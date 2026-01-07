@@ -1,0 +1,305 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+
+<div class="bg-white px-5 pt-3 rounded">
+  <app-bread-crumb [title]="' إدارة الأصول'" [imageTitle]="'./assets/icons/projectsActive.svg'"
+    [subTitles]="subTitle"></app-bread-crumb>
+</div>
+<!-- ============================= -->
+<!-- add-edit-form -->
+<!-- ============================= -->
+<form [formGroup]="assetForm">
+  <div class="bg-white px-5 py-5 rounded">
+    <h3 class="font-bold my-3">تحديد موقع الأصل</h3>
+    <hr />
+    <div class="grid grid-cols-12 gap-4 mt-3">
+      <div class="input-field col-span-6">
+        <label for="name"> رقم الأصل <span>*</span></label>
+        <div class="field-icon">
+          <input type="text" class="form-control" formControlName="assetNumber" placeholder="رقم الأصل" />
+        </div>
+        <small class="default-attention"
+          *ngIf="( assetForm.controls['assetNumber'].errors?.['required'] && (assetForm.controls['assetNumber'].dirty || assetForm.controls['assetNumber'].touched))">رقم
+          الأصل مطلوب
+        </small>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> المبنى <span>*</span></label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              'padding-right': '20px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى  " formControlName="buildingId"
+            [options]="mainBuildingsList" [filter]="true" filterBy="name"
+            (onChange)="changeBulding($event)"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="( assetForm.controls['buildingId'].errors?.['required'] && (assetForm.controls['buildingId'].dirty || assetForm.controls['buildingId'].touched))">اسم
+          المبنى مطلوب
+        </small>
+      </div>
+      <!-- <div class="input-field col-span-6">
+        <label for="name"> المبنى الفرعي <span>*</span></label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              'padding-right': '20px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر  المبنى الفرعي  " formControlName="subunitId"
+            [options]="subunitList" [filter]="true" filterBy="name" (onChange)="changeSubUnit($event)"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="( assetForm.controls['subunitId'].errors?.['required'] && (assetForm.controls['subunitId'].dirty || assetForm.controls['subunitId'].touched))">المبنى
+          الفرعي مطلوب
+        </small>
+      </div> -->
+      <div class="input-field col-span-6">
+        <label for="name"> الطابق <span>*</span></label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              'padding-right': '20px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر الطابق  " formControlName="FloorId"
+            [options]="FloorsList" [filter]="true" filterBy="name" (onChange)="changeFloor($event)"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="( assetForm.controls['FloorId'].errors?.['required'] && (assetForm.controls['FloorId'].dirty || assetForm.controls['FloorId'].touched))">
+          الطابق مطلوب
+        </small>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> الغرفة <span>*</span></label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              'padding-right': '20px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر الغرفة  " formControlName="officeId"
+            [options]="officesList" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="( assetForm.controls['officeId'].errors?.['required'] && (assetForm.controls['officeId'].dirty || assetForm.controls['officeId'].touched))">
+          الغرفة مطلوب
+        </small>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> النظام <span>*</span></label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              'padding-right': '20px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر النظام  " formControlName="assetTypeId"
+            [options]="typeAssetList" [filter]="true" filterBy="name" (onChange)="changeAssetType($event)"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="( assetForm.controls['assetTypeId'].errors?.['required'] && (assetForm.controls['assetTypeId'].dirty || assetForm.controls['assetTypeId'].touched))">نوع
+          الأصل مطلوب
+        </small>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> التصنيف الرئيسي <span>*</span></label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              'padding-right': '20px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر  التصنيف الرئيسي  " formControlName="categoryId"
+            [options]="categoryList" [filter]="true" filterBy="name"
+            (onChange)="changeAssetTypesMainCategories($event)"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="( assetForm.controls['categoryId'].errors?.['required'] && (assetForm.controls['categoryId'].dirty || assetForm.controls['categoryId'].touched))">التصنيف
+          الرئيسي مطلوب
+        </small>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> التصنيف الفرعي <span>*</span></label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              'padding-right': '20px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر  التصنيف الفرعي  "
+            formControlName="subCategoryId" [options]="subCategoryList" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="( assetForm.controls['subCategoryId'].errors?.['required'] && (assetForm.controls['subCategoryId'].dirty || assetForm.controls['subCategoryId'].touched))">التصنيف
+          الفرعي مطلوب
+        </small>
+      </div>
+
+      <div class="input-field col-span-6">
+        <label for="name">الرقم التعريفي</label>
+        <div class="field-icon">
+          <span>{{ getAssetDisplayName() }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white px-5 pt-3 pb-5 rounded mt-5">
+    <h3 class="font-bold my-3">مواصفات الأصل</h3>
+    <hr />
+    <div class="grid grid-cols-12 gap-4 mt-3">
+      <div class="input-field col-span-6">
+        <label for="name"> الشركة المنتجة </label>
+        <div class="field-icon">
+          <input type="text" class="form-control" formControlName="manufacturerNume" placeholder=" ادخل اسم الشركة " />
+        </div>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> الكتالوج (URL) </label>
+        <div class="field-icon">
+          <input type="text" class="form-control" formControlName="catalogUrl" placeholder="   ادخل URL الكاتالوج " />
+        </div>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> الرقم التسلسلي </label>
+        <div class="field-icon">
+          <input type="text" class="form-control" formControlName="serialNumber" placeholder=" ادخل الرقم   " />
+        </div>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> الوظيفة </label>
+        <div class="field-icon">
+          <input type="text" class="form-control" formControlName="job" placeholder=" ادخل الوظيفة للأصل   " />
+        </div>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> تاريخ التصنيع </label>
+
+        <div class="field-icon">
+          <img src="./assets/icons/calender.svg" />
+
+          <p-calendar class=" outline-none w-full" formControlName="industryDate" [placeholder]="' اختر تاريخ التصنيع '"
+            [styleClass]="'w-full h-12 '" [inputStyleClass]="'bg-gray-100'" [showIcon]="false"></p-calendar>
+        </div>
+
+      </div>
+
+      <div class="input-field col-span-6">
+        <label for="name"> مدة الضمان </label>
+        <div class="field-icon">
+          <input type="text" name="" id="" class="form-control" formControlName="warrantyDuration"
+            placeholder="حدد مدة الضمان" />
+        </div>
+      </div>
+
+      <div class="input-field col-span-6">
+        <label for="name"> الوكيل </label>
+        <div class="field-icon">
+          <input type="text" name="" id="" class="form-control" formControlName="agentName"
+            placeholder="  ادخل اسم الوكيل" />
+        </div>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> حالة الأصل </label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              'padding-right': '20px'
+            }" optionLabel="name" optionValue="status" placeholder=" اختر حالة الأصل   " formControlName="isWorking"
+            [options]="assetStatusList" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white px-5 pt-3 pb-5 rounded mt-5">
+    <h3 class="font-bold my-3">بيانات الصيانة</h3>
+    <hr />
+    <div class="grid grid-cols-12 gap-4 mt-3">
+
+      <div class="input-field col-span-6">
+        <label for="name"> عناصر الصيانة الدورية </label>
+        <div class="">
+          <p-multiSelect class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+        'padding-right': '20px'
+      }" formControlName="regularMaintenanceItemIds" [options]="enhancedMaintenanceList" optionLabel="name"
+            optionValue="id" placeholder="اختر عناصر الصيانة الدورية" display="chip" #maintenanceDropdown
+            (onFilter)="onDropdownFilter($event)" [filter]="true">
+
+            <!-- Custom item template -->
+            <ng-template pTemplate="item" let-option let-index="index">
+              <!-- Regular item -->
+              <div *ngIf="!option.isAddButton" class="p-2">
+                <span>{{ option.name }}</span>
+              </div>
+
+              <!-- Add button item -->
+              <div *ngIf="option.isAddButton"
+                class="flex items-center justify-between w-full p-2 bg-gray-50 border-t border-gray-200">
+                <span class="text-gray-700">إضافة: "{{ option.searchTerm }}"</span>
+                <button type="button"
+                  class="bg-[#16968C] text-white px-3 py-1 rounded text-sm hover:bg-[#14857B] transition-colors ml-2"
+                  (click)="addNewMaintenanceItem(option.searchTerm, $event)">
+                  اضافة
+                </button>
+              </div>
+            </ng-template>
+          </p-multiSelect>
+        </div>
+      </div>
+
+      <!-- <div class="input-field col-span-6">
+        <label for="name">
+          موعد الصيانة الدورية ( بالأيام ) </label>
+        <div class="field-icon">
+          <input type="text" class="form-control" formControlName="regularMaintenanceDays"
+            placeholder="   حدد موعد الصيانة الدورية" />
+        </div>
+      </div>
+
+      <div class="input-field col-span-6">
+        <label for="name">
+          موعد الصيانة الثانوي ( بالأيام ) </label>
+        <div class="field-icon">
+          <input type="text" class="form-control" formControlName="secondaryMaintenanceDays"
+            placeholder="      حدد موعد الصيانة الثانوي" />
+        </div>
+      </div> -->
+    </div>
+  </div>
+  <div class="bg-white px-5 pt-3 pb-5 rounded mt-5">
+    <h3 class="font-bold my-3">المرفقات و الملاحظات</h3>
+    <hr />
+    <div class="grid grid-cols-12 mt-3">
+      <div class="input-field col-span-12">
+        <label for="name"> مرفقات </label>
+        <div class="fileContainer flex flex-col col-span-3">
+          <app-uploadFile [uploadedFiles]="uploadedFiles" [editMode]="editMode" [showTitle]="false"
+            [currentId]="editeId" [routeName]="'/assets'"></app-uploadFile>
+        </div>
+      </div>
+      <div class="input-field col-span-12">
+        <label for="name"> الملاحظات </label>
+
+        <textarea class="form-control" formControlName="notes" placeholder=" ادخل ملاحظاتك" style="
+            resize: none;
+            width: 100%;
+            background-color: #f6f6f6;
+            padding: 10px;
+          " rows="4"></textarea>
+      </div>
+    </div>
+    <div class="buttons-content mt-5">
+      <button class="buttons" type="submit" (click)="createUpdateAsset()" [disabled]="!assetForm.valid">
+        {{ editMode ? "تعديل" : "إضافة" }}
+      </button>
+      <button class="buttons-white" type="button" (click)="routeToAssets()">
+        إلغاء
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  الاصول'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

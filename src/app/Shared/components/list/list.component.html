@@ -1,0 +1,361 @@
+<div class="" *ngIf="!noData">
+  <div class="card">
+    <p-table
+      [rows]="5"
+      [columns]="cols"
+      [value]="values"
+      [tableStyle]="{ 'min-width': '30rem' }"
+    >
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th *ngFor="let col of columns">
+            {{ col.header }}
+          </th>
+          <th *ngIf="withActives">حالة التنشيط</th>
+          <th *ngIf="withControles">إعدادات</th>
+          <th *ngIf="viewButton">إعدادات</th>
+          <th *ngIf="deleteButton">إعدادات</th>
+          <th *ngIf="isExpandable"></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-value let-columns="columns">
+        <tr>
+          <!-- -------------ALL DATA LIST---------------- -->
+
+          <td
+            *ngFor="let col of columns; index as i"
+            (click)="openWhenClickTd(value)"
+            style="cursor: pointer"
+          >
+            <span
+              *ngIf="
+                !col.isDate &&
+                !col.isUserType &&
+                !col.priority &&
+                !col.maintenanceRequestStatusId &&
+                !col.statusPartsID &&
+                !col.numbers &&
+                !col.isColor &&
+                !col.statusClass &&
+                !col.visitRequestStatusId &&
+                !col.isCurrency &&
+                !col.attachmentTypeId &&
+                !col.isClickable &&
+                !col.financialConnection &&
+                !col.isPercentage &&
+                !col.isChecked
+              "
+            >
+              {{ value[col.field] ?? "----" }}
+            </span>
+            <!-- -------------DATE---------------- -->
+            <span *ngIf="col.isDate">
+              {{ value[col.field] | date }}
+            </span>
+            <span *ngIf="col.isPercentage"> {{ value[col.field] }}% </span>
+            <span *ngIf="col.isClickable">
+              <a (click)="openFile(value[col.fullPath])" target="_blank">
+                <i
+                  class="fa-solid fa-file"
+                  [ngClass]="value.isPicked ? 'file-picked' : 'file-uploaded'"
+                ></i>
+                {{ value[col.field] }}
+              </a>
+            </span>
+            <!-- -------------CURRENCY---------------- -->
+            <span *ngIf="col.isCurrency">
+              {{ value[col.field] | currency : " " : "symbol" : "0.0-1" }}
+            </span>
+
+            <!-- -------------Users Types---------------- -->
+            <span
+              *ngIf="col.isUserType"
+              [class]="'userColors_' + value[col.userType]"
+            >
+              {{ value[col.field] }}
+            </span>
+            <!-- -------------status ---------------- -->
+
+            <span *ngIf="col.isChecked">
+              {{ value[col.field] ? "يعمل" : "لا يعمل" }}
+            </span>
+
+            <!-- -------------Request priority---------------- -->
+            <span
+              *ngIf="col.priority"
+              [class]="'priorityColors_' + value[col.field]"
+            >
+              <span
+                [ngClass]="
+                  value[col.field] === 1 ? 'high-priority' : 'low-priority'
+                "
+                ><i class="fa-solid fa-circle"></i
+              ></span>
+              {{ value[col.field] === 1 ? "عاجل" : "عادي" }}
+            </span>
+            <!-- -------------maintenance Request Status Id---------------- -->
+            <span
+              *ngIf="col.maintenanceRequestStatusId"
+              [class]="
+                'maintenanceRequestStatusIdColors_' +
+                value[col.maintenanceRequestStatusId]
+              "
+            >
+              {{
+                value[col.maintenanceRequestStatusId] === 1
+                  ? "تحت المراجعة"
+                  : value[col.maintenanceRequestStatusId] === 2
+                  ? "تم المراجعة"
+                  : value[col.maintenanceRequestStatusId] === 3
+                  ? "قيد التنفيذ"
+                  : value[col.maintenanceRequestStatusId] === 4
+                  ? "تحت الاستلام"
+                  : value[col.maintenanceRequestStatusId] === 5
+                  ? "تم  التخصيص"
+                  : value[col.maintenanceRequestStatusId] === 6
+                  ? "تم  رفض المعالجة"
+                  : value[col.maintenanceRequestStatusId] === 7
+                  ? "تم  تأكيد الرفض "
+                  : value[col.maintenanceRequestStatusId] === 8
+                  ? "تم  قبول المعالجة "
+                  : value[col.maintenanceRequestStatusId] === 9
+                  ? "تم  تأكيد المعالجة "
+                  : ""
+              }}
+            </span>
+            <!-- -------------PARTS Request Status Id---------------- -->
+            <span
+              *ngIf="col.statusPartsID"
+              [class]="'statusPartsIDColors_' + value[col.statusPartsID]"
+            >
+              {{
+                value[col.statusPartsID] === 1
+                  ? " بانتظار الموافقة"
+                  : value[col.statusPartsID] === 2
+                  ? " تم الاعتماد المبدأي"
+                  : value[col.statusPartsID] === 3
+                  ? "تم الاعتماد النهائي"
+                  : ""
+              }}
+            </span>
+            <!-- -------------financialConnection---------------- -->
+            <span *ngIf="col.financialConnection">
+              {{ value[col.field] ? "مرتبط" : "غير مرتبط" }}
+            </span>
+            <!-- -------------Visit Request Status Id---------------- -->
+
+            <span
+              *ngIf="col.visitRequestStatusId"
+              [class]="
+                'visitRequestStatusIdColors_' + value[col.visitRequestStatusId]
+              "
+            >
+              {{
+                value[col.visitRequestStatusId] === 1
+                  ? "لم يتم التخصيص "
+                  : value[col.visitRequestStatusId] === 2
+                  ? "تم التخصيص"
+                  : value[col.visitRequestStatusId] === 3
+                  ? "غير مكتمل"
+                  : value[col.visitRequestStatusId] === 4
+                  ? "تم اكتمال الزيارة"
+                  : value[col.visitRequestStatusId] === 5
+                  ? "مرفوض"
+                  : ""
+              }}
+            </span>
+
+            <!-- -------------FILE TYPES---------------- -->
+
+            <span *ngIf="col.attachmentTypeId">
+              {{
+                value[col.attachmentTypeId] === 1
+                  ? "الكراسه"
+                  : value[col.attachmentTypeId] === 2
+                  ? "جدول الكميات مسعر"
+                  : value[col.attachmentTypeId] === 3
+                  ? "جدول كميات - مفرغ"
+                  : value[col.attachmentTypeId] === 4
+                  ? "ارتباط"
+                  : value[col.attachmentTypeId] === 5
+                  ? "محضر فتح العروض"
+                  : value[col.attachmentTypeId] === 6
+                  ? "تحليل فني ومالي"
+                  : value[col.attachmentTypeId] === 7
+                  ? "محضر الترسيه"
+                  : value[col.attachmentTypeId] === 8
+                  ? "محضر تسليم الموقع"
+                  : value[col.attachmentTypeId] === 9
+                  ? "تبليغ المقاول"
+                  : value[col.attachmentTypeId] === 10
+                  ? "المستخلصات"
+                  : value[col.attachmentTypeId] === 11
+                  ? "محضر تسليم نهائي"
+                  : value[col.attachmentTypeId] === 12
+                  ? "المخطط"
+                  : value[col.attachmentTypeId] === 13
+                  ? "العقد"
+                  : ""
+              }}
+            </span>
+            <!-- -------------STATUS---------------- -->
+            <span
+              *ngIf="col.statusClass"
+              [ngClass]="
+                'statues_task_colors status-' + value[col.statusBadgeField]
+              "
+            >
+              {{ value[col.statusBadgeField] ? "مكتملة" : "غير مكتملة" }}
+            </span>
+
+            <!-- -------------IS COLOR---------------- -->
+            <span *ngIf="col.isColor" class="color-content">
+              <span
+                class="isColor"
+                [style]="'background-color:' + value[col.field]"
+              ></span>
+              <span>{{ value[col.field] }}</span>
+            </span>
+
+            <!---------------- setting  ------------------>
+          </td>
+          <td *ngIf="withActives">
+            <label class="switch">
+              <input
+                type="checkbox"
+                [checked]="!value.inactive"
+                (click)="activeUserFun(value)"
+              />
+              <span class="slider round"></span>
+            </label>
+          </td>
+          <td *ngIf="viewButton" (click)="onItemClicked(value.id)">
+            <i class="fa-regular fa-eye" style="color: #16968c"></i> عرض
+          </td>
+          <td *ngIf="deleteButton" (click)="onDeleteClicked(value)">
+            <i
+              class="fa-solid fa-trash-can cursor-pointer"
+              style="color: red"
+            ></i>
+          </td>
+          <td *ngIf="withControles">
+            <p-menu
+              #menu
+              [model]="items"
+              [popup]="true"
+              [appendTo]="'body'"
+            ></p-menu>
+            <button
+              pButton
+              class="tw-outline-none focus:tw-outline-none focus:tw-shadow-none focus:tw-border-0 ellipsis"
+              type="button"
+              (click)="onClickedmenu(value); menu.toggle($event)"
+              icon="fa-solid fa-ellipsis tw-text-gold-color tw-text-2xl"
+              label=""
+            ></button>
+          </td>
+          <td *ngIf="isExpandable">
+            <button class="w-5 mt-1" type="button" (click)="expandRow(value)">
+              <img
+                *ngIf="expandedRow[value.id]"
+                src="assets/icons/closeRow.svg"
+                alt="open"
+                class="w-5"
+              />
+
+              <img
+                *ngIf="!expandedRow[value.id]"
+                src="assets/icons/expandRow.svg"
+                alt="close"
+                class="w-5"
+              />
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="expandedRow[value.id]" class=" ">
+          <td [attr.colspan]="5" class="filesContainer">
+            <!-- Notes Section -->
+            <div
+              class="border-class bg-[#f6f6f6] rounded-lg border-black flex justify-start p-4 m-4"
+            >
+              <span class="text-[#16968C] font-semibold">ملاحظات :</span>
+              <span class="ml-2">{{ logValues?.['description'] }}</span>
+            </div>
+
+            <!-- Files Section -->
+            <div
+              class="border-class bg-[#f6f6f6] rounded-lg border-black flex justify-start p-4 m-4"
+            >
+              <span class="text-[#16968C] font-semibold">مرفقات :</span>
+
+              <ul class="flex flex-wrap gap-7">
+                <li
+                  class="w-72"
+                  *ngFor="let fileName of logValues?.['fileUploads']; let i = index"
+                >
+                  <i class="fa-solid fa-file"></i>
+                  <a
+                    style="cursor: pointer"
+                    class=""
+                    href="{{ fileName?.fullPath }}"
+                    target="_blank"
+                  >
+                    {{ fileName?.originalName }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <div
+      *ngIf="
+        (isSearching && values.length != 0 && history != false) || !isSearching
+      "
+      class="paginatorContainer"
+    >
+      <p-paginator
+        (onPageChange)="onPageChange($event)"
+        [first]="first"
+        [rows]="rows"
+        [totalRecords]="totalPageCount"
+        [showCurrentPageReport]="false"
+        [pageLinkSize]="3"
+      ></p-paginator>
+      <div class="nestedDiv">
+        <span class="spanText"> عدد العناصر لكل صفحة : </span>
+        <p-dropdown
+          [options]="options"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="rows"
+          (onChange)="onPageChange({ page: 1, first: 0, rows: rows })"
+        ></p-dropdown>
+      </div>
+    </div>
+    <!-- <div class="tw-py-6">
+      <app-no-data-yet
+        [marginForList]="true"
+        *ngIf="isSearching && values.length == 0"
+        [noDataElements]="{
+            noDataImg: '../../../../assets/images/no-data-search.png',
+            noDataText: 'يبدو أنه لا تتوفر نتائج لبحثك، من فضلك حاول مرة أخرى...',
+            noDataButtonText: '',
+          }"
+      ></app-no-data-yet>
+    </div> -->
+  </div>
+</div>
+<div class="tw-py-6">
+  <app-no-data-yet
+    [marginForList]="true"
+    *ngIf="isSearching && values.length == 0"
+    [noDataElements]="{
+        noDataImg: '../../../../assets/images/no-data-search.png',
+        noDataText: 'يبدو أنه لا تتوفر نتائج لبحثك، من فضلك حاول مرة أخرى...',
+        noDataButtonText: '',
+      }"
+  ></app-no-data-yet>
+</div>

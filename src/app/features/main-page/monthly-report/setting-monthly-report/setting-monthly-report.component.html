@@ -1,0 +1,199 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="' إدارة الأصول'"
+  [imageTitle]="'./assets/icons/Simplificationactive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: ' الارشيف', routerLink: '/monthly-report/main-tab' },
+    { name: 'الاعدادات', routerLink: '/monthly-report' }
+  ]"
+  [isFilte]="false"
+  [inputPlaceholder]="'ابحث...'"
+  [buttonText]="' اضافة تبويب'"
+  [saveBtnText]="'إضافة'"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [isShowAddEdite]="false"
+  (addButton)="toggleMonthlyReportPopup()"
+  (valueSearch)="filterBySearchTesxt($event)"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  (editEvent)="updateTabweeb($event)"
+  (deleteEvent)="deleteMonthlyReport($event)"
+  (rowsCountChanged)="getList($event)"
+  [noData]="showBreadcrumb ? false : true"
+></app-list>
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT Main/ Sub Tab -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showMonthlyPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/Simplificationactive.svg" />
+      <p>{{ editMode ? "تعديل تبويب" : "إضافة تبويب" }}</p>
+    </div>
+
+    <form [formGroup]="TabForm" (ngSubmit)="saveTab()">
+      <!-- Tab Type -->
+      <div class="input-field">
+        <label> نوع التبويب <span>*</span> </label>
+
+        <div class="flex items-center mb-3">
+          <div class="flex items-center mr-6">
+            <input
+              type="radio"
+              name="tabType"
+              formControlName="tabType"
+              value="تبويب رئيسي"
+      id="mainTab"
+            />
+            <label class="mx-2 mb-0" for="mainTab">تبويب رئيسي</label>
+          </div>
+
+          <div class="flex items-center">
+            <input
+              type="radio"
+              name="tabType"
+              formControlName="tabType"
+              value="تبويب فرعي"
+               id="subTab"
+            />
+            <label class="mx-2 mb-0" for="subTab">تبويب فرعي</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Name -->
+      <div class="input-field">
+        <label> اسم التبويب <span>*</span></label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input
+            formControlName="name"
+            type="text"
+            placeholder="أدخل اسم التبويب"
+          />
+        </div>
+        <small
+          *ngIf="TabForm.get('name')?.invalid && TabForm.get('name')?.touched"
+        >
+          برجاء إدخال الاسم
+        </small>
+      </div>
+
+      <!--  (Only When Sub) -->
+      <div
+        class="input-field"
+        *ngIf="TabForm.get('tabType')?.value === 'تبويب فرعي'"
+      >
+        <label> التبويب الرئيسي <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/malfunction-outline.svg" />
+
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name"
+            optionValue="id"
+            [placeholder]="'اختر التبويب الرئيسي'"
+            formControlName="parentId"
+            [options]="tabList"
+            [filter]="true"
+            [filterBy]="'name'"
+          ></p-dropdown>
+        </div>
+        <small
+          *ngIf="
+            TabForm.get('parentId')?.invalid && TabForm.get('parentId')?.touched
+          "
+        >
+          يجب اختيار تبويب رئيسي
+        </small>
+      </div>
+
+      <!-- Buttons -->
+      <div class="buttons-content mt-4">
+        <button class="buttons" type="submit" [disabled]="TabForm.invalid">
+          {{ editMode ? "تعديل" : "إضافة" }}
+        </button>
+
+        <button
+          class="buttons-white"
+          type="button"
+          (click)="toggleMonthlyReportPopup()"
+        >
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- NO DATA YET... -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  (addNewEvent)="toggleMonthlyReportPopup()"
+  [noDataElements]="{
+noDataImg: './assets/images/no-data-search.png',
+noDataText: 'قائمة التبويب فارغة، يمكنك البدء بإضافة أول تبويب',
+ 
+noDataButtonText: 'تبويب جديدة',
+}"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض التبويبات  '
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: ' هل أنت متأكد أنك تريد حذف  التبويب؟ سيتم حذفه نهائيًا من قائمة التبويبات',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

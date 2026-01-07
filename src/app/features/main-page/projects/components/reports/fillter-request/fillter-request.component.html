@@ -1,0 +1,93 @@
+   <!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+[title]="'تقارير الطلبات'"
+[imageTitle]="'./assets/icons/Simplificationactive.svg'"
+[subTitles]="[
+  { name: 'الرئيسية', routerLink: '/projects' },
+  { name: 'إدارة المشاريع', routerLink: '/projects' },
+  { name: 'التقارير', routerLink: '/projects/reports/fillterRequest' },
+  { name: 'تقارير الطلبات', routerLink: '/projects/reports/fillterRequest' }
+]"
+></app-bread-crumb>
+
+
+        <form [formGroup]="filterForm">
+
+         <div class="shadow-md p-5">
+            <div class="three-inputs-fields">
+                <div class="input-field">
+                    <label for="main-building"> النوع </label>
+          <div class="field-icon">
+            <p-treeSelect
+            class="w-full"
+            [containerStyleClass]="'w-full bg-filterBtnBg py-3'"
+            [containerStyle]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            formControlName="visitRequestTypeName"
+            [options]="visitRequestTypesList"
+            placeholder="اختر نوع الطلب"
+            [selectionMode]="'single'"
+            [(ngModel)]="selectedNodes"
+          >
+          </p-treeSelect>
+                  </div></div>
+
+                <div class="input-field">
+                    <label> حالة الطلب </label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر حالة الطلب"
+            formControlName="visitRequestStatusId"
+            [options]="visitRequestStatusList"
+          ></p-dropdown>
+                  </div>
+
+                <div class="input-field">
+                    <label for="main-building">  تاريخ الزيارة </label>
+                    <div class="field-icon">
+                      <p-calendar
+                        [placeholder]="'  اختر تاريخ الزيارة '"
+                        class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+                        formControlName="StartDate"
+                        [styleClass]="'w-full h-12'"
+                        [inputStyleClass]="'bg-gray-100'"
+                        [showIcon]="true"
+                      ></p-calendar>
+                    </div>
+                  </div>
+
+
+
+
+
+         </div>  <!-- =======================BUTTONS================== -->
+         <div class="buttons-content">
+           <button class="buttons" type="button" (click)="Filter()">
+             تصفية
+           </button>
+           <button
+             class="buttons-white"
+             type="button"
+             (click)="closeFilter()"
+           >
+             إعادة ضبط
+           </button>
+         </div>       </div>
+
+        </form>
+

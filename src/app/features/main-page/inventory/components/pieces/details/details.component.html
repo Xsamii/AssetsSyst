@@ -1,0 +1,169 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'تفاصيل القطعة'"
+  [imageTitle]="'./assets/icons/PiecesActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/inventory/pieces' },
+    { name: 'المخزون', routerLink: '/inventory/pieces' },
+    { name: 'القطع', routerLink: '/inventory/pieces' },
+    { name: 'تفاصيل القطعة', routerLink: 'inventory/pieces/details' }
+  ]"
+
+  [isShowAddEdite]="false"
+  [isShowFilter]="true"
+
+></app-bread-crumb>
+
+<!-- =================================================== -->
+<!-- Request Details -->
+<!-- =================================================== -->
+
+<div class="request-container">
+  <div class="tabs">
+    <div
+      class="tab"
+      (click)="toggle('details')"
+      [class.active-tab]="activeTab == 'details'"
+    >
+      <img
+        src="./assets/icons/PiecesActive.svg"
+        *ngIf="activeTab === 'details'"
+      />
+      <img
+        src="./assets/icons/PiecesActive.svg"
+        *ngIf="activeTab === 'history'"
+      />
+
+      <h3>تفاصيل القطعة</h3>
+    </div>
+
+    <div
+      class="tab"
+      (click)="toggle('history')"
+      [class.active-tab]="activeTab == 'history'"
+    >
+      <img src="./assets/icons/info-icon.svg" />
+      <h3>سجل القطعة</h3>
+    </div>
+  </div>
+
+  <!-- uncomment this -->
+  <div class="request-details-content" *ngIf="activeTab === 'details'">
+    <div class="box">
+      <img src="./assets/icons/mainBuildingOutLine.svg" />
+      <p>
+        اسم القطعة:
+        <span>
+          {{ PieceDetails?.['name']}}</span
+        >
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/mainBuildingOutLine.svg" />
+      <p>
+        الكود:
+        <span>
+          {{
+          PieceDetails?.["code"]
+          }}</span
+        >
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/calender.svg" />
+      <p>
+        التصنيف:
+        <span> {{ PieceDetails?.["classificationName"]  }}</span>
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/pen-ruler-icon.svg" />
+      <p>
+        وحدة القياس:
+        <span>
+          {{
+          PieceDetails?.["inventoryItemUnitName"]
+          }}</span
+        >
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/pen-icon.svg" />
+      <p>
+        الكمية:
+        <span>
+          {{
+          PieceDetails?.["quantity"]
+          }}</span
+        >
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/malfunction-outline.svg" />
+      <p>
+        وصف القطعة:
+        <span>
+          {{
+          PieceDetails?.["description"]
+          }}</span
+        >
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ================================== -->
+  <!-- FILES -->
+  <!-- ================================== -->
+
+  <!-- uncomment this -->
+  <div class="request-details-content" *ngIf="activeTab === 'details'">
+    <div class="bg-[#46948c1a] flex gap-4 py-3 px-5 w-fit rounded-lg text-[#16968C] font-medium text-base mb-4">
+      <img src="./assets/icons/fileUploadedIcon.svg" />
+      <h3>مرفقات القطعة</h3>
+    </div>
+    <div class="box" *ngFor="let files of uploadedFiles">
+
+      <img
+        style="width: 25px; height: 25px"
+        src="./assets/icons/fileUploadedIcon.svg"
+      />
+
+      <a [href]="files.fullPath" target="_blank">
+        <p>
+          {{ files?.originalName }}:
+          <span>
+            {{
+              files?.fileSize
+            }}
+          </span>
+        </p>
+      </a>
+    </div>
+    <h3 *ngIf="PieceDetails?.['fileUploads']?.length == 0">
+      لا يوجد مرفقات...
+    </h3>
+  </div>
+
+  <!-- ================================== -->
+  <!-- Request History -->
+  <!-- ================================== -->
+
+  <div class="" *ngIf="activeTab === 'history'">
+
+    <app-list
+    [noData]=" false"
+    [cols]="cols"
+    [isSearching]="true"
+    [values]="values"
+    [logValues]="logValues"
+    [totalPageCount]="totalPageCount"
+    [withControles]="false"
+    [isExpandable]="true"
+    (rowsCountChanged)="getLog()"
+    (expand)="expand($event)"
+  ></app-list>
+  </div>
+</div>

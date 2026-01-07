@@ -1,0 +1,29 @@
+// Hail Theme Variables
+$primary-color: #16968c;
+$secondary-color: #0e3434;
+$background-color: #46948c1a;
+$gradient: linear-gradient(150.57deg, #16968c 14.49%, #0e3434 91.35%);
+$button-text-color: #fff;
+$content-bg: #fff;
+$scrollbar-color: #16968c;
+$text-color: linear-gradient(150.57deg, #16968c 14.49%, #0e3434 91.35%);
+
+// CSS Custom Properties for component usage
+:root {
+  --primary-color: #{$primary-color};
+  --secondary-color: #{$secondary-color};
+  --background-color: #{$background-color};
+  --gradient: #{$gradient};
+  --button-text-color: #{$button-text-color};
+  --content-bg: #{$content-bg};
+  --text-color: #{$text-color};
+  --scrollbar-color: #{$scrollbar-color};
+  --header-bg: #{$gradient}; // Header uses gradient for Hail
+  --header-text-color: #{$button-text-color}; // White text for Hail
+  --sidebar-bg: #{$gradient}; // Sidebar uses gradient for Hail
+  --sidebar-text-color: #eaf7ff; // Light blue text for Hail
+  --sidebar-active-bg: transparent; // No background change for active links (original behavior)
+  --sidebar-dropdown-active-bg: #{$content-bg}; // White background for open dropdowns
+  --sidebar-active-text-color: #{$content-bg}; // White text for active items
+  --module-active-color: #{$primary-color}; // White text for active items
+}

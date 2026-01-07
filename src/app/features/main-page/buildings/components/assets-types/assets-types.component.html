@@ -1,0 +1,112 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'إدارة الأصول '" [imageTitle]="'./assets/icons/subUnitsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: 'الأنظمة ', routerLink: '/buildings/assets-types' }
+  ]" [isFilte]="false" [inputPlaceholder]="'ابحث باسم النظام...'" [buttonText]="'اضافة نظام'" [saveBtnText]="'إضافة'"
+  [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false" (addButton)="openAdd()"
+  (valueSearch)="filterBySearchText($event)"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
+  [withControles]="true" (editEvent)="openEdit($event)" (deleteEvent)="confirmDelete($event)"
+  (rowsCountChanged)="getAllAssetTypes($event)" [noData]="showBreadcrumb ? false : true"></app-list>
+
+
+
+
+
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/subUnitsActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل نظام" : "إضافة نظام" }}
+      </p>
+    </div>
+    <form [formGroup]="assetTypeForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name">
+          اسم النظام
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="name" id="name" type="text" placeholder="أدخل اسم النظام" />
+        </div>
+        <small *ngIf="formControls.name.invalid && formControls.name.touched">
+          برجاء إدخال اسم النظام
+        </small>
+      </div>
+
+      <div class="input-field">
+        <label for="name">
+          الكود
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="code" id="name" type="text" placeholder="أدخل الكود" />
+        </div>
+        <small *ngIf="formControls.code.invalid && formControls.code.touched">
+          برجاء إدخال الكود
+        </small>
+      </div>
+
+
+
+      <div class="buttons-content">
+        <button [disabled]="assetTypeForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button class="buttons-white" type="button" (click)="onCloseAddEditePopup()">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ======================================================== -->
+<!-- NO DATA YET... -->
+<!-- ======================================================== -->
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+noDataImg: './assets/images/no-data-search.png',
+noDataText: 'يبدو أنك لم تقم بإضافة أي نظام بعد، ستظهر الأنظمة المضافة  هنا... يمكنك البدء بإضافة أول نظام',
+noDataButtonText: 'إضافة نظام جديد',
+}"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض الأنظمة '
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف النظام؟ سيتم حذفه نهائيًا من قائمة الأنظمة',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

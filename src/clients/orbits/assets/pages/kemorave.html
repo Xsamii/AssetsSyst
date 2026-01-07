@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>3D Layers from LocalStorage</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.33/"></script>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <script type="module">
+    const [
+      Map,
+      SceneView,
+      SceneLayer,
+      BuildingSceneLayer,
+      LayerList,
+      Expand,
+      ScaleBar,
+      Search,
+      BuildingExplorer,
+      reactiveUtils,
+    ] = await $arcgis.import([
+      "@arcgis/core/Map.js",
+      "@arcgis/core/views/SceneView.js",
+      "@arcgis/core/layers/SceneLayer.js",
+      "@arcgis/core/layers/BuildingSceneLayer.js",
+      "@arcgis/core/widgets/LayerList.js",
+      "@arcgis/core/widgets/Expand.js",
+      "@arcgis/core/widgets/ScaleBar.js",
+      "@arcgis/core/widgets/Search.js",
+      "@arcgis/core/widgets/BuildingExplorer.js",
+      "@arcgis/core/core/reactiveUtils.js",
+    ]);
+
+    if (!localStorage.getItem("actions")) {
+      localStorage.setItem(
+        "actions",
+        JSON.stringify([
+          {
+            title: "طلب صيانه",
+            id: "save-feature",
+            icon: "information",
+          },
+        ])
+      );
+    }
+
+    if (!localStorage.getItem("layers")) {
+      localStorage.setItem(
+        "layers",
+        JSON.stringify([
+          {
+            title: "weeeee",
+            url: "https://tiles.arcgis.com/tiles/yLODIUIxVXuW5qAs/arcgis/rest/services/%D9%85%D8%A8%D9%86%D9%89_%D8%AF%D9%88%D8%B1%D8%A7%D8%AA_%D9%85%D9%8A%D8%A7%D9%87_%D8%A7%D9%84%D8%AA%D8%B4%D8%BA%D9%8A%D9%84_%D9%88%D8%A7%D9%84%D8%B5%D9%8A%D8%A7%D9%86%D8%A9/SceneServer?f=json",
+          },
+        ])
+      );
+    }
+
+    const map = new Map({ basemap: "topo-3d", ground: "world-elevation" });
+    const view = new SceneView({
+      container: "viewDiv",
+      map,
+      viewingMode: "global",
+      camera: { position: { x: 41.6863, y: 27.5215, z: 800 }, tilt: 65 },
+    });
+
+    const buildingLayers = [];
+
+    async function loadLayersFromStorage() {
+      const actions = JSON.parse(localStorage.getItem("actions") || "[]");
+
+      const stored = JSON.parse(localStorage.getItem("layers") || "[]");
+      let first = true;
+      for (const { title, url } of stored) {
+        try {
+          const res = await fetch(url, { method: "GET" });
+          const json = await res.json();
+          let layer;
+          if (json.layerType === "BuildingSceneLayer") {
+            layer = new BuildingSceneLayer({
+              title,
+              url: url,
+
+            });
+            buildingLayers.push(layer);
+          } else {
+            layer = new SceneLayer({
+              title,
+              url: url,
+
+            });
+          }
+          map.add(layer);
+          if (first) {
+            first = false;
+            view.whenLayerView(layer).then((layerView) => {
+              view.goTo(layer.fullExtent.expand(0.8));
+            });
+          }
+        } catch (err) {
+          console.error("Failed to load layer:", title, err);
+        }
+      }
+      view.popup.actions = [];
+      for (const action of actions) {
+        view.popup.actions.push(action);
+      }
+
+      localStorage.removeItem("layers");
+      localStorage.removeItem("actions");
+    }
+
+    await loadLayersFromStorage();
+    reactiveUtils.on(
+      () => view.popup,
+      "trigger-action",
+      (event) => {
+        let data = JSON.stringify({
+          actionId: event.action.id,
+          attributes: view.popup?.selectedFeature.attributes,
+        });
+        localStorage.setItem("onActions", data);
+
+        //alert(data);
+      }
+    );
+
+    // const buildingExplorer = new BuildingExplorer({ view, layers: buildingLayers });
+    const layerList = new LayerList({
+      view,
+      // executes for each ListItem in the LayerList
+      listItemCreatedFunction: async function (event) {
+
+        let item = event.item;
+
+        await item.layer.when();
+
+        item.open = true;
+        item.actionsSections = [[{
+          title: "Go to full extent",
+          className: "esri-icon-zoom-to-object",
+          id: "full-extent"
+        }]];
+      }
+
+    });
+    const scaleBar = new ScaleBar({ view, unit: "metric" });
+    const search = new Search({ view });
+
+    view.ui.add(
+      new Expand({ view, content: layerList, expandIcon: "layers" }),
+      "top-right"
+    );
+    view.ui.add(search, "top-right");
+    // view.ui.add(buildingExplorer, "top-right");
+    view.ui.add(scaleBar, "bottom-left");
+
+    layerList.on("trigger-action", function(event) {
+  if (event.action.id === "full-extent") {
+    view.goTo(event.item.layer.fullExtent.expand(1));
+  }
+});
+
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>

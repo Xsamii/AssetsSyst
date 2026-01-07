@@ -1,0 +1,71 @@
+form {
+  .three-inputs-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 16px;
+  }
+  padding: 24px;
+
+  .input-field {
+    margin-bottom: 24px;
+    label {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: 400;
+      color: #0c588b;
+      span {
+        color: #fe4035;
+      }
+    }
+    .field-icon {
+      background-color: #f6f6f6;
+      display: flex;
+      align-items: center;
+      border-radius: 8px;
+      height: 48px;
+      img {
+        margin-left: 16px;
+      }
+      input,
+      select,
+      p-dropdown {
+        background-color: transparent;
+        width: 100%;
+        border: none;
+        outline: none;
+        &:focus {
+          outline: none;
+          border: none;
+        }
+      }
+    }
+    small {
+      color: #fe4035;
+    }
+  }
+
+  .buttons-content {
+    display: flex;
+    justify-content: end;
+    align-items: end;
+
+    button[disabled] {
+      cursor: not-allowed;
+    }
+  }
+}
+
+:host ::ng-deep .p-dropdown-items {
+  width: 100%;
+  background-color: white;
+}
+:host ::ng-deep .p-element.p-dropdown-item {
+  @apply px-4 py-4;
+}
+:host ::ng-deep .p-dropdown-label {
+  color: #707070b2;
+}
+:host ::ng-deep .p-dropdown-label:not(.p-placeholder) {
+  color: black !important;
+}

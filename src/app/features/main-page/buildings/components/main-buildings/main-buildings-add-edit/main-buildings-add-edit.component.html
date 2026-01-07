@@ -1,0 +1,245 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'المباني'" [imageTitle]="'./assets/icons/mainBuildingsActive.svg'" [subTitles]="items"
+  (submitReq)="submit()" (cancelReq)="cancel()" [isFilte]="true"
+  [inputPlaceholder]="'ابحث باسم المبنى، العنوان ، الموقع...'" [buttonText]="'مبنى جديد'"
+  [saveBtnText]="isEdit ? 'حفظ' : 'إضافة'" [isShowAddEdite]="true" [validity]="formData.valid"></app-bread-crumb>
+
+<form [formGroup]="formData">
+  <!-- Building Details container -->
+  <div class="form-container my-8 p-6 rounded-lg w-full">
+    <!-- Container Header -->
+    <div class="flex items-center justify-around p-3 rounded-lg bg-primary-light max-w-40 min-h-12">
+      <img src="./assets/icons/mainBuildingsActive.svg" class="w-5" alt="" />
+      <label class="header-title font-medium">تفاصيل المبني</label>
+    </div>
+
+    <!-- Container Body -->
+    <div class="addForm my-6">
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          اسم المبنى <span>*</span></label>
+        <!-- <img src="assets/inputs-icons/buildingNameIcon.svg" alt=""> -->
+        <!-- <div class="field-icon"> -->
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder=" اسم المبنى"
+          formControlName="name" style="
+            background: url('./assets/icons/name-icon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+        <!-- </div> -->
+        <small class="default-attention"
+          *ngIf="( formData.controls['name'].errors?.['required'] && (formData.controls['name'].dirty || formData.controls['name'].touched))">اسم
+          المبنى مطلوب
+        </small>
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          كود المبنى </label>
+        <!-- <img src="assets/inputs-icons/buildingNameIcon.svg" alt=""> -->
+        <!-- <div class="field-icon"> -->
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder=" كود المبنى"
+          formControlName="buildingCode" style="
+            background: url('./assets/icons/name-icon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+      </div>
+    </div>
+
+
+    <div class="addForm my-4">
+
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          عقد الصيانة (تنفيذي) </label>
+        <p-dropdown [filter]="true" class="mt-2 outline-none relative" [style]="{
+            background:
+              'url(./assets/icons/penRulerInput.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id" placeholder=" عقد الصيانة "
+          formControlName="executableProjectId" [options]="executiveList" [showClear]="true"></p-dropdown>
+
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> عقد الصيانة (استشاري) </label>
+        <p-dropdown [filter]="true" class="mt-2 outline-none" [style]="{
+            background:
+              'url(./assets/icons/pen-icon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+          placeholder=" المشروع الاستشاري" formControlName="supervisorProjectId" [options]="consultingList"
+          [showClear]="true"></p-dropdown>
+
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          الموقع </label>
+        <p-dropdown [filter]="true" class="mt-2 outline-none" [style]="{
+            background:
+              'url(./assets/icons/locationIcon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id" placeholder=" اختر الموقع"
+          formControlName="siteId" [options]="sitesList" [showClear]="true"></p-dropdown>
+
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          عدد طوابق المبنى </label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder=" عدد طوابق المبنى "
+          formControlName="floorsNumber" style="
+            background: url('./assets/icons/info-icon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+        <!-- <small
+          class="default-attention"
+          *ngIf="( formData.controls['floorsNumber'].errors?.['required'] && (formData.controls['floorsNumber'].dirty || formData.controls['floorsNumber'].touched))"
+        >
+          عدد طوابق المبنى مطلوب
+        </small> -->
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          رابط المبنى (3D) </label>
+        <!-- <img src="assets/inputs-icons/buildingNameIcon.svg" alt=""> -->
+        <!-- <div class="field-icon"> -->
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="رابط المبنى"
+          formControlName="urlBuilding3D" style="
+            background: url('./assets/icons/name-icon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+        <!-- </div> -->
+
+      </div>
+    </div>
+
+    <div class="addForm my-4">
+      <div class="flex flex-col col-span-full">
+        <label class="header-title font-medium">
+          الملاحظات </label>
+        <textarea class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" rows="4" placeholder="أدخل الملاحظات"
+          formControlName="notes" style="
+            background: url('./assets/icons/name-icon.svg')
+              no-repeat right 15px top 15px;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+            resize: none;
+            font-family: inherit;
+          "></textarea>
+      </div>
+    </div>
+  </div>
+  <!-- End of building details container -->
+
+  <!-- Building location container -->
+  <div class="form-container my-8 p-6 rounded-lg w-full">
+    <!-- Container Header -->
+    <div class="flex items-center justify-around p-3 rounded-lg bg-primary-light max-w-40 min-h-12">
+      <img src="./assets/icons/buildingLocation.svg" class="w-5" alt="" />
+      <label class="header-title font-medium">موقع المبني</label>
+    </div>
+    <!-- Container Body -->
+    <div class="addForm my-6">
+      <div class="flex flex-col col-span-full">
+        <label class="header-title font-medium">
+          عنوان المبنى بالتفصيل </label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="عنوان المبنى"
+          formControlName="address" style="
+            background: url('./assets/icons/locationIcon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+      </div>
+
+      <div class="flex-col col-span-full">
+        <label class="header-title font-medium">الموقع </label>
+        <div class="flex items-center bg-gray-100 mt-2 p-3 rounded-lg" style="
+            background: url('./assets/icons/locationIcon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          ">
+          <p *ngIf="!locationDetails" class="text-gray-400">
+            حدد الموقع على الخريطة
+          </p>
+          <div class="flex items-center justify-evenly">
+            <p *ngIf="locationDetails" class="bg-white text-bgactive rounded-lg py-0.5 px-3 mx-2 map-info">
+              الموقع هنا:
+              {{ locationDetails?.address }}
+            </p>
+            <p *ngIf="locationDetails" class="bg-white text-bgactive rounded-lg py-0.5 px-3 mx-2 map-info">
+              خط الطول:
+              {{ locationDetails?.longitude | number : "1.2-2" }}
+            </p>
+            <p *ngIf="locationDetails" class="bg-white text-bgactive rounded-lg py-0.5 px-3 mx-2 map-info">
+              خط العرض:
+              {{ locationDetails?.latitude | number : "1.2-2" }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-full mt-3 overflow-hidden" style="border-radius: 15px">
+        <google-map height="458px" width="100%" [mapTypeId]="hybrid" [center]="center" [zoom]="zoom"
+          (mapClick)="addMarker($event)">
+          <map-marker [position]="markerPositions" [options]="markerOptions"></map-marker>
+        </google-map>
+      </div>
+    </div>
+  </div>
+  <!-- End of building location container -->
+
+  <!-- File upload container -->
+  <div class="form-container my-8 p-6 rounded-lg w-full">
+    <!-- Container Header -->
+    <div class="flex items-center justify-around p-3 rounded-lg bg-primary-light max-w-40 min-h-12">
+      <img src="./assets/icons/fileUploadedIcon.svg" class="w-5" alt="" />
+      <label class="header-title font-medium">مرفقات المبني</label>
+    </div>
+
+    <!-- Container Body -->
+    <div class="fileContainer flex flex-col col-span-3 w-full">
+      <app-uploadFile [uploadedFiles]="uploadedFiles" [currentId]="currentId" [editMode]="isEdit" [showTitle]="false"
+        [routeName]="'/main-buildings'" [filesTitle]="'مرفقات'"></app-uploadFile>
+    </div>
+  </div>
+  <!-- End of file upload container -->
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض المباني '
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

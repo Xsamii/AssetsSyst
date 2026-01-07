@@ -1,0 +1,226 @@
+<!-- =============================
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="type == 1 ? 'الطلبات الإشرافية' : 'الطلبات التنفيذية'"
+  [imageTitle]="'./assets/icons/projectsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    {
+      name: 'طلبات الصيانة ',
+      routerLink: ''
+    },
+    {
+      name: type == 1 ? 'الطلبات الإشرافية' : 'الطلبات التنفيذية',
+      routerLink: ''
+    }
+  ]" [isFilte]="true" [inputPlaceholder]="'ابحث باسم المبنى، المبنى، العطل الرئيسي...'" [buttonText]="'مشروع جديد'"
+  [showAddButton]="userRole == 1 || userRole == 2" [saveBtnText]="'إضافة'"
+  [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false" [showAddButton]="false"
+  (valueSearch)="filterBySearchText($event)" (onFilterClick)="onShowFilterPopup()"></app-bread-crumb>
+
+<!-- ======================================================== -->
+<!-- TABEL LIST -->
+<!-- ======================================================== -->
+<!--
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  [supervisoryMaintenanceRequests]="type == 1 ? true : false"
+  [executiveMaintenanceRequests]="type == 2 ? true : false"
+  (rowsCountChanged)="getData($event)"
+  [noData]="showBreadcrumb ? false : true"
+  (recieveRequest)="recieve($event)"
+  (addRequestNotes)="addRequestNotes($event)"
+  (closeRequest)="onCloseRequest($event)"
+  (showRequest)="showMaintenanceRequest($event)"
+></app-list> -->
+
+<!-- ============================= -->
+<!-- NOTES POPUP-->
+<!-- ============================= -->
+
+<div class="overlay-notes" *ngIf="showNotesPopup">
+  <div class="popup" style="width: 434px">
+    <div class="title">
+      <img src="./assets/icons/notes-active.svg" />
+      <p>إضافة ملاحظة للطلب</p>
+    </div>
+    <!--  (ngSubmit)="OnSubmitData()" -->
+
+    <form [formGroup]="maintainenceForm" (ngSubmit)="sendNotes()">
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+      <!-- ---------------------------------------------------------------- -->
+
+      <div class="input-field">
+        <label> ملاحظات </label>
+        <div class="field-icon">
+          <img src="./assets/icons/notes-icon.svg" />
+
+          <textarea formControlName="consultantNotes" placeholder="أدخل ملاحظتك عن الطلب"></textarea>
+        </div>
+        <small *ngIf="
+            formControls.consultantNotes.invalid &&
+            formControls.consultantNotes.touched
+          ">يجب إخال ملاحظتك
+        </small>
+      </div>
+
+      <!-- =======================BUTTONS================== -->
+      <div class="buttons-content">
+        <button class="buttons" type="submit" [disabled]="maintainenceForm.invalid">
+          إضافة
+        </button>
+        <button class="buttons-white" type="button" (click)="onCloseNotesPopup()">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- POPUP FILTER-->
+<!-- ============================= -->
+
+<div class="overlay" *ngIf="showFilterPopup">
+  <div class="popup" style="width: 664px">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية طلبات الصيانة</p>
+    </div>
+    <form [formGroup]="filterForm">
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+      <!-- ---------------------------------------------------------------- -->
+      <div class="two-inputs-fields">
+        <div class="input-field">
+          <label for="main-building"> المبنى </label>
+          <div class="field-icon">
+            <img src="./assets/icons/select-main-building-icon.svg" />
+
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              placeholder="اختر  المبنى" formControlName="buildingId" [options]="builldingLookup"
+              (click)="getAllBuildingSubUnit(filterForm.value.buildingId)"></p-dropdown>
+          </div>
+        </div>
+        <div class="input-field">
+          <label for="main-building"> المبنى </label>
+          <div class="field-icon">
+            <img src="./assets/icons/select-main-building-icon.svg" />
+
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              placeholder="اختر  المبنى" formControlName="subUnitId" [options]="buildingSubUnitLookup"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+      <!-- ---------------------------------------------------------------- -->
+      <div class="two-inputs-fields">
+        <div class="input-field">
+          <label for="main-building"> نوع العطل الرئيسي </label>
+          <div class="field-icon">
+            <img src="./assets/icons/types-icon-fill.svg" />
+            <!-- -------------------------------- -->
+            <!-- -------------------------------- -->
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              formControlName="mainCategoryType" placeholder="اختر  نوع العطل الرئيسي "
+              [options]="primaryMaintenanceTypeLookup"
+              (click)="getMaintTypesByParent(filterForm.value.mainCategoryType)"></p-dropdown>
+            <!-- -------------------------------- -->
+            <!-- -------------------------------- -->
+          </div>
+        </div>
+        <div class="input-field">
+          <label for="main-building"> نوع العطل الفرعي </label>
+          <div class="field-icon">
+            <img src="./assets/icons/types-icon-fill.svg" />
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              formControlName="subCategoryType" placeholder="اختر  نوع العطل الفرعي "
+              [options]="secondaryMaintenanceTypeLookup"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+      <!-- ---------------------------------------------------------------- -->
+      <div class="two-inputs-fields">
+        <div class="input-field">
+          <label for="main-building"> حالة الطلب </label>
+          <div class="field-icon">
+            <img src="./assets/icons/info-icon.svg" />
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              formControlName="maintenanceRequestStatusId" placeholder="اختر  حالة الطلب  "
+              [options]="visitRequestsStatusLookup"></p-dropdown>
+          </div>
+        </div>
+        <div class="input-field">
+          <label for="main-building"> أولوية الطلب </label>
+          <div class="field-icon">
+            <img src="./assets/icons/info-icon.svg" />
+
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              formControlName="requestPriorety" placeholder="اختر  أولوية الطلب  "
+              [options]="requestPrioretyLookup"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <!-- =======================BUTTONS================== -->
+      <div class="buttons-content">
+        <button class="buttons" type="button" (click)="popupFilter()">
+          تصفية
+        </button>
+        <button class="buttons-white" type="button" (click)="closePopupFilter()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- RECIEVE SUB SUCCESS -->
+<app-sweet-alert-message *ngIf="recieveAlertSubSuccess" [data]="{
+    type: 'subSuccess',
+    text: alertSuccessMsg,
+    buttonText: subSuccessBtnText
+  }" (confirmMessage)="recieveAlertSubSuccessFun($event)"></app-sweet-alert-message>
+<!-- CLOSE SUB SUCCESS -->
+<app-sweet-alert-message *ngIf="closeAlertSubSuccess" [data]="{
+    type: 'subSuccess',
+    text: alertSuccessMsg,
+    buttonText: subSuccessBtnText
+  }" (confirmMessage)="CloseAlertSubSuccessFun($event)"></app-sweet-alert-message>
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض طلبات الصيانة'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: errorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنه لم يتم تخصيصك في أي طلب صيانة بعد، ستظهر الطلبات المخصصة لك هنا...',
+  noDataButtonText: '',
+  }"></app-no-data-yet> -->

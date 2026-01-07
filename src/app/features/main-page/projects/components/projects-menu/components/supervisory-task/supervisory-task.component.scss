@@ -1,0 +1,138 @@
+.overlay {
+  background: linear-gradient(
+    150.57deg,
+    rgba(12, 88, 139, 0.162) 15.91%,
+    rgba(21, 90, 138, 0.186) 48.08%,
+    rgba(38, 94, 135, 0.184) 88.94%
+  );
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .popup {
+    background-color: #fff;
+    box-shadow: 0px 2px 5.27px 0px #00000009;
+
+    box-shadow: 0px 0px 37px 0px #0000000d;
+    border-radius: 8px;
+    width: 434px;
+    .title {
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 0.5px solid #7070702e;
+      img {
+        margin-left: 15px;
+      }
+      p {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0c588b;
+      }
+    }
+    form {
+      padding: 24px;
+
+      .input-field {
+        margin-bottom: 24px;
+        label {
+          display: block;
+          margin-bottom: 12px;
+          font-size: 18px;
+          font-weight: 400;
+          color: #0c588b;
+          span {
+            color: #fe4035;
+          }
+        }
+        .field-icon {
+          background-color: #f6f6f6;
+          display: flex;
+          align-items: center;
+          padding: 0 15px;
+          border-radius: 8px;
+          height: 48px;
+          img {
+            margin-left: 16px;
+          }
+          input,
+          select {
+            background-color: transparent;
+            width: 100%;
+            border: none;
+            outline: none;
+          }
+        }
+        small {
+          color: #fe4035;
+        }
+      }
+
+      .buttons-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        button[disabled] {
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+:host ::ng-deep .p-element.p-dropdown-item {
+  @apply px-4 py-4;
+}
+.addForm {
+  @apply grid
+      grid-cols-4
+       gap-8;
+  span {
+    color: #fe4035;
+  }
+  label {
+    color: #0c588b;
+  }
+  .narrowCols {
+    @apply 2xl:col-span-2 xl:col-span-2 md:col-span-4 col-span-4;
+  }
+}
+:host ::ng-deep .p-checkbox-box {
+  border: 2px solid;
+  border-color: #0c588b;
+
+  // opacity: 0px;
+}
+:host ::ng-deep.p-highlight {
+  background-color: #1aaa55;
+  border: none;
+}
+.check-label {
+  margin-bottom: 0 !important;
+}
+
+// /* Default custom border */
+// :host ::ng-deep .p-checkbox input[type="checkbox"] + label {
+//   border: 1.5px solid transparent; /* Set default to transparent if using border-image */
+//   border-image-source: linear-gradient(
+//     150.57deg,
+//     rgba(12, 88, 139, 0.81) 15.91%,
+//     rgba(21, 90, 138, 0.93) 48.08%,
+//     rgba(38, 94, 135, 0.92) 88.94%
+//   );
+//   border-image-slice: 1;
+//   padding: 2px; /* Optional padding */
+//   border-radius: 3px; /* Optional for rounded corners */
+// }
+
+// /* Highlighted state (focus/hover) */
+// :host ::ng-deep.p-checkbox input[type="checkbox"]:hover + label,
+// .p-checkbox input[type="checkbox"]:focus + label {
+//   border: 1.5px solid #1aaa55;
+// }

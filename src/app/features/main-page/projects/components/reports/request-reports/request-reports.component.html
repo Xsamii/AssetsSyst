@@ -1,0 +1,108 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb-report
+  [imageTitle]="'./assets/images/orbit.svg'"
+  [isFilte]="true"
+  [inputPlaceholder]="' ابحث بإسم المشروع، رقم المشروع'"
+  [buttonText]=" ' تحميل التقارير' "
+  [isShowAddEdite]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  (onFilterClick)="onShowFilterPopup()"
+  (valueSearch)="filterBySearchText($event)"
+  (addButton)="exportReport($event,{})"
+  (BackButton)="BackButton()"
+ 
+></app-bread-crumb-report>
+
+<iframe [src]="pdfSrc" width="100%" height="950px" *ngIf="pdfSrc"></iframe>
+
+<!-- ============================= -->
+<!-- POPUP FILTER-->
+<!-- ============================= -->
+
+<div class="overlay" *ngIf="showFilterPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية تقارير الطلبات</p>
+    </div>
+
+    <form [formGroup]="filterForm">
+   
+      
+        <div class="input-field">
+          <label for="main-building"> النوع </label>
+          <div class="field-icon">
+            <p-treeSelect
+            class="w-full"
+            [containerStyleClass]="'w-full bg-filterBtnBg py-3'"
+            [containerStyle]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            formControlName="visitRequestTypeName"
+            [options]="visitRequestTypesList"
+            placeholder="اختر نوع الطلب"
+            [selectionMode]="'single'"
+            [(ngModel)]="selectedNodes"
+          >
+          </p-treeSelect>
+            
+          </div>
+        </div>
+   
+     
+        <div class="input-field">
+         
+          <label> حالة الطلب </label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر حالة الطلب"
+            formControlName="visitRequestStatusId"
+            [options]="visitRequestStatusList"
+          ></p-dropdown>
+        </div>
+  
+      
+        <div class="input-field">
+          <label for="main-building"> تاريخ البداية </label>
+          <div class="field-icon">
+            <p-calendar
+              [placeholder]="'اختر تاريخ البداية '"
+              class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+              formControlName="StartDate"
+              [styleClass]="'w-full h-12'"
+              [inputStyleClass]="'bg-gray-100'"
+              [showIcon]="true"
+            ></p-calendar>
+          </div>
+        </div>
+  
+      <!-- =======================BUTTONS================== -->
+      <div class="buttons-content">
+        <button class="buttons" type="button" (click)="popupFilter()">
+          تصفية
+        </button>
+        <button
+          class="buttons-white"
+          type="button"
+          (click)="closePopupFilter()"
+        >
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

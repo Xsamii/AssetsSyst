@@ -1,0 +1,217 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'تفاصيل طلب قطع الغيار'"
+  [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+
+    { name: 'طلبات القطع', routerLink: '/buildings/parts-requests' },
+    {
+      name: ' تفاصيل طلب قطع الغيار',
+      routerLink: 'buildings/parts-requests/details'
+    }
+  ]"
+></app-bread-crumb>
+
+<div class="custom-tabview">
+  <p-tabView>
+    <p-tabPanel header="تفاصيل الطلب" [selected]="true">
+      <div class="card">
+        <div class="flex items-center details">
+          <label class="flex items-center space-x-2 rtl:space-x-reverse">
+            <img
+              src="\assets\icons\info-icon.svg"
+              alt=""
+              class="w-4 h-4"
+              style="display: inline; margin-left: 10px"
+            />
+            <span>رقم طلب الصيانة :</span>
+          </label>
+          <span class="ml-2">{{ currentParts?.maintenanceRequestOrderNumber }}</span>
+        </div>
+
+        <!--
+                    <div class="flex items-center  details">
+                        <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                            <img src="\assets\icons\info-icon.svg" alt="" class="w-4 h-4" style="display: inline; margin-left: 10px;" />
+                            <span>رقم طلب الحالة :</span>
+                          </label>
+                      <span >{{currentParts?.maintenanceRequestId}}</span>
+                    </div> -->
+
+        <div class="flex items-center details">
+          <label class="flex items-center space-x-2 rtl:space-x-reverse">
+            <img
+              src="\assets\icons\calender.svg"
+              alt=""
+              class="w-4 h-4"
+              style="display: inline; margin-left: 10px"
+            />تاريخ الطلب :</label
+          >
+          <span>{{ currentParts?.createdAt | date }}</span>
+        </div>
+
+        <div class="flex items-center details">
+          <label class="flex items-center space-x-2 rtl:space-x-reverse">
+            <img
+              src="\assets\icons\notes-icon.svg"
+              alt=""
+              class="w-4 h-4"
+              style="display: inline; margin-left: 10px"
+            />
+            ملاحظات :</label
+          >
+          <span> {{ currentParts?.notes }}</span>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <div class="title">
+          <h2 class="font-bold">
+            <img
+              src="\assets\icons\PiecesActive.svg"
+              alt=""
+              class="w-4 h-4"
+              style="display: inline; margin-left: 10px"
+            />
+
+            تفاصيل القطع
+          </h2>
+        </div>
+
+        <div class="mt-5 table-container">
+          <p-table
+            [value]="currentParts?.piecesRequested"
+            [tableStyle]="{ 'min-width': '30rem' }"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th
+                  [ngClass]="' rounded-t '"
+                  style="text-align: start; padding-right: 50px"
+                >
+                  اسم القطعة
+                </th>
+                <th
+                  [ngClass]="'text-left rounded-t '"
+                  style="padding-left: 50px"
+                >
+                  الكمية
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-part>
+              <tr style="border-bottom: 1px solid #f8f3f3">
+                <td
+                  style="
+                    text-align: start;
+                    padding-right: 50px;
+                    padding-block: 5px;
+                  "
+                >
+                  {{ part?.pieceName }}
+                </td>
+                <td
+                  [ngClass]="'text-left'"
+                  style="padding-left: 50px; padding-block: 5px"
+                >
+                  {{ part?.quantity }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <div class="title">
+          <h2 class="font-bold">
+            <img
+              src="/assets/icons/fileUpload.png"
+              alt=""
+              class="w-4 h-4"
+              style="display: inline; margin-left: 10px"
+            />
+
+            مرفقات الطلب
+          </h2>
+        </div>
+        <div class="card">
+          <div
+            class="flex items-center details"
+            *ngFor="let file of currentParts?.files"
+          >
+            <img
+              src="/assets/icons/fileUpload.png"
+              alt=""
+              class="w-4 h-4"
+              style="display: inline; margin-left: 10px"
+            />
+
+            <a [href]="file.fullPath" target="_blank" class="file-name">
+              <p class="file-size">
+                {{ file?.originalName }}
+
+              </p>
+              <span >
+                {{ file?.fileSize ? file?.fileSize + "ميجا بايت" : "   " }}
+              </span>
+            </a>
+          </div>
+          <h3 *ngIf="currentParts?.files?.length == 0">
+            لا يوجد مرفقات...
+          </h3>
+        </div>
+      </div>
+    </p-tabPanel>
+    <p-tabPanel header="سجل الطلب">
+      <div class="card mt-5">
+        <div class="mt-5 table-container">
+          <p-table
+            [value]="currentParts?.piecesRequestStatusLogs"
+            [tableStyle]="{ 'min-width': '30rem' }"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th [ngClass]="'text-center rounded-t'">قام بالتعديل</th>
+                <th [ngClass]="'text-center '">تاريخ التعديل</th>
+                <th [ngClass]="'text-center rounded-t'">حالة التعديل</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-product>
+              <tr class="border rounded">
+                <td [ngClass]="'text-center text-gray-400 p-3'">
+                  {{ product?.createdByUserName }}
+                </td>
+                <td [ngClass]="'text-center text-gray-400 p-3 '">
+                  {{ product?.createdAt | date }}
+                </td>
+                <td [ngClass]="'text-center p-3 '">
+                  <span
+                    class="status-Initialpproval"
+                    *ngIf="product?.statusId == 2"
+                  >
+                    تم الاعتماد المبدأي</span
+                  >
+
+                  <span
+                    class="status-WaitConfirme"
+                    *ngIf="product?.statusId == 1"
+                  >
+                    بانتظار الموافقة</span
+                  >
+                  <span class="status-approval" *ngIf="product?.statusId == 3"
+                    >تم الاعتماد النهائي
+                  </span>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

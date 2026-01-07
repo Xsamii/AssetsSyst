@@ -1,0 +1,102 @@
+<!-- ============================================= -->
+<!-- -------------------TYPES--------------------- -->
+<!-- SUCCESS -->
+<!-- WARNING -->
+<!-- ERROR -->
+<!-- CONFIRM -->
+<!-- ============================================= -->
+<!-- ============================================= -->
+<div class="overlay">
+  <div class="sweet-alert">
+    <!-- ================================ -->
+    <!-- SWEET ALERT ICOM IMG -->
+    <!-- ================================ -->
+    <div class="sweet-img">
+      <div *ngIf="data.type == 'success'">
+        <img src="./assets/icons/alert-success.svg" />
+      </div>
+      <div *ngIf="data.type == 'error'">
+        <img src="./assets/icons/alert-error.svg" />
+      </div>
+      <div *ngIf="data.type == 'warning'">
+        <img src="./assets/icons/alert-warning.svg" />
+      </div>
+      <div *ngIf="data.type == 'confirm'">
+        <img src="./assets/icons/alert-confirm.svg" />
+      </div>
+      <div *ngIf="data.type == 'subSuccess'">
+        <img src="./assets/icons/alert-success.svg" />
+      </div>
+    </div>
+    <!-- ================================ -->
+    <!-- SWEET ALERT TEXT  -->
+    <!-- ================================ -->
+    <div class="sweet-text popup-text">
+      {{ data.text }}
+    </div>
+    <!-- ================================ -->
+    <!-- SWEET ALERT BUTTONS  -->
+    <!-- ================================ -->
+    <div class="sweet-buttons">
+      <!-- --------------SUCCESS BUTTON----------------- -->
+      <button
+        *ngIf="data.type == 'success'"
+        class="success"
+        (click)="handleClick(true)"
+      >
+        {{ data.buttonText }}
+      </button>
+      <!-- --------------ERROR BUTTON----------------- -->
+      <button
+        *ngIf="data.type == 'error'"
+        class="error"
+        (click)="handleClick(true)"
+      >
+        أعد المحاولة
+      </button>
+      <button
+        *ngIf="data.type == 'subSuccess'"
+        class="success"
+        (click)="handleClick(true)"
+      >
+        {{ data.buttonText }}
+      </button>
+      <!-- --------------WARNING BUTTON----------------- -->
+      <button
+        *ngIf="data.type == 'warning'"
+        class="warning"
+        (click)="handleClick(true)"
+      >
+        نعم
+      </button>
+      <!-- --------------CONFIRM BUTTON----------------- -->
+      <button
+        *ngIf="data.type == 'confirm'"
+        class="confirm"
+        (click)="handleClick(true)"
+      >
+        حذف
+      </button>
+      <!-- ======================================================= -->
+      <!-- OTHER BUTTON (SHOW with CONFIRM Or WARNING) -->
+      <!-- ======================================================= -->
+      <button
+        (click)="handleClick(false)"
+        *ngIf="data.type == 'confirm' || data.type == 'warning'"
+        class="tw-mr-3"
+        [ngClass]="data.type == 'warning' ? 'warning-cancle' : 'confirm-cancle'"
+      >
+        رجوع
+      </button>
+      <button
+        (click)="handleClick(false)"
+        *ngIf="data.type == 'subSuccess'"
+        class="tw-mr-3 subSuccess-cancle"
+      >
+        رجوع
+      </button>
+      <!-- ========================================================= -->
+      <!-- ========================================================= -->
+    </div>
+  </div>
+</div>

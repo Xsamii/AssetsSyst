@@ -1,0 +1,84 @@
+<div class="cardTitle" *ngIf="showTitle">
+  <h2>مرفقات</h2>
+</div>
+
+<div class="fileContainer flex flex-col col-span-3">
+  <label class="mb-2"> {{ filesTitle }}</label>
+  <div class="flex fileBox justify-between">
+    <input
+      class="px-5 rounded-lg outline-none pointer-events-none"
+      type=""
+      placeholder="  ارفع المرفقات إن وجدت "
+      readonly
+    />
+    <p-fileUpload
+      #fileUpload
+      mode="basic"
+      [multiple]="true"
+      [chooseIcon]="'pi pi-upload '"
+      name="demo[]"
+     [accept]="accept"
+      (onSelect)="SelectedFile($event, fileUpload)"
+      [auto]="true"
+      chooseLabel="رفع"
+      class="w-36"
+    ></p-fileUpload>
+  </div>
+  <div class="fileContainer flex flex-col col-span-3 mt-5">
+    <div class="py-3 fileUploaded mt-3"*ngFor="let file of uploadedFiles; let i = index">
+      <ng-container>
+        <div class="py-1 flex justify-between items-center">
+          <div class="fileDetails flex items-center">
+            <span style="cursor: pointer" (click)="downloadFile(file)">
+              <i
+                class="fa-solid fa-file"
+                [ngClass]="file.isPicked ? 'file-picked' : ''"
+              ></i>
+            </span>
+            <a style="cursor: pointer" class="" (click)="downloadFile(file)">
+              {{ file?.originalName }}
+            </a>
+
+            <span>
+              {{ file.size ? file.size : "" }}
+            </span>
+          </div>
+          <div class="percentageDiv">
+            <p class="percentage" *ngIf="file.progress != 100">
+              % {{ file.progress }}
+            </p>
+            <div>
+              <button (click)="remove(file.filePath, i, file)">
+                <i class="fa-solid fa-xmark hover:cursor-pointer"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="file.progress != 100">
+          <div class="w-full h-6 bg-gray-200 rounded-md dark:bg-gray-700">
+            <div
+              class="progressBar h-6 text-md font-normal text-white text-center content-center p-0.5 leading-4 rounded-md"
+              [style]="'width:' + file.progress + '%'"
+            >
+              {{ file.progress }}%
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<!-- ==================================== -->
+<!-- SWEET ALERT -->
+<!-- ==================================== -->
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="errorAlert"
+  (confirmMessage)="errorFunction($event)"
+  [data]="{
+    type: 'error',
+    text: errorAlertMsg,
+    buttonText: ''
+  }"
+></app-sweet-alert-message>

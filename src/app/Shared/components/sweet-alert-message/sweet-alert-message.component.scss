@@ -1,0 +1,82 @@
+.overlay {
+  background: linear-gradient(
+    150.57deg,
+    rgba(12, 88, 139, 0.162) 15.91%,
+    rgba(21, 90, 138, 0.186) 48.08%,
+    rgba(38, 94, 135, 0.184) 88.94%
+  );
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  z-index: 10001;
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+
+  .sweet-alert {
+    background-color: #ffffff;
+    width: 435px;
+    padding: 34px 44px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 1px 0px 6px 12px #00000009;
+
+    .sweet-img {
+      width: 82px;
+      margin: 0 auto;
+      margin-bottom: 24px;
+    }
+    .sweet-text {
+      font-size: 22px;
+      font-weight: 400;
+      color: #797f8f;
+      margin-bottom: 24px;
+    }
+    .sweet-buttons {
+      button {
+        padding: 14px 35px;
+        border-radius: 8px;
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 18px;
+      }
+
+      .success {
+        background-color: #1aaa55;
+        border: 1px solid #1aaa55;
+      }
+      .error,
+      .confirm {
+        background-color: #fe4035;
+        border: 1px solid #fe4035;
+      }
+      .warning {
+        background-color: #ff9500;
+        border: 1px solid #ff9500;
+      }
+      .warning-cancle {
+        background-color: transparent;
+        border: 1px solid #ff9500;
+        color: #ff9500;
+        margin-right: 16px;
+      }
+      .confirm-cancle {
+        background-color: transparent;
+        border: 1px solid #fe4035;
+        color: #fe4035;
+        margin-right: 16px;
+      }
+      .subSuccess-cancle {
+        background-color: transparent;
+        border: 1px solid #1aaa55;
+        color: #1aaa55;
+        margin-right: 16px;
+      }
+    }
+  }
+}

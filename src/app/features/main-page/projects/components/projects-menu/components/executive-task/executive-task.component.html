@@ -1,0 +1,130 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'المهام التنفيذية'"
+  [imageTitle]="'./assets/icons/tasks.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    { name: 'المشاريع ', routerLink: '/projects/projects-menu' },
+    { name: 'المهام التنفيذية', routerLink: '' }
+  ]"
+  [isFilte]="true"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث بالرقم، اسم المهمة...'"
+  [buttonText]="'مهمة جديدة'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  (valueSearch)="filterBySearchText($event)"
+  (onFilterClick)="showDialog()"
+  [showAddButton]="false"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="false"
+  [noData]="showBreadcrumb ? false : true"
+  (rowsCountChanged)="getAllProjectTasks($event)"
+  [isProjectTask]="true"
+></app-list>
+
+<!-- ============================= -->
+<!-- SEARCH DIALOG  -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup" style="width: 600px">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية المهام</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="submitSearchForm()">
+      <!-- First Row -->
+      <div class="narrowCols input-field">
+        <label for=""> المهمة </label>
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg py-3'"
+          [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="اختر المهمة  "
+          formControlName="name"
+          [options]="projectTasksList"
+        ></p-dropdown>
+      </div>
+      <div class="narrowCols input-field">
+        <label for=""> المشروع</label>
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg py-3'"
+          [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="اختر  المشروع"
+          formControlName="projectId"
+          [options]="projectsList"
+        ></p-dropdown>
+      </div>
+      <!-- End of First Row -->
+      <!-- Second Row -->
+      <!-- <div class="addForm input-field"> -->
+      <div class="narrowCols input-field">
+        <label for=""> الحالة</label>
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg py-3'"
+          [style]="{
+            background:
+              'url(./assets/icons/types-icon-fill.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="name"
+          optionValue="id"
+          placeholder=" اختر حالة المهمة   "
+          formControlName="isCompeleted"
+          [options]="tasksStatusList"
+        ></p-dropdown>
+      </div>
+      <!-- </div> -->
+      <!-- End of Second Row -->
+      <!-- Third Row -->
+
+      <div class="buttons-content mt-3">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنه لم تردك أي مهمة بعد، ستظهر المهام الواردة هنا...',
+  noDataButtonText: '',
+  }"
+></app-no-data-yet>

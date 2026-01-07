@@ -1,0 +1,31 @@
+// Orbits Theme Variables
+$primary-color: #613843;
+$secondary-color: #05628C;
+$background-color: #ECF4F3;
+$gradient: #613843;
+$button-text-color: #fff;
+$content-bg: #fff;
+$scrollbar-color: #613843;
+$text-color: #613843;
+$active-item-bg: #33333333;
+
+// CSS Custom Properties for component usage
+:root {
+  --primary-color: #{$primary-color};
+  --secondary-color: #{$secondary-color};
+  --background-color: #{$background-color};
+  --gradient: #{$gradient};
+  --button-text-color: #{$text-color};
+  --content-bg: #{$content-bg};
+  --scrollbar-color: #{$scrollbar-color};
+  --text-color: #{$text-color};
+  --header-bg: #{$content-bg}; // Header uses white bg for Orbits
+  --header-text-color: #{$text-color}; // Dark text for Orbits
+  --sidebar-bg: #{$content-bg}; // Sidebar uses white bg for Orbits
+  --sidebar-text-color: #{$text-color}; // Dark text for Orbits
+  --sidebar-dropdown-active-bg: #{$active-item-bg}; // Gray background for open modules
+  --sidebar-active-bg: #{$active-item-bg}; // Gray background for active items
+  --sidebar-active-text-color: #{$text-color}; // Dark text for active items
+  --module-active-color: #{$text-color}; // Dark text for active items
+
+}

@@ -1,0 +1,96 @@
+.sidebar {
+  width: 264px;
+  background: linear-gradient(150.57deg, #16968c 14.49%, #0e3434 91.35%);
+  border-radius: 8px;
+  height: calc(100vh - 139px);
+  padding: 24px;
+  position: fixed;
+  right: 24px;
+  z-index: 1;
+
+  .item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 35px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    .item-icon {
+      width: 26px;
+      height: 24px;
+      margin-left: 15px;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+      .icon {
+        display: block;
+      }
+      .active-icon {
+        display: none;
+      }
+    }
+    p {
+      font-size: 22px;
+      font-weight: 400;
+      color: #eaf7ff;
+    }
+    i {
+      color: #fff;
+      font-size: 22px;
+      margin-right: auto;
+      cursor: pointer;
+    }
+    &.active {
+      background-color: #fff;
+      .item-icon {
+        .icon {
+          display: none;
+        }
+        .active-icon {
+          display: block;
+        }
+      }
+
+      p,
+      i {
+        color: #0c588b;
+      }
+    }
+  }
+}
+.active {
+  background-color: #fff;
+  p {
+    color: #0c588b;
+  }
+}
+
+.dropdown-menu {
+  margin-bottom: 15px;
+  margin-right: 20px;
+  p {
+    font-size: 20px;
+    font-weight: 400;
+    color: #eaf7ffcc;
+    cursor: pointer;
+  }
+  &.active-subMenu {
+    display: flex;
+    align-items: center;
+    p {
+      color: #fff;
+    }
+    &::before {
+      font-family: "Font Awesome 5 Free";
+      content: "\f100";
+      margin-right: 10px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 0;
+      margin-left: 18px;
+      font-size: 18px;
+    }
+  }
+}

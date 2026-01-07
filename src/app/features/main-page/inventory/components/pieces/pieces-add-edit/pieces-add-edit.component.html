@@ -1,0 +1,238 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="breadcrumbTitle"
+  [imageTitle]="'./assets/icons/PiecesActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/inventory/pieces' },
+    { name: 'المخزون', routerLink: '/inventory/pieces' },
+    { name: 'القطع', routerLink: '/inventory/pieces' },
+    { name: breadcrumbTitle, routerLink: breadCrumbLink}
+  ]"
+  [saveBtnText]="editMode ? 'تعديل' : 'إضافة'"
+  [isShowAddEdite]="true"
+  [isShowFilter]="true"
+  (submitReq)="onSubmit()"
+  (cancelReq)="onCancle()"
+  [validity]="PiecesForm.valid"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- Form-->
+<!-- ============================= -->
+
+<form [formGroup]="PiecesForm" (ngSubmit)="onSubmit()">
+  <!-- ----------------------------------------------- -->
+  <!-- ----------------------------------------------- -->
+
+  <!-- ----------------------------------------------- -->
+  <!-- ----------------------------------------------- -->
+  <div class="form-content">
+    <div class="title">
+      <img src="./assets/icons/PiecesActive.svg" />
+      <p>تفاصيل القطعة</p>
+    </div>
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="two-inputs-fields">
+      <div class="input-field">
+        <label class="header-title font-medium">
+          اسم القطعة <span>*</span></label
+        >
+        <input
+          class="mt-2 w-full py-3 px-3 bg-gray-100 rounded-lg outline-none"
+          type="text"
+          placeholder=" أدخل اسم القطعة"
+          formControlName="name"
+          style="
+            background: url('./assets/icons/name-icon.svg')
+            no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          "
+        />
+        <small
+          class="default-attention"
+          *ngIf="( PiecesForm.controls['name'].errors?.['required'] && (PiecesForm.controls['name'].dirty || PiecesForm.controls['name'].touched))"
+          >اسم المشروع مطلوب
+        </small>
+      </div>
+      <div class="input-field">
+        <label class="header-title font-medium">
+          رقم القطعة <span>*</span></label
+        >
+        <input
+          class="mt-2 w-full py-3 px-3 bg-gray-100 rounded-lg outline-none"
+          type="text"
+          placeholder="أدخل رقم القطعة"
+          formControlName="code"
+          style="
+            background: url('./assets/icons/code-icon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          "
+        />
+        <small
+          class="default-attention"
+          *ngIf="( PiecesForm.controls['code'].errors?.['required'] && (PiecesForm.controls['code'].dirty || PiecesForm.controls['code'].touched))"
+          >رقم القطعة مطلوب
+        </small>
+      </div>
+    </div>
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="two-inputs-fields">
+
+      <div class="input-field">
+        <label for="name"> التصنيف   <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/types-icon-fill.svg" />
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر    التصنيف"
+            formControlName="classificationId"
+            [options]="inventoryCategory"
+          ></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small
+          *ngIf="
+            formControls.classificationId.invalid &&
+            formControls.classificationId.touched
+          "
+          class="error-text"
+          >يجب إختيار التصنيف
+        </small>
+      </div>
+
+
+      <div class="input-field grid grid-cols-2 gap-4">
+        <div>
+        <label for="name">وحدة القياس <span>*</span></label>
+        <div class="field-icon">
+          <img src="./assets/icons/pen-ruler-icon.svg" />
+          <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg'"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="اختر وحدة القياس"
+          formControlName="inventoryItemUnitId"
+          [options]="pieceMeasuringUnit"
+        ></p-dropdown>
+        <small
+        *ngIf="
+          formControls.inventoryItemUnitId.invalid &&
+          formControls.inventoryItemUnitId.touched
+        "
+        class="error-text"
+        >يجب إختيار التصنيف
+      </small>
+        </div>
+      </div>
+      <div>
+        <label for="name">الكمية <span>*</span></label>
+        <div class="field-icon">
+          <img src="./assets/icons/info-icon.svg" />
+          <input
+            class="bg-gray-100 rounded-lg outline-none"
+            type="text"
+            appOnlyNumber
+            placeholder="أدخل الكمية"
+            formControlName="quantity"
+          />
+          <small
+          class="default-attention"
+          *ngIf="( PiecesForm.controls['quantity'].errors?.['required'] && (PiecesForm.controls['quantity'].dirty || PiecesForm.controls['quantity'].touched))"
+          >رقم القطعة مطلوب
+        </small>
+        </div>
+      </div>
+      </div>
+
+
+    </div>
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TEXT AREA----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="input-textarea">
+      <label for="main-building"> وصف القطعة <span>*</span></label>
+      <div class="field-icon">
+        <img src="./assets/icons/notes-icon.svg" />
+        <textarea
+          placeholder="أدخل وصف القطعة"
+          formControlName="description"
+        ></textarea>
+      </div>
+      <!-- VALIDATIONS -->
+      <small
+        *ngIf="
+          formControls.description.invalid &&
+          formControls.description.touched
+        "
+        class="error-text"
+        >يجب إدخل وصف المشكلة
+      </small>
+    </div>
+  </div>
+
+  <div class="form-content">
+    <div class="title">
+      <img src="./assets/icons/fileUploadedIcon.svg" />
+      <p>مرفقات القطعة</p>
+    </div>
+
+    <div class="fileContainer flex flex-col col-span-3">
+      <app-uploadFile
+        [uploadedFiles]="uploadedFiles"
+        [editMode]="editMode"
+        [showTitle]="false"
+        [currentId]="editeId"
+        [routeName]="'pieces'"
+      ></app-uploadFile>
+    </div>
+  </div>
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض القطع '
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

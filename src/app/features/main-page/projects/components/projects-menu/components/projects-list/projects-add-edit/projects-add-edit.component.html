@@ -1,0 +1,474 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'المشاريع'" [imageTitle]="'./assets/icons/mainBuildingsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/projects' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    { name: 'المشاريع ', routerLink: '/projects/projects-menu' },
+    {
+      name: isEdit ? 'تعديل المشروع' : 'إضافة مشروع',
+      routerLink: isEdit
+        ? '/projects/projects-menu/edit/' + currentId
+        : '/projects/projects-menu/add'
+    }
+  ]" (submitReq)="
+    activeTab == projectTabsEnum.attachementDeets ? submit() : nextTab()
+  " (cancelReq)="cancel()" [isFilte]="true" [inputPlaceholder]="'ابحث باسم المبنى، العنوان ، الموقع...'"
+  [buttonText]="'مبنى جديد'" [saveBtnText]="
+    activeTab != projectTabsEnum.attachementDeets ? 'التالي' : 'حفظ'
+  " [isShowAddEdite]="true" [validity]="projectDetailsForm.valid"></app-bread-crumb>
+
+<div class="form-container my-8 p-6 rounded-lg w-full">
+  <div class="grid grid-cols-4 gap-7">
+    <button (click)="changeTab(projectTabsEnum.projectDeets)"
+      class="flex items-center justify-center tabs-buttons rounded-lg py-3 px-16"
+      [ngClass]="{ activeTab: activeTab == projectTabsEnum.projectDeets }">
+      <img src="./assets/icons/projectsActive.svg" alt="" />
+      <p class="mr-4 font-medium text-slate-400" [ngClass]="{ activeTab: activeTab == projectTabsEnum.projectDeets }">
+        تفاصيل المشروع
+      </p>
+    </button>
+    <button (click)="changeTab(projectTabsEnum.secondaryDeets)"
+      class="flex items-center justify-center tabs-buttons rounded-lg py-3 px-16"
+      [ngClass]="{ activeTab: activeTab == projectTabsEnum.secondaryDeets }">
+      <img src="./assets/icons/secondaryDetailsActive.svg" alt="" />
+      <p class="mr-4 font-medium text-slate-400" [ngClass]="{ activeTab: activeTab == projectTabsEnum.secondaryDeets }">
+        تفاصيل فرعية
+      </p>
+    </button>
+    <!--  -->
+    <button (click)="changeTab(projectTabsEnum.locationDeets)"
+      class="flex items-center justify-center tabs-buttons rounded-lg py-3 px-16">
+      <!--  -->
+      <img src="./assets/icons/locationDetailsActive.svg"
+        [ngClass]="{ activeTab: activeTab == projectTabsEnum.locationDeets }" alt="" />
+      <p class="mr-4 font-medium text-slate-400" [ngClass]="{ activeTab: activeTab == projectTabsEnum.locationDeets }">
+        <!--  -->
+        بيانات الموقع
+      </p>
+    </button>
+    <button (click)="changeTab(projectTabsEnum.attachementDeets)"
+      class="flex items-center justify-center tabs-buttons rounded-lg py-3 px-16"
+      [ngClass]="{ activeTab: activeTab == projectTabsEnum.attachementDeets }">
+      <img src="./assets/icons/fileUploadedIcon.svg" alt="" />
+      <p class="mr-4 font-medium text-slate-400"
+        [ngClass]="{ activeTab: activeTab == projectTabsEnum.attachementDeets }">
+        مرفقات المشروع
+      </p>
+    </button>
+  </div>
+
+  <form [hidden]="activeTab != projectTabsEnum.projectDeets" [formGroup]="projectDetailsForm">
+    <div class="mt-10 h-full w-full addForm">
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          اسم المشروع <span>*</span></label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder=" أدخل اسم المشروع"
+          formControlName="name" style="
+            background: url('./assets/icons/name-icon.svg') no-repeat right 15px
+              center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+        <small class="default-attention"
+          *ngIf="( projectDetailsForm.controls['name'].errors?.['required'] && (projectDetailsForm.controls['name'].dirty || projectDetailsForm.controls['name'].touched))">اسم
+          المشروع مطلوب
+        </small>
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> رقم المشروع </label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="أدخل رقم المشروع"
+          formControlName="number" style="
+            background: url('./assets/icons/code-icon.svg') no-repeat right 15px
+              center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+        <!-- <small
+          class="default-attention"
+          *ngIf="( projectDetailsForm.controls['number'].errors?.['required'] && (projectDetailsForm.controls['number'].dirty || projectDetailsForm.controls['number'].touched))"
+          >رقم المشروع مطلوب
+        </small> -->
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> مدة المشروع (أيام) </label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" [maxlength]="8" appOnlyNumber
+          placeholder="مدة المشروع بالأيام" formControlName="durationByDay" style="
+            background: url('./assets/icons/info-icon.svg') no-repeat right 15px
+              center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> الرقم المرجعي </label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="الرقم المرجعي"
+          formControlName="referenceNumber" style="
+            background: url('./assets/icons/code-icon.svg') no-repeat right 15px
+              center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> قيمة المشروع </label>
+        <!-- <p-inputNumber
+          inputId="integeronly"
+          class=""
+          [styleClass]="'w-full bg-filterBtnBg mt-2 rounded-lg'"
+          type="number"
+          placeholder="أدخل قيمة المشروع"
+          [min]="0"
+          formControlName="value"
+          [inputStyleClass]="'bg-gray-100 w-full py-3'"
+          [style]="{
+            background:
+              'url(./assets/icons/projectValueIcon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          >></p-inputNumber
+        > -->
+
+        <!-- <input
+          class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none"
+          type="text"
+          placeholder="أدخل قيمة المشروع"
+          formControlName="value"
+          [style]="{
+            background:
+              'url(./assets/icons/projectValueIcon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+        /> -->
+        <div style="position: relative;" class="mt-2">
+          <input class="py-3 px-3 pr-16 rounded-lg outline-none w-full bg-gray-100" type="text"
+            placeholder="أدخل قيمة المشروع" formControlName="value" (keydown)="onlyNumberAndComma($event)" [style]="{
+              background:
+                'url(./assets/icons/projectValueIcon.svg) no-repeat right 15px center',
+              'background-color': '#f6f6f6'
+            }" />
+          <span style="position: absolute; top: 50%; left: 40px; transform: translateY(-50%); color: #888;">
+            ريال.س
+          </span>
+        </div>
+        <!-- <small
+          class="default-attention"
+          *ngIf="( projectDetailsForm.controls['value'].errors?.['required'] && (projectDetailsForm.controls['value'].dirty || projectDetailsForm.controls['value'].touched))"
+          >قيمة المشروع مطلوبة
+        </small> -->
+      </div>
+      <!-- END OF FIRST ROW -->
+
+      <!-- THIRD ROW -->
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> التصنيف </label>
+
+        <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'"
+          formControlName="projectClassificationId" [style]="{
+            background:
+              'url(./assets/icons/types-icon-fill.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر تصنيف المشروع" [options]="projectClassificationList"
+          [filter]="true"></p-dropdown>
+
+        <!-- <small
+          class="default-attention"
+          *ngIf="( projectDetailsForm.controls['projectClassificationId'].errors?.['required'] && (projectDetailsForm.controls['projectClassificationId'].dirty || projectDetailsForm.controls['projectClassificationId'].touched))"
+          >الصنيف مطلوب</small
+        > -->
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> الحالة </label>
+
+        <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'" formControlName="projectStatueId"
+          [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر حالة المشروع" [options]="projectStatusList"
+          [filter]="true"></p-dropdown>
+
+        <!-- <small
+          class="default-attention"
+          *ngIf="( projectDetailsForm.controls['projectStatueId'].errors?.['required'] && (projectDetailsForm.controls['projectStatueId'].dirty || projectDetailsForm.controls['projectStatueId'].touched))"
+          >الحالة مطلوبة
+        </small> -->
+      </div>
+      <!-- END OF THIRD ROW -->
+
+      <!-- FOURTH ROW -->
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> المقاول </label>
+
+        <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'" formControlName="officeId"
+          (onChange)="getAllProjectManagersByOfficeId($event.value)" [filter]="true" [style]="{
+            background:
+              'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر المقاول التابع له المشروع"
+          [options]="officeList"></p-dropdown>
+        <!-- <small
+          class="default-attention"
+          *ngIf="( projectDetailsForm.controls['officeId'].errors?.['required'] && (projectDetailsForm.controls['officeId'].dirty || projectDetailsForm.controls['officeId'].touched))"
+          >المقاول مطلوب</small
+        > -->
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> المدير </label>
+
+        <p-dropdown class="w-full" [filter]="true" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'"
+          formControlName="projectManagerId" [style]="{
+            background:
+              'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="fullName" optionValue="id" placeholder="اختر المدير التابع له المشروع"
+          [options]="projectManagerList"></p-dropdown>
+
+        <!-- <small
+          class="default-attention"
+          *ngIf="( projectDetailsForm.controls['projectManagerId'].errors?.['required'] && (projectDetailsForm.controls['projectManagerId'].dirty || projectDetailsForm.controls['projectManagerId'].touched))"
+          >المدير مطلوب
+        </small> -->
+      </div>
+      <!-- END OF FOURTH ROW -->
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> المستخلصات </label>
+
+        <p-inputNumber inputId="integeronly" class="" [styleClass]="'w-full bg-filterBtnBg mt-2 rounded-lg'"
+          type="number" placeholder="أدخل عدد المستخلصات" [min]="0" formControlName="extractsNumber"
+          [inputStyleClass]="'bg-gray-100 w-full  py-3'" [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }">></p-inputNumber>
+        <!-- <small
+          class="default-attention"
+          *ngIf="( projectDetailsForm.controls['extractsNumber'].errors?.['required'] && (projectDetailsForm.controls['extractsNumber'].dirty || projectDetailsForm.controls['extractsNumber'].touched))"
+          >المستخلصات مطلوبة
+        </small> -->
+      </div>
+      <!-- FIFTH ROW -->
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          نوع المشروع <span>*</span></label>
+
+        <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'" formControlName="projectTypeId"
+          (onChange)="showSupervisorProject($event)" #type [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر نوع المشروع"
+          [options]="projectTypeList"></p-dropdown>
+
+        <small class="default-attention"
+          *ngIf="( projectDetailsForm.controls['projectTypeId'].errors?.['required'] && (projectDetailsForm.controls['projectTypeId'].dirty || projectDetailsForm.controls['projectTypeId'].touched))">نوع
+          المشروع مطلوب</small>
+      </div>
+      <div *ngIf="showSupervisor" class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          الاستشاري </label>
+
+        <p-dropdown class="w-full" [filter]="true" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'"
+          formControlName="supervisorOfficeId" [style]="{
+            background:
+              'url(./assets/icons/pen-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر  الاستشاري"
+          [options]="SupervisorOfficeList"></p-dropdown>
+        <!-- <small
+          class="default-attention"
+          *ngIf="( projectDetailsForm.controls['supervisorOfficeId'].errors?.['required'] && ( projectDetailsForm.controls['supervisorOfficeId'].touched))"
+        >
+          الاستشاري مطلوب
+        </small> -->
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          نوع المنافسة </label>
+
+        <p-dropdown class="w-full" [filter]="true" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'"
+          formControlName="competitionType" [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر  نوع المنافسة"
+          [options]="competitionTypes"></p-dropdown>
+        <!-- <small
+          class="default-attention"
+          *ngIf="( projectDetailsForm.controls['competitionType'].errors?.['required'] && ( projectDetailsForm.controls['competitionType'].touched))"
+        >
+          نوع المنافسة مطلوب
+        </small> -->
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> نسبة الانجاز </label>
+
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="أدخل نسبة الانجاز"
+          formControlName="taskCompletionRate" [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" />
+
+      </div>
+      <div class="bg-[#F6F6F699] py-2 px-5 rounded-md mt-9" style="
+          width: fit-content;
+          height: fit-content;
+          border: 1px solid #13746e;
+        ">
+        <p-checkbox formControlName="financialConnection" [binary]="true" inputId="ny">
+        </p-checkbox>
+        <label for="ny" class="header-title font-medium mr-5">مرتبط مالياً
+        </label>
+      </div>
+
+
+
+      <!-- END OF FIFTH ROW -->
+    </div>
+  </form>
+
+  <form [hidden]="activeTab != projectTabsEnum.secondaryDeets" [formGroup]="secondaryDetailsForm">
+    <div class="mt-10 h-full w-full addForm">
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> تاريخ الترسيه </label>
+        <p-calendar class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+          [maxDate]="this.secondaryDetailsForm.value.startDate" formControlName="biddingDate"
+          [placeholder]="'اختر الترسيه '" [styleClass]="'w-full h-12 '" [inputStyleClass]="'bg-gray-100'"
+          [showIcon]="true"></p-calendar>
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> تاريخ تسليم الموقع </label>
+        <p-calendar [placeholder]="'اختر تاريخ تسليم الموقع'" [minDate]="this.secondaryDetailsForm.value.biddingDate"
+          class="mt-2 bg-gray-100 rounded-lg outline-none w-full" formControlName="startDate"
+          [styleClass]="'w-full h-12'" [inputStyleClass]="'bg-gray-100'" [showIcon]="true"></p-calendar>
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> تاريخ نهاية المشروع </label>
+        <p-calendar [placeholder]="'اختر تاريخ نهاية المشروع'" [minDate]="this.secondaryDetailsForm.value.startDate"
+
+          class="mt-2 bg-gray-100 rounded-lg outline-none w-full" formControlName="endDate" [styleClass]="'w-full h-12'"
+          [inputStyleClass]="'bg-gray-100'" [showIcon]="true"></p-calendar>
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> تاريخ الإستلام النهائي </label>
+        <p-calendar [placeholder]="'اختر تاريخ الإستلام النهائي '" formControlName="deliveryDate"
+          [minDate]="this.secondaryDetailsForm.value.startDate" class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+          [styleClass]="'w-full h-12'" [inputStyleClass]="'bg-gray-100'" [showIcon]="true"></p-calendar>
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">تاريخ إعلان المنافسة</label>
+        <p-calendar [placeholder]="'اختر تاريخ إعلان المنافسة'" formControlName="competitionAnnouncementDate"
+          class="mt-2 bg-gray-100 rounded-lg outline-none w-full" [styleClass]="'w-full h-12'"
+          [inputStyleClass]="'bg-gray-100'" [showIcon]="true"></p-calendar>
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">تاريخ فتح المظاريف</label>
+        <p-calendar [placeholder]="'اختر تاريخ فتح المظاريف'" formControlName="envelopeOpeningDate"
+          class="mt-2 bg-gray-100 rounded-lg outline-none w-full" [styleClass]="'w-full h-12'"
+          [inputStyleClass]="'bg-gray-100'" [showIcon]="true"></p-calendar>
+      </div>
+      <div class="largDiv">
+        <label class="header-title font-medium"> ملاحظات </label>
+        <textarea class="px-3 pt-3 mt-2 bg-gray-100 rounded-lg outline-none h-36 resize-none" formControlName="note"
+          type="text" placeholder="أدخل ملاحظاتك عن المشروع"></textarea>
+      </div>
+    </div>
+  </form>
+
+  <!--  -->
+  <div class="mt-10 h-full w-full" *ngIf="activeTab == projectTabsEnum.locationDeets">
+    <div class="flex-col col-span-full">
+      <label class="header-title font-medium">الموقع </label>
+      <div class="flex items-center bg-gray-100 mt-2 p-3 rounded-lg" style="
+          background: url('./assets/icons/locationIcon.svg') no-repeat right
+            15px center;
+          background-color: #f6f6f6;
+          padding-right: 35px;
+        ">
+        <p *ngIf="!locationDetails" class="text-gray-400">
+          حدد الموقع على الخريطة
+        </p>
+        <div class="flex items-center justify-evenly">
+          <p *ngIf="locationDetails" class="bg-white text-bgactive rounded-lg py-0.5 px-3 mx-2 map-info">
+            الموقع هنا:
+            {{ locationDetails?.address }}
+          </p>
+          <p *ngIf="locationDetails" class="bg-white text-bgactive rounded-lg py-0.5 px-3 mx-2 map-info">
+            خط الطول:
+            {{ locationDetails?.longitude | number : "1.2-2" }}
+          </p>
+          <p *ngIf="locationDetails" class="bg-white text-bgactive rounded-lg py-0.5 px-3 mx-2 map-info">
+            خط العرض:
+            {{ locationDetails?.latitude | number : "1.2-2" }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-span-full mt-3 overflow-hidden" style="border-radius: 15px">
+      <google-map height="458px" width="100%" [mapTypeId]="hybrid" [center]="center" [zoom]="zoom"
+        (mapClick)="addMarker($event)">
+        <map-marker [position]="markerPositions" [options]="markerOptions"></map-marker>
+      </google-map>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab == projectTabsEnum.attachementDeets" class="mt-7 h-full w-full">
+    <div class="grid grid-cols-3 gap-4 items-start">
+      <div class="col-span-1">
+        <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2 pr-3'" optionLabel="name"
+          optionValue="id" placeholder="اختر تصنيف المشروع" [options]="filesTypesList" [filter]="true"
+          (onChange)="onFileTypeChange($event)"></p-dropdown>
+      </div>
+
+      <div class="col-span-2">
+        <app-uploadFileGrid [uploadedFiles]="uploadedFiles" [attachmentTypeId]="selectedFileTypeId" [editMode]="isEdit"
+          [showTitle]="false" [currentId]="currentId" [routeName]="'projects-menu'" [disabled]="!selectedFileTypeId"
+          (onFileUploaded)="handleFileUploaded($event)"></app-uploadFileGrid>
+      </div>
+    </div>
+    <app-list [values]="values" [cols]="cols" [isSearching]="false" [deleteButton]="true"
+      (deleteEvent)="remove($event)"></app-list>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  المشاريع'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

@@ -1,0 +1,199 @@
+<app-bread-crumb [title]="isEdite ? 'إدارة الأصول' : 'إدارة الأصول'"
+    [imageTitle]="'./assets/icons/mainBuildingsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: ' إدارة الأصول', routerLink: '/projects' },
+    { name: 'اعدادات مؤشرات التقييم', routerLink: '/maintenance/rating-settings' },
+    {
+      name: isEdite ? 'تعديل مؤشر تقييم' : 'اضافة مؤشر تقييم',
+      routerLink: isEdite
+        ? '/maintenance/rating-settings' + currentId
+        : '/maintenance/rating-settings'
+    }
+  ]"></app-bread-crumb>
+
+<section class="form-container">
+    <div class="form-content">
+        <form class="flex flex-col gap-8 py-8" [formGroup]="form" (ngSubmit)="submitData()">
+            <div class="questionnaire-name flex flex-col gap-1">
+                <label class="text-lg font-semibold text-[#16968C]"> اسم الاستبيان <span
+                        class="text-[#F04438]">*</span></label>
+                <input type="text" placeholder="ادخل اسم الاستبيان" formControlName="formName"
+                    class="w-full min-h-[48px] rounded-lg bg-[#F6F6F6] px-6 placeholder:text-[#C5C5C5]" />
+                <div class="text-red-500 mt-1"
+                    *ngIf="form.get('formName')?.touched && form.get('formName')?.hasError('required')">
+                    اسم الاستبيان مطلوب
+                </div>
+            </div>
+
+            <div class="departments">
+                <label class="text-lg font-semibold text-[#16968C]">
+                    الأقسام <span class="text-[#F04438]">*</span>
+                </label>
+                <p-table [value]="departments().controls" styleClass="rounded-xl mt-2 overflow-hidden">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>اسم القسم</th>
+                            <th></th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-q let-index="rowIndex">
+                        <tr>
+                            <td>
+                                <input type="text" placeholder="اسم القسم"
+                                    class="w-full min-h-[50px] border border-[#D1D1DB] rounded px-4 shadow-3xl placeholder:text-[#121217] py-3 mt-5 mx-2"
+                                    [formControl]="q.get('name')" />
+                                <div class="text-red-500 text-right mt-1 mx-2"
+                                    *ngIf="q.get('name')?.touched && q.get('name')?.hasError('required')">
+                                    اسم القسم مطلوب
+                                </div>
+
+                            </td>
+                            <td class="flex justify-center gap-x-4 mt-5">
+                                <button
+                                    class="minus w-[48px] h-[48px] flex justify-center items-center rounded-full cursor-pointer"
+                                    [ngClass]="index === 0 ? 'bg-[#BFE5E4]' : 'bg-[#009995]'"
+                                    (click)="removeDepartment(index)" [disabled]="index === 0" type="button">
+                                    <i class="fa-solid fa-minus text-white text-lg"></i>
+                                </button>
+                                <button
+                                    class="plus w-[48px] h-[48px] flex justify-center items-center bg-[#009995] rounded-full cursor-pointer"
+                                    (click)="addDepartment()" type="button">
+                                    <i class="fa-solid fa-plus text-white text-lg"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            <div class="questions">
+                <label class="text-lg font-semibold text-[#16968C]">
+                    الأسئلة <span class="text-[#F04438]">*</span>
+                </label>
+
+                <p-table [value]="questions().controls" styleClass="custom-table rounded-xl mt-2 overflow-hidden">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>اسم السؤال</th>
+                            <th>القسم</th>
+                            <th>نوع السؤال</th>
+                            <th></th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-q let-index="rowIndex">
+                        <tr>
+                            <td>
+                                <input type="text" placeholder="اسم السؤال"
+                                    class="w-full min-h-[50px] border border-[#D1D1DB] rounded px-4 shadow-3xl placeholder:text-[#121217] py-3"
+                                    [formControl]="q.get('name')" />
+                                <div class="text-red-500 text-right mt-1"
+                                    *ngIf="q.get('name')?.touched && q.get('name')?.hasError('required')">
+                                    اسم السؤال مطلوب
+                                </div>
+                            </td>
+
+                            <td>
+                                <p-dropdown [options]="departmentsList" optionLabel="name" optionValue="id"
+                                    [formControl]="q.get('departmentId')" placeholder="اختر القسم"
+                                    styleClass="w-full border border-[#D1D1DB] rounded px-4 shadow-3xl py-3"
+                                    [appendTo]="'body'" dataKey="id"></p-dropdown>
+                                <div class="text-red-500 text-right mt-1"
+                                    *ngIf="q.get('departmentId')?.touched && q.get('departmentId')?.hasError('required')">
+                                    اختر القسم
+                                </div>
+                            </td>
+
+                            <td>
+                                <p-dropdown [options]="typesList" optionLabel="name" optionValue="id"
+                                    [formControl]="q.get('typeId')" placeholder="اختر نوع السؤال"
+                                    styleClass="w-full border border-[#D1D1DB] rounded px-4 shadow-3xl py-3"
+                                    (onChange)="onQuestionTypeChange($event, q)" [appendTo]="'body'"></p-dropdown>
+                                <div class="text-red-500 text-right mt-1"
+                                    *ngIf="q.get('typeId')?.touched && q.get('typeId')?.hasError('required')">
+                                    اختر نوع السؤال
+                                </div>
+                            </td>
+
+                            <td class="flex justify-center gap-x-4">
+                                <button
+                                    class="minus w-[48px] h-[48px] flex justify-center items-center rounded-full cursor-pointer"
+                                    [ngClass]="index === 0 ? 'bg-[#BFE5E4]' : 'bg-[#009995]'"
+                                    (click)="removeQuestion(index)" [disabled]="index === 0" type="button">
+                                    <i class="fa-solid fa-minus text-white text-lg"></i>
+                                </button>
+                                <button
+                                    class="plus w-[48px] h-[48px] flex justify-center items-center bg-[#009995] rounded-full cursor-pointer"
+                                    (click)="addQuestion()" type="button">
+                                    <i class="fa-solid fa-plus text-white text-lg"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr
+                            *ngIf="q.get('typeId')?.value === surveyEnum.Choice || q.get('typeId')?.value === surveyEnum.BoolChoice">
+                            <td colspan="4">
+                                <div class="flex gap-3 my-3">
+                                    <ng-container *ngFor="let choice of q.value.choices; let i = index">
+                                        <div class="flex items-center gap-2">
+
+                                            <button *ngIf="q.get('typeId')?.value === surveyEnum.Choice"
+                                                class="bg-[#E4E4E4] w-[30px] h-[30px] flex justify-center items-center rounded-full"
+                                                (click)="removeChoice(q, i)" type="button">
+                                                <i class="fa-solid fa-xmark text-[#333]"></i>
+                                            </button>
+
+                                            <input class="choiceInput border border-[#D1D1DB] rounded px-3 py-2"
+                                                [placeholder]="'خيار ' + (i + 1)" [value]="choice"
+                                                (change)="setChoiceValue(q, $event, i)" />
+
+                                            <!-- زر إضافة يظهر فقط للـ Choice العادي -->
+                                            <button
+                                                *ngIf="q.get('typeId')?.value === surveyEnum.Choice && i + 1 === q.value.choices.length && q.value.choices.length < 10"
+                                                class="bg-[#009995] w-[30px] h-[30px] flex justify-center items-center rounded-full"
+                                                (click)="addChoice(q)" type="button">
+                                                <i class="fa-solid fa-plus text-white text-sm"></i>
+                                            </button>
+
+                                        </div>
+                                    </ng-container>
+                                </div>
+
+                                <div class="text-red-500 mt-1"
+                                    *ngIf="q.get('choices')?.touched && q.get('choices')?.hasError('minChoices')">
+                                    يجب أن يحتوي السؤال على خيارين على الأقل
+                                </div>
+                            </td>
+                        </tr>
+
+                    </ng-template>
+                </p-table>
+            </div>
+
+            <div class="buttons-content flex justify-end mt-12">
+                <button class="buttons" type="submit">
+                    {{ isEdite ? "تعديل" : "إضافة" }}
+                </button>
+                <button class="buttons-white" type="button" (click)="closeRating()">
+                    إلغاء
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض مؤشرات التقييم'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

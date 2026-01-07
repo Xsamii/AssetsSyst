@@ -1,0 +1,291 @@
+  <!-- ============================= -->
+  <!-- BREAD CRUMB -->
+  <!-- ============================= -->
+  <app-bread-crumb
+    [title]="' المشاريع'"
+    [imageTitle]="'./assets/icons/projectsActive.svg'"
+    [subTitles]="[
+      { name: 'الرئيسية', routerLink: '/projects' },
+      { name: 'إدارة المشاريع', routerLink: '/projects' },
+      { name: 'المشاريع ', routerLink: '/projects/projects-menu' }
+    ]"
+    [isFilte]="true"
+    [inputPlaceholder]="'ابحث بالرقم،  اسم المشروع، رقم المشروع...'"
+    [buttonText]="'مشروع جديد'"
+    [saveBtnText]="'إضافة'"
+    [isShowFilter]="showBreadcrumb ? false : true"
+    [isShowAddEdite]="false"
+    (addButton)="openAdd()"
+    (valueSearch)="filterBySearchTesxt($event)"
+    (onFilterClick)="showDialog()"
+    [showAddButton]="userRole == 1 || userRole == 2"
+    [projectStatusList]="projectStatusList"
+    (projectStatusId)="fillterByprojectStatusid($event)"
+    [dropdownStatus]="true"
+  ></app-bread-crumb>
+ <div class="text-left font-bold total-count">
+  اجمالي عدد المشاريع : {{ totalCount }}
+</div>
+
+  <!-- ============================= -->
+  <!-- SEARCH DIALOG  -->
+  <!-- ============================= -->
+  <div class="overlay" *ngIf="displayDialog">
+    <div class="popup">
+      <div class="title">
+        <img src="./assets/icons/searchForm.svg" />
+        <p>تصفية المشاريع</p>
+      </div>
+      <form [formGroup]="searchForm" (ngSubmit)="OnSubmitData()">
+        <!-- First Row -->
+        <div class="addForm input-field">
+          <div class="narrowCols">
+            <label for=""> المقاول</label>
+            <p-dropdown
+              class="w-full"
+              [styleClass]="'w-full bg-filterBtnBg py-3'"
+              [style]="{
+                background:
+                  'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                'background-color': '#f6f6f6',
+                'padding-right': '35px'
+              }"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="اختر المقاول التابع له المشروع "
+              formControlName="OfficeId"
+              [options]="officeList"
+              [showClear]="true"
+
+            ></p-dropdown>
+          </div>
+          <div class="narrowCols">
+            <label for="">الاستشاري</label>
+            <p-dropdown
+              class="w-full"
+              [styleClass]="'w-full bg-filterBtnBg py-3'"
+              [style]="{
+                background:
+                  'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                'background-color': '#f6f6f6',
+                'padding-right': '35px'
+              }"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="   اختر الاستشاري"
+              formControlName="SupervisorOfficeId"
+              [options]="SupervisorOfficeList"
+              [showClear]="true"
+
+            ></p-dropdown>
+          </div>
+        </div>
+        <div class="addForm input-field">
+          <div class="narrowCols">
+            <label for=""> التصنيف</label>
+            <p-dropdown
+              class="w-full"
+              [styleClass]="'w-full bg-filterBtnBg py-3'"
+              [style]="{
+                background:
+                  'url(./assets/icons/types-icon-fill.svg) no-repeat right 10px center',
+                'background-color': '#f6f6f6',
+                'padding-right': '35px'
+              }"
+              optionLabel="name"
+              optionValue="id"
+              placeholder=" اختر تصنيف المشروع "
+              formControlName="ProjectClassificationId"
+              [options]="projectClassificationList"
+              [showClear]="true"
+
+            ></p-dropdown>
+          </div>
+          <div class="narrowCols">
+            <label> نوع المنافسة </label>
+
+            <p-dropdown
+              class="w-full"
+              [filter]="true"
+              [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'"
+              formControlName="competitionType"
+              [style]="{
+                background:
+                  'url(./assets/icons/pen-icon.svg) no-repeat right 10px center',
+                'background-color': '#f6f6f6',
+                'padding-right': '35px'
+              }"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="اختر  نوع المنافسة"
+              [options]="competitionTypes"
+              [showClear]="true"
+
+            ></p-dropdown>
+          </div>
+        </div>
+        <div class="addForm input-field">
+          <div class="narrowCols">
+            <label for=""> نوع المشروع</label>
+            <p-dropdown
+              class="w-full"
+              [styleClass]="'w-full bg-filterBtnBg py-3'"
+              [style]="{
+                background:
+                  'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+                'background-color': '#f6f6f6',
+                'padding-right': '35px'
+              }"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="اختر نوع المشروع"
+              formControlName="ProjectTypeId"
+              [options]="projectTypeList"
+              [showClear]="true"
+
+            ></p-dropdown>
+          </div>
+          <!-- <div class="narrowCols">
+            <label for="">مدير المشروع</label>
+            <p-dropdown
+              class="w-full"
+              [styleClass]="'w-full bg-filterBtnBg py-3'"
+              [style]="{
+                background:
+                  'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                'background-color': '#f6f6f6',
+                'padding-right': '35px'
+              }"
+              optionLabel="fullName"
+              optionValue="id"
+              placeholder=" اختر المدير التابع له المشروع"
+              formControlName="ProjectManagerId"
+              [options]="projectManagerList"
+            ></p-dropdown>
+          </div> -->
+          <div class="narrowCols">
+            <label for=""> الارتباط المالي</label>
+            <p-dropdown
+              class="w-full"
+              [styleClass]="'w-full bg-filterBtnBg py-3'"
+              [style]="{
+                background:
+                  'url(./assets/icons/financialConnection.svg) no-repeat right 10px center',
+                'background-color': '#f6f6f6',
+                'padding-right': '35px'
+              }"
+              optionLabel="name"
+              optionValue="value"
+              placeholder="اختر الارتباط المالي"
+              formControlName="financialConnection"
+              [options]="financialConnectionList"
+              [showClear]="true"
+
+            ></p-dropdown>
+          </div>
+        </div>
+
+
+    <div class="addForm input-field">
+          <div class="narrowCols">
+          <label class="header-title font-medium"> تاريخ تسليم الموقع </label>
+          <p-calendar [placeholder]="'اختر تاريخ تسليم الموقع'"
+            class="mt-2 bg-gray-100 rounded-lg outline-none w-full" formControlName="startDate"
+            [styleClass]="'w-full h-12'" [inputStyleClass]="'bg-gray-100'" selectionMode="range"  [showIcon]="true"></p-calendar>
+          </div>
+          <div class="narrowCols">
+          <label class="header-title font-medium"> تاريخ الإستلام النهائي </label>
+          <p-calendar [placeholder]="'اختر تاريخ الإستلام النهائي '" formControlName="deliveryDate"
+              class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+            [styleClass]="'w-full h-12'" [inputStyleClass]="'bg-gray-100'" selectionMode="range"  [showIcon]="true"></p-calendar>
+          </div>
+        </div>
+
+
+
+
+
+
+        <div class="buttons-content mt-3">
+          <button class="buttons" type="submit">تصفية</button>
+          <button class="buttons-white" type="button" (click)="hideDialog()">
+            إعادة ضبط
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- ======================================================== -->
+  <!-- TABEL LIST -->
+  <!-- ======================================================== -->
+
+  <app-list
+    [isProjectList]="true"
+    [cols]="cols"
+    [isSearching]="isSearchingReasult"
+    [values]="values"
+    [totalPageCount]="totalPageCount"
+    [withControles]="true"
+    (editEvent)="openEdit($event)"
+    (deleteEvent)="deleteProject($event)"
+    (rowsCountChanged)="getData($event)"
+    [noData]="showBreadcrumb ? false : true"
+  ></app-list>
+
+  <!-- ======================================================== -->
+  <!-- NO DATA -->
+  <!-- ======================================================== -->
+
+  <app-no-data-yet
+    *ngIf="values.length == 0 && !isSearchingReasult"
+    (addNewEvent)="openAdd()"
+    [noDataElements]="{
+    noDataImg: './assets/images/no-data-search.png',
+    noDataText: [1,2].includes(userRole)? 'يبدو أنك لم تقم بإضافة أي مشروع بعد، ستظهر المشاريع المضافة هنا... يمكنك البدء بإضافة أول مشروع' : 'لا يوجد أي مشاريع مضافة  ستظهر المشاريع المضافة هنا...',
+    noDataButtonText: [1,2].includes(userRole)?'مشروع جديد': '',
+    }"
+  ></app-no-data-yet>
+
+  <!-- ============================= -->
+  <!-- SWEET ALERTS-->
+  <!-- ============================= -->
+  <!-- SUCCESS -->
+  <app-sweet-alert-message
+    *ngIf="alertSuccess"
+    [data]="{
+      type: 'success',
+      text: alertSuccessMsg,
+      buttonText: 'عرض المشاريع '
+    }"
+    (confirmMessage)="alertSuccessFun($event)"
+  ></app-sweet-alert-message>
+  <!-- WARNING -->
+  <app-sweet-alert-message
+    *ngIf="alertWarning"
+    [data]="{
+      type: 'warning',
+      text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+      buttonText: ''
+    }"
+    (confirmMessage)="alertWarningFun($event)"
+  ></app-sweet-alert-message>
+  <!-- CONFIRM -->
+  <app-sweet-alert-message
+    *ngIf="alertConfirm"
+    [data]="{
+      type: 'confirm',
+      text: 'هل أنت متأكد أنك تريد حذف المشروع؟ سيتم حذفه نهائيًا من قائمة  المشاريع',
+      buttonText: ''
+    }"
+    (confirmMessage)="alertConfirmFun($event)"
+  ></app-sweet-alert-message>
+  <!-- CONFIRM -->
+  <app-sweet-alert-message
+    *ngIf="alertError"
+    [data]="{
+      type: 'error',
+      text: alertFailureMessage,
+      buttonText: ''
+    }"
+    (confirmMessage)="alertErrorFun($event)"
+  ></app-sweet-alert-message>

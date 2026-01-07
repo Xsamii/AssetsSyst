@@ -1,0 +1,166 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+
+<app-bread-crumb [title]="userRole === userTypes.Admin ? 'الطلبات' : 'الطلبات الصادرة'"
+  [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/projects' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    { name: 'طلبات الزيارة ', routerLink: '/projects/visit-requests' },
+    {
+      name: userRole === userTypes.Admin ? 'الطلبات' : 'الطلبات الصادرة',
+      routerLink: userRole === userTypes.Admin ? '/projects/visit-requests' : '/projects/visit-requests/outgoing-requests'
+    },
+    {
+      name: 'إضافة طلب',
+      routerLink: ''
+    }
+  ]" [isFilte]="true" [inputPlaceholder]="'ابحث باسم المشروع، المهمة.'" [buttonText]="'طلب جديد'"
+  [saveBtnText]="editMode ? 'تعديل' : 'إضافة'" [isShowAddEdite]="true" [showAddButton]="true" (submitReq)="onSubmit()"
+  (cancelReq)="onCancleRequest()" [validity]="requestForm.valid"></app-bread-crumb>
+<!--
+[isShowFilter]="showBreadcrumb ? false : true"
+(valueSearch)="filterBySearchText($event)"
+  (onFilterClick)="showDialog()"
+  (addButton)="openAdd()"
+-->
+
+<!-- ------------------------------------------------------------ -->
+<!-- Form -->
+<!-- ------------------------------------------------------------ -->
+<div class="request-content">
+  <div class="title">
+    <img src="./assets/icons/maintenanceRequestsActive.svg" />
+    <h3>تفاصيل الطلب</h3>
+  </div>
+  <!-- --------------------------- -->
+  <form [formGroup]="requestForm">
+    <!-- First Row -->
+    <div class="addForm input-field">
+      <div class="narrowCols">
+        <label for="">المشروع <span>*</span></label>
+        <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+            background:
+              'url(./assets/icons/pen-ruler-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر المشروع" formControlName="projectId"
+          [options]="projectList" (onChange)="
+            getProjectTaskByProjectId(formControlls.projectId.value);
+            getMaintenanceRequestByProjectId(formControlls.projectId.value)
+          "></p-dropdown>
+      </div>
+      <div class="narrowCols">
+        <label for=""> المهمة <span>*</span></label>
+        <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+            background:
+              'url(./assets/icons/check-list.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder=" اختر  المهمة " formControlName="projectTaskId"
+          [options]="tasksList"></p-dropdown>
+      </div>
+    </div>
+    <!-- End of First Row -->
+    <!-- Second Row -->
+    <div class="addForm input-field">
+      <div class="narrowCols">
+        <label for="">نوع الطلب <span>*</span></label>
+        <p-treeSelect class="w-full" [containerStyleClass]="'w-full bg-filterBtnBg py-3'" [containerStyle]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" formControlName="requestTypeId" [panelStyle]="{ 'max-height': '200px', overflow: 'hidden' }"
+          placeholder="اختر نوع الطلب" [selectionMode]="'single'" [options]="requestTypeList"
+          [(ngModel)]="selectedNodes">
+        </p-treeSelect>
+      </div>
+      <div class="narrowCols">
+        <label> عنوان الطلب <span>*</span></label>
+        <input class="py-3 px-3 bg-gray-100 w-full rounded-lg outline-none" type="text" placeholder="أدخل عنوان طلب "
+          formControlName="requestAdress" style="
+            background: url('./assets/icons/locationIcon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+        <!-- <small class="default-attention"
+          *ngIf="( projectDetailsForm.controls['number'].errors?.['required'] && (projectDetailsForm.controls['number'].dirty || projectDetailsForm.controls['number'].touched))">رقم
+          المشروع مطلوب
+        </small> -->
+      </div>
+    </div>
+    <!-- End of Second Row -->
+    <!-- Third Row -->
+    <div class="addForm input-field">
+      <div class="narrowCols">
+        <label> تاريخ الزيارة <span>*</span></label>
+        <p-calendar class="mt-2 bg-gray-100 rounded-lg outline-none w-full" formControlName="visitDate"
+          [placeholder]="' اختر تاريخ الزيارة '" dataType="string" [styleClass]="'w-full h-12 '"
+          [inputStyleClass]="'bg-gray-100'" [showIcon]="true"></p-calendar>
+      </div>
+      <div class="narrowCols">
+        <label> وقت الزيارة <span>*</span></label>
+        <p-calendar class="mt-2 bg-gray-100 rounded-lg outline-none w-full" formControlName="visitTime"
+          [placeholder]="' اختر وقت الزيارة '" [styleClass]="'w-full h-12 '" [inputStyleClass]="'bg-gray-100'"
+          [showIcon]="true" [timeOnly]="true" [showTime]="true" dataType="string"></p-calendar>
+      </div>
+    </div>
+    <div class="addForm input-field">
+      <!-- ------- -->
+
+      <!-- ------- -->
+    </div>
+    <!-- End of Third Row -->
+  </form>
+</div>
+
+<!-- ============ -->
+<div class="form-content">
+  <div class="title">
+    <img src="./assets/icons/fileUploadedIcon.svg" />
+    <p>مرفقات الطلب</p>
+  </div>
+
+  <div class="fileContainer flex flex-col col-span-3">
+    <app-uploadFile [uploadedFiles]="uploadedFiles" [editMode]="editMode" [showTitle]="false"
+      [currentId]="currentRequestId" [routeName]="'projects/visit-requests/outgoing-requests'"></app-uploadFile>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: userRole === userTypes.Admin ? 'عرض الطلبات' : 'عرض الطلبات الصادرة'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<!-- <app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message> -->
+<!-- CONFIRM -->
+<!-- <app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف المبنى؟ سيتم حذفها نهائيًا من قائمة المباني الفرعية',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message> -->
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

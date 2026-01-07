@@ -1,0 +1,191 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="' عقود الصيانة'" [imageTitle]="'./assets/icons/projectsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: 'عقود الصيانة ', routerLink: '/buildings/maintenance-contracts' }
+  ]" [isFilte]="true" [inputPlaceholder]="'ابحث بالرقم، اسم عقد الصيانة، رقم عقد الصيانة...'" [buttonText]="'عقد صيانة جديد'"
+  [saveBtnText]="'إضافة'" [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false"
+  (addButton)="openAdd()" (valueSearch)="filterBySearchTesxt($event)" (onFilterClick)="showDialog()"
+  [showAddButton]="userRole == 1 || userRole == 2"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- SEARCH DIALOG  -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية عقود الصيانة</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="OnSubmitData()">
+      <!-- first Row -->
+      <div class="addForm input-field">
+
+        <div class="narrowCols">
+          <label for=""> نوع المشروع</label>
+          <p-dropdown class="w-full"
+          (onChange)="getOfficesByProjectType($event.value)" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+        background:
+          'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+        'background-color': '#f6f6f6',
+        'padding-right': '35px'
+      }" optionLabel="name" optionValue="id" placeholder="اختر نوع المشروع" formControlName="ProjectTypeId"
+            [options]="projectTypeList"></p-dropdown>
+        </div>
+
+        <div class="narrowCols">
+          <label for=""> الغرف</label>
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'"
+            (onChange)="getAllProjectManagersByOfficeId($event.value)" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder="اختر المقاول التابع له المشروع "
+            formControlName="OfficeId" [options]="officeList"></p-dropdown>
+        </div>
+      </div>
+      <!-- End of first Row -->
+
+      <!--  second Row -->
+      <div class="addForm input-field">
+        <div class="narrowCols">
+          <label for="">المدير</label>
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="fullName" optionValue="id" placeholder=" اختر المدير التابع له المشروع"
+            formControlName="ProjectManagerId" [options]="projectManagerList"></p-dropdown>
+        </div>
+      </div>
+      <!-- End of second Row -->
+
+      <div class="buttons-content mt-3">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- TABEL LIST -->
+<!-- ======================================================== -->
+
+<app-list [isProjectList]="true" [cols]="cols" [isSearching]="isSearchingReasult" [values]="values"
+  [totalPageCount]="totalPageCount" [withControles]="true" (editEvent)="openEdit($event)"
+  (deleteEvent)="deleteProject($event)" (rowsCountChanged)="getData($event)" [evaluate]="true" (evaluateEvent)="openEvaluation($event)"
+  [noData]="showBreadcrumb ? false : true"></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم تقم بإضافة أي عقد صيانة بعد، ستظهر عقود الصيانة المضافة هنا... يمكنك البدء بإضافة أول عقد صيانة',
+  noDataButtonText: 'عقد صيانة جديد',
+  }"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- EVALUATION POPUP -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showEvaluationDialog">
+  <div class="popup evaluation-popup">
+    <div class="text-center mb-6">
+      <h3 class="text-xl font-semibold text-teal-600">تقييم العقد</h3>
+    </div>
+
+    <!-- Loading state -->
+    <div *ngIf="isLoadingEvaluation" class="text-center py-8">
+      <p class="text-gray-500">جاري تحميل معايير التقييم...</p>
+    </div>
+
+    <!-- Evaluation Criteria -->
+    <div class="space-y-2" *ngIf="evaluationTerms.length > 0 && !isLoadingEvaluation">
+
+      <!-- Headers -->
+      <div class="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
+        <div class="text-right">
+          <h4 class="text-lg font-medium text-gray-700">البند</h4>
+        </div>
+        <div class="text-center">
+          <h4 class="text-lg font-medium text-gray-700">التقييم</h4>
+        </div>
+
+      </div>
+
+      <!-- Loop through evaluation terms -->
+      <div *ngFor="let term of evaluationTerms; let i = index" class="grid grid-cols-2 gap-4 items-center ">
+
+         <!-- Term Name (Right Column) -->
+        <div class="text-right">
+          <h5 class="text-base font-medium text-gray-800 leading-relaxed">{{ term.name }}</h5>
+        </div>
+        <!-- Stars (Left Column) -->
+        <div class="text-center">
+          <div class="flex justify-center gap-1">
+            <i *ngFor="let star of [1,2,3,4,5]"
+               class="fas text-3xl cursor-pointer transition-colors duration-200"
+               [ngClass]="getRating(i) >= star ? 'fa-star text-yellow-400' : 'fa-star text-gray-300'"
+               (click)="setRatingAndSave(i, star)"
+               (mouseenter)="setHoverRating(i, star)"
+               (mouseleave)="clearHoverRating(i)"></i>
+          </div>
+        </div>
+
+
+
+      </div>
+
+    </div>
+
+    <!-- No evaluation terms message -->
+    <div *ngIf="evaluationTerms.length === 0 && !isLoadingEvaluation" class="text-center py-8">
+      <p class="text-gray-500">لا توجد معايير تقييم متاحة لهذا العقد</p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-center mt-8">
+      <button class="px-12 py-3 bg-white border-2 border-teal-500 text-teal-600 rounded-lg hover:bg-teal-50 transition-colors font-medium"
+              type="button"
+              (click)="closeEvaluationDialog()">
+        إغلاق
+      </button>
+    </div>
+
+  </div>
+</div>
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض عقود الصيانة '
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف عقد الصيانة؟ سيتم حذفه نهائيًا من قائمة  عقود الصيانة',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

@@ -1,0 +1,246 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'إضافة طلب قطع'"
+  [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: 'طلبات القطع', routerLink: '/buildings/parts-requests' },
+    { name: 'إضافة طلب قطع', routerLink: '/buildings/parts-requests/create' }
+  ]"
+  [saveBtnText]="editMode ? 'تعديل' : 'إضافة'"
+  [isShowAddEdite]="true"
+  [isShowFilter]="true"
+  (submitReq)="onSubmit()"
+  (cancelReq)="onCancle()"
+  [validity]="partsForm.valid"
+></app-bread-crumb>
+
+
+
+<form [formGroup]="partsForm">
+      <div class="card border border-gray-100 rounded p-5 m-3">
+        <div class=" title">
+          <img src="./assets/icons/maintenanceRequestsActive.svg"  />
+          <h2 class="font-bold mr-3">
+
+            تفاصيل الطلب </h2>
+        </div>
+
+    <div class="grid grid-cols-12 gap-4 card">
+
+        <div class="col-span-12 xl:col-span-6 md:col-span-12  ">
+            <label for="">  رقم طلب الصيانة <span>*</span> </label>
+
+
+            <div class="field-icon pr-2 mt-4">
+              <img src="./assets/icons/info-icon.svg" />
+            <p-autoComplete
+            [(ngModel)]="x"
+              [ngModelOptions]="{ standalone: true }"
+               [suggestions]="Allids"
+              [styleClass]="'w-full'"
+               [inputStyleClass]=" 'bg-[#f6f6f6] w-full ' " (keydown)="onKeyDown($event)" (completeMethod)="onChangeids($event)"
+              field="name"   placeholder="رقم طلب الصيانة" class="w-full">
+            </p-autoComplete>
+
+
+            </div>
+
+
+          <div *ngIf="partsForm.get('maintenanceRequestId')?.invalid && partsForm.get('maintenanceRequestId')?.touched" class="error">
+           * رقم الطلب مطلوب.
+          </div>
+        </div>
+        <div class="col-span-12 xl:col-span-6 md:col-span-12">
+            <label for="" >   ملاحظات <span>*</span></label>
+            <div class="field-icon pr-2 mt-4">
+              <img src="/assets/icons/notes-icon.svg" />
+              <input
+              type="text"
+              class="w-full p-2  rounded input-style"
+              pInputText
+              placeholder=" ملاحظات "
+              formControlName="notes"
+            />
+            </div>
+
+
+        </div>
+
+
+
+      </div>
+      </div>
+
+      <div class="  card border border-gray-100 rounded p-5 m-3 ">
+                <div class="grid grid-cols-12 gap-4 mt-4 ">
+                    <div class="col-span-6 title">
+                      <img src="./assets/icons/PiecesActive.svg"  />
+
+                        <h2 class="font-bold mr-3"> تفاصيل القطع </h2>
+                    </div>
+
+                    <div class="col-span-6  text-left " >
+                        <p-button label=" قطعة جديدة" icon="pi pi-plus"   iconPos="left" class=" pt-3 pb-3 pl-6 pr-6 text-white " (click)="addItemQuantity()" ></p-button>
+                    </div>
+
+                </div>
+                <div class=" table-container">
+
+
+                  <p-table [value]="ItemsQuantitiesRows.controls"  [tableStyle]="{ 'min-width': '30rem' , 'overflow': 'scroll'}">
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th class="text-start rounded-t" colspan="4" >القطعة</th>
+
+                        <th class="text-start"  colspan="3" >الكمية  </th>
+
+                        <th class="text-center rounded-t">إعدادات</th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-row let-i="rowIndex">
+                      <!-- Bind each control as a FormGroup -->
+                      <tr class="border rounded " [formGroup]="row">
+                        <!-- القطع -->
+                        <td class="text-start p-2" colspan="4">
+                          <div class="field-icon">
+                            <!-- <img src="/assets/icons/PiecesActive.svg" style="width:20px ;height:20px; margin-right: 20px;" /> -->
+                          <!-- <p-dropdown
+                            [options]="Allparts "
+                            class="w-full"
+                            optionLabel="name"
+                            optionValue="id"
+                            [placeholder]="row.get('pieceName')?.value || 'القطع'"
+                            formControlName="pieceId"
+                            appendTo="body"
+                            [filter]="true" filterBy="name" > </p-dropdown> -->
+
+                            <p-dropdown
+                            class="w-full"
+                            appendTo="body"
+                            [styleClass]="'w-full '"
+                            [panelStyleClass]="'custom-dropdown-style'"
+                            [style]="{
+                              background:
+                                'url(./assets/icons/parts-menu.svg) no-repeat right 10px center',
+                              'background-color': '#f6f6f6',
+                              'padding-right': '40px'
+                            }"
+                            optionLabel="name"
+                            optionValue="id"
+                            [placeholder]="row.get('pieceName')?.value || 'القطع'"
+                            formControlName="pieceId"
+                            [options]="Allparts"
+                            [filter]="true" filterBy="name"
+                          ></p-dropdown>
+
+
+                          </div>
+
+                          <div *ngIf="row.get('pieceName')?.invalid && row.get('pieceName')?.touched" class="error">
+                            * اختيار القطعة مطلوب.
+                          </div>
+
+
+                        </td>
+
+
+
+                        <td class="text-start p-2"  colspan="3">
+                          <div class="field-icon">
+                            <img src="/assets/icons/info-icon.svg" style="width:20px ;height:20px; margin-right: 20px;" />
+                          <input
+                            type="text"
+                            class="p-2 rounded input-style"
+                            pInputText
+                            placeholder="الكمية"
+                            formControlName="quantity"
+                            /></div>
+                          <div *ngIf="row.get('quantity')?.invalid && row.get('quantity')?.touched" class="error">
+                            <div *ngIf="row.get('quantity')?.errors?.required">* الكمية   مطلوبة.</div>
+                            <div *ngIf="row.get('quantity')?.errors?.min">* الكمية يجب أن تكون أكبر من 0.</div>
+                          </div>
+                        </td>
+
+
+
+
+
+
+
+                        <td class="text-center deleted" >
+                          <i class="pi pi-trash cursor-pointer" (click)="deleteRow(i)"></i>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+
+                  </div>
+
+
+
+
+
+      </div>
+      <div class="card border border-gray-100 rounded p-5 m-3">
+        <div class="title">
+          <img src="/assets/icons/fileUpload.png" />
+          <h2 class="mr-3">مرفقات الطلب </h2>
+        </div>
+    <!-- <div  *ngFor="let files of uploadedFiles">
+    </div> -->
+        <div class="fileContainer flex flex-col col-span-3">
+          <app-uploadFile
+            [uploadedFiles]="uploadedFiles"
+            [editMode]="editMode"
+            [showTitle]="false"
+            [currentId]="editeId"
+            [routeName]="'parts-requests'"
+
+          ></app-uploadFile>
+        </div>
+      </div>
+
+
+ </form>
+
+
+
+
+ <!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+*ngIf="alertSuccess"
+[data]="{
+  type: 'success',
+  text: alertSuccessMsg,
+  buttonText: 'عرض طلبات القطع'
+}"
+(confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+*ngIf="alertWarning"
+[data]="{
+  type: 'warning',
+  text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+  buttonText: ''
+}"
+(confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+*ngIf="alertError"
+[data]="{
+  type: 'error',
+  text: alertErrorMsg,
+  buttonText: ''
+}"
+(confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

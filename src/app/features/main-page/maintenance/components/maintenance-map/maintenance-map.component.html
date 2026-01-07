@@ -1,0 +1,163 @@
+<!-- Maintenance Requests Map Dashboard -->
+<div class="map-dashboard">
+
+  <!-- Breadcrumb -->
+  <app-bread-crumb class="bg-white" [title]="'الطلبات الموزعه علي الخريطة'"
+    [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'" [subTitles]="[
+      { name: 'الرئيسية', routerLink: '/' },
+      { name: 'المتابعة المكانية', routerLink: '/map' },
+      { name: 'الطلبات الموزعه علي الخريطة', routerLink: '/maintenance-map' }
+    ]">
+  </app-bread-crumb>
+
+  <!-- Controls Section - Above Map -->
+  <div class="controls-section" [formGroup]="filterForm">
+    <!-- Building Filter Dropdown -->
+    <div class="filter-dropdown">
+      <p-dropdown class="w-full min-w-72" [styleClass]="'w-full bg-filterBtnBg p-3 min-w-72'" [style]="{
+          background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+          'background-color': '#f6f6f6',
+          'padding-right': '35px'
+        }" optionLabel="name" optionValue="id" placeholder="المبني" formControlName="buildingId"
+        [options]="buildingsList" [filter]="true" filterBy="name" [showClear]="false" (onChange)="onFilterChange()">
+      </p-dropdown>
+    </div>
+
+    <!-- Sub Category Type Filter Dropdown -->
+    <div class="filter-dropdown">
+      <p-dropdown class="w-full min-w-72" [styleClass]="'w-full bg-filterBtnBg p-3 min-w-72'" [style]="{
+          background: 'url(./assets/icons/types-icon-fill.svg) no-repeat right 10px center',
+          'background-color': '#f6f6f6',
+          'padding-right': '35px'
+        }" optionLabel="name" optionValue="id" placeholder="نوع العطل" formControlName="subCategoryTypeId"
+        [options]="subCategoryTypesList" [filter]="true" filterBy="name" [showClear]="false"
+        (onChange)="onFilterChange()">
+      </p-dropdown>
+    </div>
+
+    <!-- Status Filter Dropdown -->
+    <div class="filter-dropdown">
+      <p-dropdown class="w-full min-w-72" [styleClass]="'w-full bg-filterBtnBg p-3 min-w-72'" [style]="{
+          background: 'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+          'background-color': '#f6f6f6',
+          'padding-right': '35px'
+        }" optionLabel="name" optionValue="id" placeholder="الحالة" formControlName="statusId" [options]="statusList"
+        [filter]="true" filterBy="name" [showClear]="false" (onChange)="onFilterChange()">
+      </p-dropdown>
+    </div>
+
+    <!-- Priority Filter Dropdown -->
+    <div class="filter-dropdown">
+      <p-dropdown class="w-full min-w-72" [styleClass]="'w-full bg-filterBtnBg p-3 min-w-72'" [style]="{
+          background: 'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+          'background-color': '#f6f6f6',
+          'padding-right': '35px'
+        }" optionLabel="name" optionValue="id" placeholder="الأولوية" formControlName="priorityId"
+        [options]="priorityList" [filter]="true" filterBy="name" [showClear]="false" (onChange)="onFilterChange()">
+      </p-dropdown>
+    </div>
+
+
+
+    <!-- Reset Button -->
+    <button class="reset-btn" (click)="resetFilters()" type="button" title="إعادة ضبط التصفية">
+      <i class="fas fa-redo"></i>
+      إعادة ضبط
+    </button>
+  </div>
+
+  <!-- Results Info -->
+  <!-- <div class="results-info" *ngIf="!isLoading">
+    <span class="results-count">
+      عرض {{ filteredMapData.length }} من أصل {{ allMapData.length }} طلب
+    </span>
+  </div> -->
+
+  <!-- Loading Indicator -->
+  <div class="loading-indicator" *ngIf="isLoading">
+    <i class="fas fa-spinner fa-spin"></i>
+    <span>جاري تحميل الطلبات...</span>
+  </div>
+
+  <!-- Map Container -->
+  <div class="map-container">
+    <!-- Google Map -->
+    <google-map [mapTypeId]="hybrid" width="100%" height="100%" [center]="center" [zoom]="zoom" [dir]="'rtl'"
+      [options]="mapOptions" class="google-map">
+      <!-- Map Markers with custom colors based on status -->
+      <map-marker [dir]="'rtl'" *ngFor="let markerPosition of markerPositions; trackBy: trackByPosition"
+        [position]="markerPosition" [options]="markerPosition" #markerRef="mapMarker"
+        (mapClick)="openInfoWindow(markerPosition, markerRef)"></map-marker>
+
+      <!-- Info Window -->
+      <map-info-window #infoWindow>
+        <div *ngIf="selectedRequest" class="info-window">
+          <div class="info-header">
+            <h4>{{ selectedRequest?.requestNumber || 'رقم الطلب غير محدد' }}</h4>
+            <span class="status-badge" [style.background-color]="getStatusColor(selectedRequest.statusId)">
+              {{ selectedRequest?.statusName }}
+            </span>
+          </div>
+
+          <div class="info-content">
+            <div class="info-item">
+              <span class="label">الوصف:</span>
+              <span class="value">{{ selectedRequest?.description || 'غير محدد' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">المبنى:</span>
+              <span class="value">{{ selectedRequest?.buildingName || 'غير محدد' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">الأولوية:</span>
+              <span class="value">{{ selectedRequest?.priorityName || 'غير محدد' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">نوع العطل:</span>
+              <span class="value">{{ selectedRequest?.subCategoryTypeName || 'غير محدد' }}</span>
+            </div>
+            <div class="info-item" *ngIf="selectedRequest?.createdDate">
+              <span class="label">تاريخ الإنشاء:</span>
+              <span class="value">{{ selectedRequest?.createdDate }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">الموقع:</span>
+              <span class="value">{{ selectedRequest?.lat }}, {{ selectedRequest?.lng }}</span>
+            </div>
+          </div>
+
+          <div class="info-actions">
+            <button class="details-btn" (click)="viewRequestDetails()">
+              <i class="fas fa-eye"></i>
+              عرض التفاصيل
+            </button>
+          </div>
+        </div>
+      </map-info-window>
+    </google-map>
+
+    <!-- No Results Message -->
+    <div class="no-results" *ngIf="!isLoading && filteredMapData.length === 0">
+      <div class="no-results-content">
+        <i class="fas fa-map-marker-alt"></i>
+        <h3>لا توجد طلبات مطابقة</h3>
+        <p>لم يتم العثور على أي طلبات تطابق معايير البحث المحددة</p>
+        <button class="reset-search-btn" (click)="resetFilters()">
+          إعادة ضبط البحث
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend-container">
+    <h5>دليل الألوان:</h5>
+    <div class="legend-items">
+      <div class="legend-item" *ngFor="let status of statusList.slice(1)">
+        <span class="legend-color" [style.background-color]="status.color"></span>
+        <span class="legend-label">{{ status.name }}</span>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,99 @@
+.bread-crumb {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #137770;
+  .cramb-right {
+    .right-title {
+      img {
+        width: 130px;
+        height: 70px;
+        margin-right: 30px;
+      }
+    }
+  }
+  .cramb-left {
+    display: flex;
+    align-items: center;
+
+    .input-search {
+      background-color: #f6f6f6;
+      display: flex;
+      align-items: center;
+      border-radius: 8px;
+      padding: 0 15px 0 0;
+      margin-left: 16px;
+      img {
+        margin-left: 15px;
+      }
+      input {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        height: 40px;
+        width: 375px;
+      }
+    }
+    .filter {
+      background-color: white;
+      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 10px;
+      img {
+        margin-left: 0;
+      }
+    }
+  }
+  .btn {
+    display: flex;
+    align-items: center;
+    .btn-white {
+    background: white;
+    color: #137770;
+    font-size: 18px;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    padding: 0px 22px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+    i {
+      margin-left: 10px;
+      margin-top: 5px;
+    }
+  }}
+}
+@media (max-width: 1240px) {
+  .bread-crumb {
+    align-items: start;
+    flex-direction: column;
+    .cramb-right {
+      margin-bottom: 24px;
+    }
+  }
+}
+.dropdown-status {
+  border: 1px solid #169187;
+  border-radius: 5px;
+}
+::ng-deep .p-dropdown-label {
+  color: black;
+}
+::ng-deep .p-menu-overlay{
+  left: 139.266px;
+    width: 180px;
+    margin-top: 2px;
+}
+::ng-deep .p-menu-list li{
+  padding: 5px
+}
+::ng-deep .p-menuitem-content{
+  padding: 10px;
+}

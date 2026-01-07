@@ -1,0 +1,82 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'المقاولون'"
+  [imageTitle]="'./assets/icons/usersActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/settings' },
+    { name: 'إدارة النظام', routerLink: '/settings' },
+    { name: 'المقاولون', routerLink: '/settings/contractors' }
+  ]"
+  [isFilte]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث بالرقم، اسم المقاول، رقم السجل'"
+  [buttonText]="'مقاول جديد'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  (valueSearch)="filterBySearchText($event)"
+  (addButton)="openAdd()"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  [noData]="showBreadcrumb ? false : true"
+  (rowsCountChanged)="getAllOffices($event)"
+  (editEvent)="openEdit($event)"
+  (deleteEvent)="confirmDelete($event)"
+></app-list>
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم تقم بإضافة أي مقاول  بعد، سيظهر المقاولين المضافين  هنا... يمكنك البدء بإضافة أول مقاول',
+  noDataButtonText: 'مقاول جديد ',
+  }"
+  (addNewEvent)="openAdd()"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  المقاولون'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف المقاول؟ سيتم حذفه نهائيًا من قائمة المقاولين',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

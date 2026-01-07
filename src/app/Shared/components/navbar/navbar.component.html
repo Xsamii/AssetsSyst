@@ -1,0 +1,97 @@
+<header>
+  <div class="header-right">
+    <div class="logo" (click)="clickToHome()">
+      <img src="./assets/images/navbar-logo.png" style="cursor: pointer; object-fit: contain;" />
+    </div>
+
+    <p>
+      <i *ngIf="showMenuIcon" class="fa-solid fa-bars" (click)="closeSidebarMenu()"></i>
+      {{ moduleName ? moduleName : "منصة إدارة أصول و مرافق الأضاحي" }}
+    </p>
+  </div>
+  <div class="header-left">
+    <!-- ------------------------ -->
+    <!--NOTIFICATIONS -->
+    <!-- ------------------------ -->
+    <div class="notifi">
+      <i class="fa-regular fa-bell" (click)="showNotificationList = !showNotificationList"></i>
+      <div class="notifi-count" *ngIf="numberOfNotifications">
+        {{ numberOfNotifications > 0 ? numberOfNotifications : "" }}
+      </div>
+
+      <div class="notifi-list" *ngIf="showNotificationList">
+        <!-- HEAD -->
+        <div class="notifi-head">
+          <h3>
+            <img src="./assets/icons/notifi.svg" />
+            الإشعارات
+          </h3>
+          <p (click)="readAllNotifications()">تمييز الكل كمقروء</p>
+        </div>
+        <!-- notifi-card -->
+        <div class="notifi-card" *ngIf="allNotifications.length > 0">
+          <div class="card-box" *ngFor="let notifi of allNotifications" [ngClass]="notifi.isRead ? 'read' : ''"
+            (click)="readNotification(notifi)">
+            <h4>
+              {{ notifi.title }}
+            </h4>
+            <span>
+              <i class="fa-solid fa-circle"></i>
+              {{
+              notifi.creationDate | date : "EEEE MMM/dd/yyyy hh:mm a"
+              }}</span>
+          </div>
+        </div>
+
+        <!-- no Data -->
+        <div class="no-data" *ngIf="allNotifications.length == 0">
+          <img src="./assets/images/notification-nodata.svg" />
+          <p>
+            يبدو أنك لم تتلقى أي إشعارات بعد، ستظهر الإشعارات الواردة هنا...
+          </p>
+        </div>
+        <!-- Footer -->
+        <div class="notifi-footer" (click)="routeToNotifications()">
+          <img src="./assets/icons/showAll.svg" />
+          <h5>عرض الكل</h5>
+        </div>
+      </div>
+    </div>
+    <!-- ------------------------ -->
+    <!-- ------------------------ -->
+    <div class="header-user" (click)="onShowLogoutMenu($event)">
+      <div class="user-image">
+        <img [src]="profileImage ?? './assets/images/defaultProfileImage.jpg'" />
+      </div>
+
+      <div class="user-text">
+        <p>{{ fullName }}</p>
+        <span>{{ jobName }}</span>
+      </div>
+    </div>
+    <div class="header-dropdown" (click)="onShowLogoutMenu($event)">
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+    <div class="logout-menu" *ngIf="showLogoutMenu">
+      <div class="title-info">
+        <div class="info-img">
+          <img [src]="profileImage ?? './assets/images/defaultProfileImage.jpg'" />
+        </div>
+        <div class="info-text">
+          <h3>{{fullName}}</h3>
+          <h5>{{ email }}</h5>
+        </div>
+      </div>
+      <div class="links">
+        <p (click)="routeToProfile()">
+          <img src="./assets/icons/userIcon.svg" />
+          الملف الشخصي
+        </p>
+        <p (click)="logout()">
+          <img src="./assets/icons/logout.svg" />
+          تسجيل الخروج
+        </p>
+      </div>
+    </div>
+  </div>
+</header>

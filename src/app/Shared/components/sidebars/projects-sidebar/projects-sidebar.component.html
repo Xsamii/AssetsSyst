@@ -1,0 +1,255 @@
+<!--  -->
+<div class="sidebar" *ngIf="showSidebarMenu">
+  <div class="items">
+    <!-- ====================== -->
+    <a
+      (click)="showSubMenu()"
+      class="item"
+      routerLink="/projects"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer || userRole == roles.OfficeManager || userRole == roles.ProjectManager"
+    >
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/dashboard.svg" />
+        <img class="active-icon" src="./assets/icons/dashboardActive.svg" />
+      </div>
+      <p>لوحة التحكم</p>
+    </a>
+
+    <!-- ============D========== -->
+    <div
+      class="item"
+      routerLinkActive="active"
+      (click)="showSubMenu('projects')"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer || userRole == roles.OfficeManager  || userRole == roles.ProjectManager"
+      >
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/projects.svg" />
+        <img class="active-icon" src="./assets/icons/projectsActive.svg" />
+      </div>
+      <p
+
+      >المشاريع</p>
+      <i
+        [ngClass]="
+          projectsMenu ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'
+        "
+      ></i>
+    </div>
+    <!-- DROP -->
+    <div class="Drop-Down" *ngIf="projectsMenu">
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        [routerLinkActiveOptions]="{ exact: true }"
+        *ngIf="
+          userRole == roles.Admin ||
+          userRole == roles.SystemOfficer ||
+          userRole == roles.OfficeManager ||
+          userRole == roles.ProjectManager ||
+          userRole == roles.OfficeEmployee
+        "
+      >
+        <a routerLink="projects-menu"><p>المشاريع</p></a>
+      </div>
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer"
+      >
+        <a routerLink="projects-menu/projects-categories"><p>التصنيفات</p></a>
+      </div>
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer"
+      >
+        <a routerLink="projects-menu/projects-status"><p>الحالات</p></a>
+      </div>
+
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer"
+      >
+        <a routerLink="projects-menu/projects-tasks"><p>المهام</p></a>
+      </div>
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="
+          userRole == roles.OfficeManager || userRole == roles.ProjectManager
+        "
+      >
+        <a routerLink="projects-menu/supervisory-task"
+          ><p>المهام الإشرافية</p></a
+        >
+      </div>
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="
+          userRole == roles.OfficeManager || userRole == roles.ProjectManager
+        "
+      >
+        <a routerLink="projects-menu/executive-task"><p>المهام التنفيذية</p></a>
+      </div>
+    </div>
+    <!-- ===========D=========== -->
+    <div
+      class="item"
+      routerLinkActive="active"
+      (click)="showSubMenu('requests')"
+    >
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/visitRequests.svg" />
+        <img class="active-icon" src="./assets/icons/visitRequestsActive.svg" />
+      </div>
+      <p>طلبات الزيارة</p>
+      <i
+        [ngClass]="
+          requestsMenu ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'
+        "
+      ></i>
+    </div>
+    <!-- DROP -->
+    <div class="Drop-Down" *ngIf="requestsMenu">
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        [routerLinkActiveOptions]="{ exact: true }"
+        *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer"
+      >
+        <a routerLink="visit-requests"><p>الطلبات</p></a>
+      </div>
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="
+          userRole == roles.OfficeManager || userRole == roles.ProjectManager
+        "
+      >
+        <a routerLink="visit-requests/incoming-requests"
+          ><p>الطلبات الواردة</p></a
+        >
+      </div>
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="
+          userRole == roles.OfficeManager || userRole == roles.ProjectManager
+        "
+      >
+        <a routerLink="visit-requests/outgoing-requests"
+          ><p>الطلبات الصادرة</p></a
+        >
+      </div>
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="userRole == roles.OfficeEmployee"
+      >
+        <a routerLink="visit-requests/specified-requests"
+          ><p>الطلبات المخصصة</p></a
+        >
+      </div>
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer"
+      >
+        <a routerLink="visit-requests/requests-types"><p>أنواع الطلبات</p></a>
+      </div>
+    </div>
+    <!-- ============ طلبات الصيانة========== -->
+    <div
+      (click)="showSubMenu('maintenance-requests')"
+      class="item"
+      *ngIf="
+        (maintenanceMenu && userRole == roles.OfficeManager) ||
+        userRole == roles.ProjectManager ||
+        userRole == roles.OfficeEmployee
+      "
+    >
+      <div class="item-icon" *ngIf="maintenanceMenu">
+        <img class="icon" src="./assets/icons/maintenanceRequests.svg" />
+        <img
+          class="active-icon"
+          src="./assets/icons/maintenanceRequestsActive.svg"
+        />
+      </div>
+      <p *ngIf="maintenanceMenu">طلبات الصيانة</p>
+      <i
+        *ngIf="maintenanceMenu"
+        [ngClass]="
+          maintenanceMenu
+            ? 'fa-solid fa-chevron-up'
+            : 'fa-solid fa-chevron-down dontShow'
+        "
+      ></i>
+    </div>
+
+   <div class="Drop-Down" *ngIf="maintenanceMenu">
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="
+          userRole == roles.OfficeManager || userRole == roles.ProjectManager
+        "
+      >
+        <a
+          *ngIf="maintenanceMenu"
+          [routerLink]="['projects-maintenance-requests/']"
+          [queryParams]="{ role: '1' }"
+          ><p *ngIf="maintenanceMenu">الطلبات الإشرافية</p></a
+        >
+      </div>
+      <div
+        class="dropdown-menu"
+        routerLinkActive="active-subMenu"
+        *ngIf="
+           maintenanceMenu &&
+          userRole == roles.OfficeManager || userRole == roles.ProjectManager
+        "
+      >
+        <a
+          *ngIf="maintenanceMenu"
+          [routerLink]="['projects-maintenance-requests/']"
+          [queryParams]="{ role: '2' }"
+        >
+          <p *ngIf="maintenanceMenu">الطلبات التنفيذية</p></a
+        >
+      </div>
+    </div>
+    <!-- ====================== -->
+    <!-- <a
+      (click)="showSubMenu()"
+      class="item"
+      routerLink="contractors"
+      routerLinkActive="active"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer"
+    >
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/users.svg" />
+        <img class="active-icon" src="./assets/icons/usersActive.svg" />
+      </div>
+      <p>المقاولون</p>
+    </a> -->
+
+    <!-- ====================== -->
+    <a
+      (click)="showSubMenu()"
+      class="item"
+      routerLink="project-settings"
+      routerLinkActive="active"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer"
+    >
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/settings.svg" />
+        <img class="active-icon" src="./assets/icons/settingsActive.svg" />
+      </div>
+      <p>الإعدادات</p>
+    </a>
+  </div>
+</div>

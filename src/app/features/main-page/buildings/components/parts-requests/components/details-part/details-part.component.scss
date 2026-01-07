@@ -1,0 +1,91 @@
+
+::ng-deep .p-tabview-nav li a {
+    @apply shadow-md;
+        color: #115f5a;
+        margin-right: 20px;
+        height: 20px;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 10px;
+        
+        }
+
+        ::ng-deep .p-tabview-nav li.p-highlight a{
+            background-color: #ecf4f3!important;
+            color: #115f5a;
+        }
+
+        .custom-tabview{
+            margin-top: 30px  !important;
+        }  
+         
+          
+        .file-name {
+            color: #333;
+            padding-block: 6px;
+            padding-inline: 5px;
+          }
+          
+          .file-size {
+            font-size: 12px;
+            color: #115f5a;
+            font-weight: normal;
+          }
+          
+         
+       .details{
+        background-color: rgba(246, 246, 246, 1);
+        margin-block: 15px;
+        padding: 10px;
+        border-radius: 10px;
+       }
+       .details label{
+        color:#115f5a;
+       }
+       .title{
+        background-color: #ecf4f3 !important;
+        color: #115f5a;
+        border-radius: 10px;
+        padding: 10px;
+        width: fit-content;
+        font-weight: bold;
+        margin-bottom: 20px;
+        margin-top: 40px;
+       }
+
+       :host ::ng-deep p-table .p-datatable-thead > tr > th {
+        background-color: rgba(246, 246, 246, 1);
+        color: rgba(121, 127, 143, 1); /* Optional: To make text more readable */
+        font-weight: bold;
+       padding: 10px;
+    }
+    :host ::ng-deep p-table .p-datatable-thead   {
+        border-radius: 20px;
+        padding: 10px;
+
+    }
+     
+    .status-WaitConfirme{
+        color: rgba(255, 149, 0, 1);
+        background-color: rgba(255, 226, 186, 1);
+        font-weight: normal;
+        padding: 5px 30px;
+        border-radius: 5px;
+        margin-right: 20px;
+      }
+      .status-Initialpproval{
+        color:rgba(127, 211, 42, 1);
+        background-color: rgba(127, 211, 42, 0.2);
+        font-weight: normal;
+        padding: 5px 30px;
+        border-radius: 5px;
+        margin-right: 20px;
+      }
+      .status-approval{
+        color:rgba(39, 163, 0, 1);
+        background-color:rgba(102, 153, 0, 0.2);
+        font-weight: normal;
+        padding: 5px 30px;
+        border-radius: 5px;
+        margin-right: 20px;
+      }

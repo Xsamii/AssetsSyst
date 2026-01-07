@@ -1,0 +1,46 @@
+<div class="auth-login">
+  <div class="login-content">
+    <div class="login-content-left">
+      <div class="flex justify-center mb-10">
+        <img src="./assets/images/login-logo.png" />
+      </div>
+      <h3>كود التحقق</h3>
+      <p>
+        قم بإدخال الكود المرسل إلى <span>{{ email }}</span>
+      </p>
+      <div class="timer">
+        <p class="code-text">الكود ينتهى في <span class="gradient-text">01:00</span></p>
+      </div>
+      <h3>{{ code }}</h3>
+      <div class="image">
+        <img src="./assets/images/verify-otp.svg" alt="" />
+      </div>
+      <form [formGroup]="verifyCodeForm" (ngSubmit)="sendVerifyCode()">
+        <ng-otp-input #ngOtpInput #ngxOtp (onInputChange)="otpChanged($event)" [formCtrl]="YourFormControl" [config]="{
+            length: 6,
+            containerStyles: {
+              direction: 'ltr'
+            }
+          }"></ng-otp-input>
+
+        <div>
+          <button type="submit" class="login-btn">تحقق</button>
+        </div>
+        <p>
+          لم تتسلم كود؟
+          <span (click)="ResendCode()"> {{ resendMsg }}</span>
+        </p>
+      </form>
+    </div>
+
+  </div>
+</div>
+<!-- ==================================== -->
+<!-- SWEET ALERT -->
+<!-- ==================================== -->
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="errorAlert" (confirmMessage)="errorFunction($event)" [data]="{
+    type: 'error',
+    text: 'لقد أدخلت كود غير صحيح',
+    buttonText: ''
+  }"></app-sweet-alert-message>

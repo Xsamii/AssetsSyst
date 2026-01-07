@@ -1,0 +1,155 @@
+<div class="bread-crumb">
+  <div class="cramb-right">
+    <div class="right-title">
+      <img [src]="imageTitle" />
+      <h3>{{ title }}</h3>
+    </div>
+    <div class="right-sub-titles">
+      <ng-container *ngFor="let subTitle of subTitles">
+        <span [routerLink]="[subTitle.routerLink]">{{ subTitle.name }}</span>
+        <i class="fa-solid fa-angle-left"></i
+      ></ng-container>
+    </div>
+  </div>
+  <div class="cramb-left" *ngIf="!isShowFilter">
+    <div class="input-search" *ngIf="isSearch">
+      <div><img src="./assets/icons/seacrhIcon.svg" /></div>
+      <input
+        type="text"
+        [placeholder]="inputPlaceholder"
+        #search
+        (change)="valueSearchFun(search.value)"
+      />
+      <button *ngIf="isFilte" class="filter" (click)="onFilterClickFun()">
+        <img src="./assets/icons/filter.svg" />
+      </button>
+    </div>
+    <div class="ml-3 dropdown-status" *ngIf="dropdownStatus">
+      <p-dropdown
+        class="w-full"
+        [styleClass]="'w-full  px-4 py-3 '"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="الحالة"
+        [options]="projectStatusList"
+        (onChange)="changeprojectStatusID($event)"
+      ></p-dropdown>
+    </div>
+    <div class="ml-3 dropdown-status" *ngIf="isAssets">
+      <p-dropdown
+        class="w-full"
+        [styleClass]="'w-full  px-4 py-3 '"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="المقاول"
+        [options]="OfficesList"
+        (onChange)="changeofficeID($event)"
+      ></p-dropdown>
+    </div>
+
+    <div class="ml-3 dropdown-status" *ngIf="isAssets">
+      <p-dropdown
+        class="w-full"
+        [styleClass]="'w-full  px-4 py-3 '"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="المقاول"
+        [options]="OfficesList"
+        (onChange)="changeofficeID($event)"
+      ></p-dropdown>
+    </div>
+
+    <!-- Contractors Evaluation Dropdowns -->
+
+    <div class="ml-3 dropdown-status" *ngIf="isContractorsEvaluation">
+      <p-dropdown
+        class="w-full"
+        [styleClass]="'w-full  px-4 py-3 '"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="المبنى"
+        [options]="buildingsList"
+        (onChange)="changeBuildingID($event)"
+        [showClear]="true"
+      ></p-dropdown>
+    </div>
+
+    <div class="ml-3 dropdown-status" *ngIf="isContractorsEvaluation">
+      <p-dropdown
+        class="w-full"
+        [styleClass]="'w-full  px-4 py-3 '"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="المقاول"
+        [options]="contractorsList"
+        (onChange)="changeContractorID($event)"
+        [showClear]="true"
+      ></p-dropdown>
+    </div>
+
+    <!-- Evaluation Settings Dropdowns -->
+
+    <div class="ml-3 dropdown-status" *ngIf="isEvaluationSettings">
+      <p-dropdown
+        class="w-full"
+        [styleClass]="'w-full  px-4 py-3 '"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="المدة"
+        [options]="durationsList"
+        (onChange)="changeDurationID($event)"
+        [showClear]="true"
+      ></p-dropdown>
+    </div>
+
+    <div class="ml-3 dropdown-status" *ngIf="isEvaluationSettings">
+      <p-dropdown
+        class="w-full"
+        [styleClass]="'w-full  px-4 py-3 '"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="نوع خطة الصيانة"
+        [options]="planTypesListSettings"
+        (onChange)="changePlanTypeIDSettings($event)"
+        [showClear]="true"
+      ></p-dropdown>
+    </div>
+
+    <button
+      *ngIf="showAddButton && buttonText !== ''"
+      class="buttons"
+      (click)="addButtonFun()"
+    >
+      <i class="fa-solid fa-plus"></i>
+      {{ buttonText }}
+    </button>
+  </div>
+  <div class="ml-3" *ngIf="isMaintab">
+    <div class="d-flex align-items-center gap-2">
+      <p-dropdown
+        [options]="maintabList"
+        [(ngModel)]="selectedTabId"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="التبويب الرئيسي"
+        (onChange)="changeselectedTab($event)"
+        [showClear]="false"
+        [style]="{ width: '500px', border: ' 1px solid var(--primary-color)' }"
+      ></p-dropdown>
+      <button
+        type="button"
+        class="m-4 px-3 py-1.5"
+        (click)="routeToSettingMonthly()"
+        style="border: 1px solid var(--primary-color); border-radius: 5px"
+      >
+        <i class="fa-solid fa-gear"></i>
+      </button>
+    </div>
+  </div>
+  <div class="cramb-left" *ngIf="isShowAddEdite">
+    <button class="buttons" [disabled]="!validity" (click)="save()">
+      {{ saveBtnText }}
+    </button>
+    <button class="buttons-white" (click)="cancel()">الغاء</button>
+  </div>
+</div>

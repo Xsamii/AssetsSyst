@@ -1,0 +1,359 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'إضافة طلب صيانة'" [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/maintenance' },
+    { name: 'طلبات الصيانة', routerLink: '/maintenance/maintenace-requests' },
+    {
+      name: 'إضافة طلب صيانة',
+      routerLink: '/maintenance/maintenace-requests/add'
+    }
+  ]" [saveBtnText]="editMode ? 'تعديل' : 'إضافة'" [isShowAddEdite]="true" [isShowFilter]="true"
+  (submitReq)="onSubmit()" (cancelReq)="onCancle()" [validity]="maintenanceForm.valid"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- Form-->
+<!-- ============================= -->
+
+<form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()">
+  <!-- ----------------------------------------------- -->
+  <!-- ----------------------------------------------- -->
+  <div class="form-content" *ngIf="editMode && (userRole == 1 || userRole == 2 || userRole == 7)">
+    <div class="title-content">
+      <div class="title">
+        <img src="./assets/icons/maintenanceRequestsActive.svg" />
+        <p>مراجعة الطلب</p>
+      </div>
+      <div class="checkbox">
+        <input (click)="onReviwed()" [checked]="statusId != 1" [disabled]="statusId != 1" id="reviwed"
+          type="checkbox" />
+        <label for="reviwed">تم المراجعة</label>
+      </div>
+    </div>
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="two-inputs-fields">
+      <div class="input-field">
+        <label for="name">
+          عقد الصيانة (المشروع التنفيذي) <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/pen-ruler-icon.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر عقد الصيانة" formControlName="executableProjectId"
+            [options]="maintenanceExecutiveProjectsLookup" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="
+            formControls.executableProjectId.invalid &&
+            formControls.executableProjectId.touched
+          " class="error-text">يجب إختيار عقد الصيانة</small>
+      </div>
+      <div class="input-field">
+        <label for="name"> المشروع الاستشاري <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/pen-icon.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر المشروع الاستشاري"
+            formControlName="supervisorProjectId" [options]="maintenanceConsultingProjectsLookup" [filter]="true"
+            filterBy="name"></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="
+            formControls.supervisorProjectId.invalid &&
+            formControls.supervisorProjectId.touched
+          " class="error-text">يجب إختيار المشروع الاستشاري</small>
+      </div>
+    </div>
+  </div>
+  <!-- ----------------------------------------------- -->
+  <!-- ----------------------------------------------- -->
+  <div class="form-content">
+    <div class="title">
+      <img src="./assets/icons/maintenanceRequestsActive.svg" />
+      <p>تفاصيل الطلب</p>
+    </div>
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+
+
+
+
+
+
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------FULL WIDTH FIELD: GEOGRAPHICAL LOCATION------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="input-field">
+      <label for="name"> الموقع الجغرافي <span>*</span> </label>
+      <div class="field-icon" (click)="statusId == 1 ? openGeoLocationDialog() : null"
+        [style.cursor]="statusId == 1 ? 'pointer' : 'default'">
+        <img src="./assets/icons/locationIcon.svg" />
+        <input class="bg-gray-100 rounded-lg outline-none" type="text" placeholder="انقر لتحديد الموقع على الخريطة"
+          [value]="selectedLatitude && selectedLongitude ? selectedLatitude + ', ' + selectedLongitude : ''"
+          [readonly]="true" style="cursor: pointer;" />
+      </div>
+      <!-- VALIDATIONS -->
+      <small *ngIf="(!selectedLatitude || !selectedLongitude) && maintenanceForm.touched" class="error-text">
+        يجب تحديد الموقع الجغرافي على الخريطة
+      </small>
+    </div>
+
+
+
+
+
+
+
+    <div class="two-inputs-fields">
+      <div class="input-field">
+        <label for="name"> المبنى <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/select-main-building-icon.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر المبنى" formControlName="buildingId"
+            [options]="builldingLookup" (onChange)="onBuildingChange(+maintenanceForm.value.buildingId)" [filter]="true"
+            filterBy="name">
+          </p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="formControls.buildingId.invalid && formControls.buildingId.touched" class="error-text">
+          يجب إختيار المبني الرئيسي
+        </small>
+      </div>
+      <!-- <div class="input-field">
+        <label for="name"> المبنى الفرعي <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/select-main-building-icon.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر المبنى الفرعي" formControlName="subUnitId"
+            [options]="buildingSubUnitLookup" (onChange)="getAllfloors(+maintenanceForm.value.subUnitId)"
+            [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+
+      </div> -->
+
+      <div class="input-field">
+        <label for="name"> الطابق </label>
+        <div class="field-icon">
+          <img src="./assets/icons/select-main-building-icon.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر الطابق " formControlName="floorId"
+            [options]="floorLookup" [filter]="true" filterBy="name"
+            (onChange)="onFloorChange(+maintenanceForm.value.floorId)">
+          </p-dropdown>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="two-inputs-fields">
+
+
+      <div class="input-field">
+        <label for="name"> الغرفة <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/select-main-building-icon.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر الغرفة " formControlName="officeId"
+            [options]="officesLookup" [filter]="true" filterBy="name"
+            (onChange)="getAllAssetsInOffice(+maintenanceForm.value.officeId)">
+          </p-dropdown>
+        </div>
+      </div>
+
+      <div class="input-field">
+        <label for="name"> أولوية الطلب <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/info-icon.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر أولوية الطلب" formControlName="requestPriorety"
+            [options]="requestPrioretyLookup" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="
+            formControls.requestPriorety.invalid &&
+            formControls.requestPriorety.touched
+          " class="error-text">يجب إختيار أولوية الطلب
+        </small>
+      </div>
+
+
+    </div>
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+
+    <div class="two-inputs-fields">
+
+
+      <div class="input-field">
+        <label for="name"> نوع العطل الرئيسي <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/types-icon-fill.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر نوع العطل الرئيسي" formControlName="mainCategoryType"
+            [options]="primaryMaintenanceTypeLookup" (onChange)="
+              getMaintTypesByParent(+maintenanceForm.value.mainCategoryType)
+            " [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="
+            formControls.mainCategoryType.invalid &&
+            formControls.mainCategoryType.touched
+          " class="error-text">يجب إختيار نوع العطل الرئيسي
+        </small>
+      </div>
+
+      <div class="input-field">
+        <label for="name"> نوع العطل الفرعي <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/types-icon-fill.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر نوع العطل الفرعي" formControlName="subCategoryType"
+            [options]="subMaintenanceTypeLookup" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="
+            formControls.subCategoryType.invalid &&
+            formControls.subCategoryType.touched
+          " class="error-text">يجب إختيار نوع العطل الرئيسي ثم العطل الفرعي التابة له</small>
+      </div>
+    </div>
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="two-inputs-fields">
+      <div class="input-field">
+        <label for="name"> وصف مكان العطل </label>
+        <div class="field-icon">
+          <img src="./assets/icons/locationIcon.svg" />
+          <input class="bg-gray-100 rounded-lg outline-none" type="text" placeholder="وصف مكان العطل "
+            formControlName="locationDescription" [readonly]="statusId != 1" />
+        </div>
+      </div>
+
+      <div class="input-field">
+        <label for="name"> معلومات إضافية </label>
+        <div class="field-icon">
+          <img src="./assets/icons/info-icon.svg" />
+          <input class="bg-gray-100 rounded-lg outline-none" type="text" placeholder="معلومات إضافية"
+            formControlName="credentials" [readonly]="statusId != 1" />
+        </div>
+      </div>
+    </div>
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="two-inputs-fields">
+      <!-- <div class="input-field">
+        <label for="name"> حالة الطلب </label>
+        <div class="field-icon">
+          <img src="./assets/icons/info-icon.svg" />
+          <p-dropdown
+            [readonly]="statusId != 1"
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name"
+            optionValue="id"
+            placeholder=" اختر حالة الطلب   "
+            [options]="visitRequestsStatusLookup"
+            formControlName="maintenanceRequestStatusId"
+          ></p-dropdown>
+        </div>
+      </div> -->
+
+      <!-- <div class="input-field">
+        <label for="name"> نوع الصيانة </label>
+        <div class="field-icon">
+          <img src="./assets/icons/info-icon.svg" />
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+            placeholder="اختر نوع الصيانة " formControlName="maintenanceTypeId" [options]="maintenanceTypes"
+            [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <small *ngIf="
+            formControls.maintenanceTypeId.invalid &&
+            formControls.maintenanceTypeId.touched
+          " class="error-text">يجب إختيار نوع الصيانة
+        </small>
+      </div> -->
+
+
+      <!-- <div class="input-field">
+        <label for="name"> وصف مكان العطل </label>
+        <div class="field-icon">
+          <img src="./assets/icons/locationIcon.svg" />
+          <input class="bg-gray-100 rounded-lg outline-none" type="text" placeholder="وصف مكان العطل "
+            formControlName="locationDescription" />
+        </div>
+
+      </div> -->
+    </div>
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TEXT AREA----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="input-textarea">
+      <label for="main-building"> وصف المشكلة </label>
+      <div class="field-icon">
+        <img src="./assets/icons/notes-icon.svg" />
+        <textarea [readonly]="statusId != 1" placeholder="أدخل وصف المشكلة"
+          formControlName="proplemDescription"></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="form-content">
+    <div class="title">
+      <img src="./assets/icons/fileUploadedIcon.svg" />
+      <p>مرفقات الطلب</p>
+    </div>
+
+    <div class="fileContainer flex flex-col col-span-3">
+      <app-uploadFile [uploadedFiles]="uploadedFiles" [editMode]="editMode" [showTitle]="false" [currentId]="editeId"
+        [routeName]="'maintenace-requests'"></app-uploadFile>
+    </div>
+  </div>
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض طلبات الصيانة'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>
+
+<!-- ============================= -->
+<!-- GEO-LOCATION DIALOG -->
+<!-- ============================= -->
+<p-dialog [(visible)]="showGeoLocationDialog" [modal]="true" [style]="{ width: '90vw', maxWidth: '900px',  }"
+  [contentStyle]="{ padding: '0', overflow: 'hidden' }" [draggable]="false" [resizable]="false"
+  header="اختر موقع البلاغ" (onShow)="onDialogShow()" styleClass="geo-location-dialog">
+  <app-geo-loction *ngIf="showGeoLocationDialog" [initialLat]="selectedLatitude" [initialLng]="selectedLongitude"
+    (locationSelected)="onLocationSelected($event)" (cancel)="onGeoLocationCancel()"></app-geo-loction>
+</p-dialog>

@@ -1,0 +1,136 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'المباني'" [imageTitle]="'./assets/icons/mainBuildingsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: 'المباني', routerLink: '/buildings/main-buildings' }
+  ]" [isFilte]="true" [inputPlaceholder]="'ابحث بالرقم، اسم المبنى...'" [buttonText]="'مبنى جديد'"
+  [saveBtnText]="'إضافة'" [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false"
+  (addButton)="openAdd()" (valueSearch)="filterBySearchTesxt($event)" (onFilterClick)="showDialog()"></app-bread-crumb>
+
+<!-- Search Dialog -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية المباني</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name"> المبنى </label>
+        <div class="">
+          <!-- <img src="assets/icons/select-main-building-icon.svg" /> -->
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى  " formControlName="buildingId"
+            [options]="mainBuildingsList" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+      </div>
+      <div class="input-field">
+        <label for="code">عقد الصيانة (المشروع التنفيذي) </label>
+        <div class="">
+          <!-- <img src="assets/inputs-icons/contractIcon.svg" /> -->
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" عقد الصيانة " formControlName="executiveProjectId"
+            [options]="executiveList" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+      </div>
+
+      <div class="buttons-content">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- TABEL LIST -->
+<!-- ======================================================== -->
+
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
+  [withControles]="true" (editEvent)="openEdit($event)" [show3D]="true" (ThreedEvent)="openLink($event)"
+  (deleteEvent)="deleteBuilding($event)" (rowsCountChanged)="getData($event)"
+  [noData]="showBreadcrumb ? false : true"></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+    noDataImg: './assets/images/no-data-search.png',
+    noDataText: 'يبدو أنك لم تقم بإضافة أي مبنى  بعد، ستظهر المباني المضافة  هنا... يمكنك البدء بإضافة أول مبنى',
+    noDataButtonText: 'مبنى جديد ',
+    }"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض المباني '
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف المبنى الرئيسي؟ سيتم حذفه نهائيًا من قائمة المباني',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>
+
+
+
+
+
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/subUnitsActive.svg" />
+      <p>
+        النطاق الجغرافي
+      </p>
+    </div>
+    <app-geo-loction></app-geo-loction>
+    <!-- <form > -->
+
+    <!-- <div class="buttons-content">
+        <button [disabled]="subUnitForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button
+          class="buttons-white"
+          type="button"
+          (click)="onCloseAddEditePopup()"
+        >
+          إلغاء
+        </button>
+      </div> -->
+    <!-- </form> -->
+  </div>
+</div>

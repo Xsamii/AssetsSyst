@@ -1,0 +1,58 @@
+<div [ngClass]="curentRoute === 'notifications' ? 'notifications' : ''">
+  <!-- ============================= -->
+  <!-- BREAD CRUMB -->
+  <!-- ============================= -->
+  <div class="bread-crumb">
+    <div class="right">
+      <div class="title">
+        <img src="./assets/icons/notifi.svg" />
+        <h3>الإشعارات</h3>
+      </div>
+      <div class="links">
+        <a routerLink="/">الرئيسية</a>
+        <i class="fa-solid fa-angle-left"></i>
+        <a routerLink=""> الإشعارات</a>
+      </div>
+    </div>
+    <div class="left" *ngIf="allNotifications.length > 0">
+      <div>
+        <button
+          class="showall-button"
+          type="button"
+          (click)="readAllNotifications()"
+        >
+          تمييز الكل كمقروء
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- ============================= -->
+  <!-- NOTIFICATIONS -->
+  <!-- ============================= -->
+
+  <div class="notifi-list">
+    <!-- notifi-card -->
+    <div class="notifi-card" *ngIf="allNotifications.length > 0">
+      <div
+        class="card-box"
+        [ngClass]="notifi.isRead ? 'read' : ''"
+        *ngFor="let notifi of allNotifications"
+        (click)="readNotification(notifi)"
+      >
+        <h4>
+          {{ notifi.title }}
+        </h4>
+        <span>
+          <i class="fa-solid fa-circle"></i>
+          {{ notifi.creationDate | date : "EEEE MMM/dd/yyyy hh:mm a" }}</span
+        >
+      </div>
+    </div>
+
+    <!-- no Data -->
+    <div class="no-data" *ngIf="allNotifications.length == 0">
+      <img src="./assets/images/notification-nodata.svg" />
+      <p>يبدو أنك لم تتلقى أي إشعارات بعد، ستظهر الإشعارات الواردة هنا...</p>
+    </div>
+  </div>
+</div>

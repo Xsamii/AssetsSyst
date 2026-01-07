@@ -1,0 +1,184 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'المقاولون'" [imageTitle]="'./assets/icons/usersActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/settings' },
+    { name: 'إدارة النظام', routerLink: '/settings' },
+    { name: 'المقاولون', routerLink: '/settings/contractros' },
+    { name: 'إضافة مقاول' }
+  ]" [isFilte]="false" [inputPlaceholder]="'ابحث باسم المقاول، رقم السجل...'" [buttonText]="'مقاول جديد'"
+  [saveBtnText]="editMode ? 'تعديل' : 'إضافة'" [isShowAddEdite]="true" (submitReq)="onSubmit()"
+  (cancelReq)="alertWarning = true" [validity]="officeForm.valid"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- FORM-->
+<!-- ============================= -->
+<form [formGroup]="officeForm">
+  <!-- ============ -->
+  <div class="form-content">
+    <div class="title">
+      <img src="./assets/icons/user-active.svg" />
+      <p>تفاصيل المقاول</p>
+    </div>
+
+    <div class="three-inputs-field">
+      <div class="input-field">
+        <label>الاسم <span>*</span></label>
+        <div class="input-icon">
+          <img src="./assets/icons/userIcon.svg" />
+          <input type="text" formControlName="name" placeholder="أدخل اسم المقاول" />
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="formControls.name.invalid && formControls.name.touched">برجاء إدخال اسم المقاول</small>
+      </div>
+      <div class="input-field">
+        <label>رقم السجل <span>*</span></label>
+        <div class="input-icon">
+          <img src="./assets/icons/hash.svg" />
+          <input type="text" formControlName="officeRegistrationNumber" placeholder="أدخل رقم سجل المقاول" />
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="
+            formControls.officeRegistrationNumber.invalid &&
+            formControls.officeRegistrationNumber.touched
+          ">برجاء إدخال رقم سجل المقاول</small>
+      </div>
+      <div class="input-field">
+        <label>نوع المقاول <span>*</span></label>
+        <div class="input-icon">
+          <img src="./assets/icons/userIcon.svg" />
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3 '" formControlName="officeTypeId"
+            #officeTypeId optionLabel="name" optionValue="value" placeholder="اختر نوع المقاول"
+            [options]="projectTypeList"></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="
+            formControls.officeTypeId.invalid &&
+            (formControls.officeTypeId.touched ||
+              formControls.officeTypeId.dirty)
+          ">برجاء إدخال نوع المقاول</small>
+      </div>
+    </div>
+    <div class="input-field-textarea">
+      <label> الوصف <span>*</span></label>
+      <div class="input-icon">
+        <img src="./assets/icons/notes-icon.svg" />
+        <textarea formControlName="description" placeholder="أدخل وصف المقاول"></textarea>
+      </div>
+      <!-- VALIDATIONS -->
+      <small *ngIf="
+          formControls.description.invalid && formControls.description.touched
+        ">برجاء إدخال وصف المقاول</small>
+    </div>
+
+    <div class="tow-inputs-field">
+
+
+      <!-- ============ -->
+    </div>
+
+    <div class="form-content">
+      <div class="title">
+        <img src="./assets/icons/user-active.svg" />
+        <p>تفاصيل المدير</p>
+      </div>
+
+      <div class="tow-inputs-field">
+        <div class="input-field">
+          <label>الاسم <span>*</span></label>
+          <div class="input-icon">
+            <img src="./assets/icons/userIcon.svg" />
+            <input [readOnly]="editMode" type="text" formControlName="fullName" placeholder="أدخل اسم مدير الغرفة" />
+          </div>
+          <!-- VALIDATIONS -->
+          <small *ngIf="
+              formControls.fullName.invalid && formControls.fullName.touched
+            ">برجاء إدخال اسم مدير الغرفة</small>
+        </div>
+        <div class="input-field">
+          <label> البريد الإلكتروني <span>*</span></label>
+          <div class="input-icon">
+            <img src="./assets/icons/email.svg" />
+
+            <input [readOnly]="editMode" type="email" formControlName="email" placeholder="أدخل البريد الإلكتروني" />
+          </div>
+          <!-- VALIDATIONS -->
+          <div *ngIf="formControls.email.invalid && formControls.email.touched">
+            <small *ngIf="formControls.email.errors['required']">برجاء إدخال البريد الإلكتروني
+            </small>
+            <small *ngIf="formControls.email.errors['email']">
+              يجب إدخال البريد الإلكتروني بشكل صحيح
+            </small>
+          </div>
+        </div>
+      </div>
+      <div class="tow-inputs-field">
+        <div class="input-field">
+          <label>رقم الهاتف <span>*</span></label>
+          <div class="input-icon">
+            <img src="./assets/icons/phone.svg" />
+            <input [maxlength]="10" [readOnly]="editMode" type="tel" formControlName="mobile"
+              placeholder="أدخل رقم الهاتف" />
+          </div>
+          <!-- VALIDATIONS -->
+          <small *ngIf="formControls.mobile.invalid && formControls.mobile.touched">برجاء إدخال رقم الهاتف
+          </small>
+        </div>
+        <div class="input-field">
+          <label> رقم الهوية <span>*</span></label>
+          <div class="input-icon">
+            <img src="./assets/icons/hash.svg" />
+            <input [maxlength]="10" [readOnly]="editMode" type="text" formControlName="nationId"
+              placeholder="أدخل رقم الهوية" />
+          </div>
+          <!-- VALIDATIONS -->
+          <div *ngIf="
+              formControls.nationId.invalid && formControls.nationId.touched
+            ">
+            <small *ngIf="formControls.nationId.errors['required']">برجاء إدخال رقم الهوية
+            </small>
+            <small *ngIf="formControls.nationId.errors['pattern']">
+              رقم الهوية يجب ان يتكون من 10 ارقام
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ============ -->
+    <div class="form-content">
+      <div class="title">
+        <img src="./assets/icons/fileUploadedIcon.svg" />
+        <p>مرفقات الطلب</p>
+      </div>
+
+      <div class="fileContainer flex flex-col col-span-3">
+        <app-uploadFile [uploadedFiles]="uploadedFiles" [editMode]="editMode" [showTitle]="false"
+          [currentId]="currentOfficeId" [routeName]="'projects/contractors'"></app-uploadFile>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  المقاولون'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>
+
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>

@@ -1,0 +1,67 @@
+<div class="auth-login">
+  <div class="login-content">
+    <div class="login-content-left">
+      <div class="flex justify-center mb-10">
+        <img src="./assets/images/login-logo.png" />
+      </div>
+      <h3>مرحبًا بك في منصة إدارة أصول و مرافق الأضاحي</h3>
+      <p>برجاء إدخال البريد الإلكتروني وكلمة المرور</p>
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <div class="input-field">
+          <label for="email">
+            البريد الإلكتروني
+            <span>*</span>
+          </label>
+          <div class="input-icon">
+            <div>
+              <img src="./assets/icons/email.svg" />
+            </div>
+            <input id="email" type="email" placeholder="أدخل البريد الإلكتروني" formControlName="email" />
+          </div>
+          <!-- VALIDATIONS -->
+          <div *ngIf="formControlls.email.invalid && formControlls.email.touched">
+            <small *ngIf="formControlls.email.errors['required']">برجاء ادخال البريد الالكتروني</small>
+            <small *ngIf="formControlls.email.errors['email']">ادخل البريد الالكتروني بشكل صحيح</small>
+          </div>
+        </div>
+        <div class="input-field">
+          <label for="password">كلمة المرور
+            <span>*</span>
+          </label>
+          <div class="input-icon">
+            <div><img src="./assets/icons/password.svg" /></div>
+            <input id="password" [type]="inputType" placeholder="أدخل كلمة المرور" formControlName="password" />
+            <div (click)="onShowPassword()" class="show-password">
+              <img *ngIf="!showPassword" src="./assets/icons/show-password.svg" />
+              <img *ngIf="showPassword" src="./assets/icons/unshow-password.svg" />
+            </div>
+          </div>
+          <!-- VALIDATIONS -->
+
+          <small *ngIf="
+              formControlls.password.invalid && formControlls.password.touched
+            ">
+            برجاء ادخال كلمة المرور</small>
+
+          <!-- ----------------------- -->
+          <h4 routerLink="/auth/forget-password">هل نسيت كلمة المرور؟</h4>
+        </div>
+        <button type="submit" [disabled]="loginForm.invalid">
+          تسجيل الدخول
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

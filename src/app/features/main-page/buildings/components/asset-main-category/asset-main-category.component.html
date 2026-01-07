@@ -1,0 +1,152 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'إدارة الأصول '" [imageTitle]="'./assets/icons/subUnitsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: 'التصنيفات الرئيسية ', routerLink: '/buildings/assets-main-categories' }
+  ]" [isFilte]="true" [inputPlaceholder]="'ابحث بالأسم او التصنيف...'" [buttonText]="'اضافة تصنيف رئيسي'"
+  [saveBtnText]="'إضافة'" [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false"
+  (addButton)="openAdd()" (valueSearch)="filterBySearchText($event)" (onFilterClick)="showDialog()"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
+  [withControles]="true" (editEvent)="openEdit($event)" (deleteEvent)="confirmDelete($event)"
+  (rowsCountChanged)="getAllMainCategories($event)" [noData]="showBreadcrumb ? false : true"></app-list>
+
+
+
+
+<!-- ============================= -->
+<!-- SEARCH-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية التصنيفات الرئيسية</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="search()">
+      <div class="input-field">
+        <label for="name"> النظام </label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر النظام " formControlName="assetTypeId"
+            [options]="assetTypeLookUp" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+      </div>
+
+
+      <div class="buttons-content">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/subUnitsActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل التصنيف الرئيسي" : "اضافة تصنيف رئيسي" }}
+      </p>
+    </div>
+    <form [formGroup]="assetMainCategoryForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name">
+          اسم التصنيف
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="name" id="name" type="text" placeholder=" أدخل اسم التصنيف" />
+        </div>
+        <small *ngIf="formControls.name.invalid && formControls.name.touched">
+          برجاء إدخال اسم التصنيف
+        </small>
+      </div>
+
+      <div class="input-field">
+        <label for="main-building">
+          النظام التابع له التصنيف
+          <span>*</span>
+        </label>
+        <div class=" ">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+            background:
+              'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر النظام" formControlName="assetTypeId"
+            [options]="assetTypeLookUp" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <small *ngIf="
+            formControls.assetTypeId.invalid &&
+            formControls.assetTypeId.touched
+          ">
+          برجاء اختيار النظام
+        </small>
+      </div>
+
+
+
+      <div class="buttons-content">
+        <button [disabled]="assetMainCategoryForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button class="buttons-white" type="button" (click)="onCloseAddEditePopup()">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ======================================================== -->
+<!-- NO DATA YET... -->
+<!-- ======================================================== -->
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+noDataImg: './assets/images/no-data-search.png',
+noDataText: 'يبدو أنك لم تقم بإضافة أي تصنيف رئيسي بعد، ستظهر التصنيفات الرئيسية المضافة  هنا... يمكنك البدء بإضافة أول تصنيف رشيسي',
+noDataButtonText: 'إضافة تصنيف رئيسي جديد',
+}"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض التصنيفات الرئيسية '
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف التصنيف الرئيسي؟ سيتم حذفه نهائيًا من قائمة التصنيفات الرئيسية',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

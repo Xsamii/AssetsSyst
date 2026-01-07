@@ -1,0 +1,187 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'إدارة الأصول '" [imageTitle]="'./assets/icons/subUnitsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: 'الطوابق ', routerLink: '/buildings/floors' }
+  ]" [isFilte]="true" [inputPlaceholder]="'ابحث باسم الطابق...'" [buttonText]="'اضافة طابق'" [saveBtnText]="'إضافة'"
+  [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false" (addButton)="openAdd()"
+  (valueSearch)="filterBySearchText($event)" (onFilterClick)="showDialog()"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
+  [withControles]="true" (editEvent)="openEdit($event)" (deleteEvent)="confirmDelete($event)"
+  (rowsCountChanged)="getAllFloors($event)" [noData]="showBreadcrumb ? false : true"></app-list>
+
+
+
+
+<!-- ============================= -->
+<!-- SEARCH-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية الطوابق</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="search()">
+      <div class="input-field">
+        <label for="name"> المبنى </label>
+        <div class="">
+          <!-- <img src="assets/icons/select-main-building-icon.svg" /> -->
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى  " formControlName="buildingId"
+            [options]="builldingLookup" [filter]="true" filterBy="name"
+            (onChange)="getAllBuildingSubUnit(searchForm.value.buildingId)"></p-dropdown>
+        </div>
+      </div>
+      <!-- <div class="input-field">
+        <label for="code">المبنى الفرعي</label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى الفرعي"
+            formControlName="buildingSubUnitId" [options]="buildingSubUnitLookup" [filter]="true"
+            filterBy="name"></p-dropdown>
+        </div>
+      </div> -->
+
+      <div class="buttons-content">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/subUnitsActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل الطابق" : "إضافة طابق" }}
+      </p>
+    </div>
+    <form [formGroup]="floorForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name">
+          رقم الطابق
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="floorNumber" id="name" type="text" placeholder="أدخل رقم الطابق" />
+        </div>
+        <small *ngIf="formControls.floorNumber.invalid && formControls.floorNumber.touched">
+          برجاء إدخال رقم الطابق
+        </small>
+      </div>
+
+      <div class="input-field">
+        <label for="main-building">
+          المبنى الرئيسي
+          <span>*</span>
+        </label>
+        <div class=" ">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+            background:
+              'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى الرئيسي " formControlName="buildingId"
+            [options]="builldingLookup" [filter]="true" filterBy="name"
+            (onChange)="getAllBuildingSubUnit(floorForm.value.buildingId)"></p-dropdown>
+        </div>
+        <small *ngIf="
+            formControls.buildingId.invalid &&
+            formControls.buildingId.touched
+          ">
+          برجاء إختيار المبنى الرئيسي
+        </small>
+      </div>
+
+      <!-- <div class="input-field">
+        <label for="main-building">
+          اختر المبنى الفرعي
+          <span>*</span>
+        </label>
+        <div class=" ">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+            background:
+              'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="  اختر المبنى" formControlName="buildingSubUnitId"
+            [options]="buildingSubUnitLookup" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <small *ngIf="
+            formControls.buildingSubUnitId.invalid &&
+            formControls.buildingSubUnitId.touched
+          ">
+          برجاء إختيار المبنى الفرعي
+        </small>
+      </div> -->
+
+      <div class="buttons-content">
+        <button [disabled]="floorForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button class="buttons-white" type="button" (click)="onCloseAddEditePopup()">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ======================================================== -->
+<!-- NO DATA YET... -->
+<!-- ======================================================== -->
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+noDataImg: './assets/images/no-data-search.png',
+noDataText: 'يبدو أنك لم تقم بإضافة أي طابق بعد، ستظهر الطوابق المضافة  هنا... يمكنك البدء بإضافة أول طابق',
+noDataButtonText: 'إضافة طابق جديد',
+}"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض الطوابق '
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف الطابق؟ سيتم حذفه نهائيًا من قائمة الطوابق',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

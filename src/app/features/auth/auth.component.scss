@@ -1,0 +1,15 @@
+.auth-page {
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  .auth-image{
+    height: 100vh !important; 
+    width: 50%;
+  }
+  .auth-content{
+    width: 50%;
+    background-color: #EDF6F5;
+  }
+  
+}

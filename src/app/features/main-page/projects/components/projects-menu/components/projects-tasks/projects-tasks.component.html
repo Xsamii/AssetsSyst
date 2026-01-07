@@ -1,0 +1,319 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'المهام '"
+  [imageTitle]="'./assets/icons/tasks.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/projects' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    { name: 'المشاريع ', routerLink: '/projects/projects-menu' },
+    { name: 'المهام ', routerLink: '' }
+  ]"
+  [isFilte]="true"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث بالرقم، اسم المهمة...'"
+  [buttonText]="'مهمة جديدة'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  (addButton)="openAdd()"
+  (valueSearch)="filterBySearchText($event)"
+  (onFilterClick)="showDialog()"
+  [showAddButton]="userRole != 5"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  [noData]="showBreadcrumb ? false : true"
+  (rowsCountChanged)="getAllProjectTasks($event)"
+  (deleteEvent)="confirmDelete($event)"
+  (editEvent)="openEdit($event)"
+  [isProjectTask]="true"
+></app-list>
+
+<!-- ============================= -->
+<!-- SEARCH DIALOG  -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup" style="width: 600px">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية المهام</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="submitSearchForm()">
+      <!-- First Row -->
+      <div class="narrowCols input-field">
+        <label for=""> المهمة </label>
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg py-3'"
+          [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="اختر المهمة  "
+          formControlName="name"
+          [options]="projectTasksList"
+          [showClear]="true"
+
+        ></p-dropdown>
+      </div>
+      <div class="narrowCols input-field">
+        <label for=""> المشروع</label>
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg py-3'"
+          [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="اختر  المشروع"
+          formControlName="projectId"
+          [options]="projectsList"
+          [showClear]="true"
+
+        ></p-dropdown>
+      </div>
+      <!-- End of First Row -->
+      <!-- Second Row -->
+      <!-- <div class="addForm input-field"> -->
+      <div class="narrowCols input-field">
+        <label for=""> الحالة</label>
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg py-3'"
+          [style]="{
+            background:
+              'url(./assets/icons/types-icon-fill.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="name"
+          optionValue="id"
+          placeholder=" اختر حالة المهمة   "
+          formControlName="isCompeleted"
+          [options]="tasksStatusList"
+          [showClear]="true"
+
+        ></p-dropdown>
+      </div>
+      <!-- </div> -->
+      <!-- End of Second Row -->
+      <!-- Third Row -->
+
+      <div class="buttons-content mt-3">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup" style="width: 600px">
+    <div class="title">
+      <img src="./assets/icons/tasks.svg" />
+      <p>
+        {{ isEditMode ? "تعديل المهمة " : " إضافة مهمة" }}
+      </p>
+    </div>
+    <form [formGroup]="taskForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name"
+          >اسم المهمة
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input
+            formControlName="name"
+            id="name"
+            type="text"
+            placeholder="أدخل اسم المهمة"
+          />
+        </div>
+        <!-- VALIDATIONS -->
+        <div
+          *ngIf="
+            formControls.name?.invalid &&
+            (formControls.name?.touched || formControls.name?.dirty)
+          "
+        >
+          <small
+            class="tw-text-red-500"
+            *ngIf="formControls.name?.errors?.['required'] || formControls.name?.errors?.['pattern']"
+          >
+            <i class="fa-solid fa-circle-xmark tw-ml-1"></i>
+            برجاء إدخال اسم المهمة
+          </small>
+        </div>
+      </div>
+      <div class="input-field">
+        <label for="name"
+          >المشروع
+          <span>*</span>
+        </label>
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg py-3'"
+          [style]="{
+            background:
+              'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="name"
+          optionValue="id"
+          placeholder=" اختر المشروع  "
+          formControlName="projectId"
+          [options]="projectsListtoAdd"
+        ></p-dropdown>
+        <small
+          class="default-attention"
+          *ngIf="
+            formControls.projectId.invalid && formControls.projectId.touched
+          "
+        >
+          المشروع مطلوب</small
+        >
+      </div>
+      <div class="addForm mb-6">
+        <div class="flex flex-col narrowCols">
+          <label for="">
+            نسبة إنجاز المهمة
+            <span>*</span>
+          </label>
+          <!-- <input class="mt-2 py-3 px-3 field-icon" type="number" formControlName="taskCompletionRate"
+            placeholder="أدخل نسبة إنجاز المهمة"> -->
+          <input
+            class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none"
+            type="text"
+            placeholder="أدخل نسبة إنجاز المهمة"
+            formControlName="taskCompletionRate"
+            appOnlyNumber
+            style="
+              background: url('./assets/icons/percentage.svg')
+                no-repeat right 15px center;
+              background-color: #f6f6f6;
+              padding-right: 35px;
+            "
+          />
+          <!-- VALIDATIONS -->
+          <div
+            *ngIf="
+              formControls.taskCompletionRate?.invalid &&
+              (formControls.taskCompletionRate?.touched ||
+                formControls.taskCompletionRate?.dirty)
+            "
+          >
+            <small
+              class="text-red-500"
+              *ngIf="formControls.taskCompletionRate?.errors?.['required'] "
+            >
+              <i class="fa-solid fa-circle-xmark tw-ml-1"></i>
+              برجاء ادخال نسبة انجاز المهمه
+            </small>
+            <small
+              class="text-red-500"
+              *ngIf="formControls.taskCompletionRate?.errors?.['max']"
+            >
+              <i class="fa-solid fa-circle-xmark tw-ml-1"></i>
+              نسبة الانجازلا تزيد عن 100
+            </small>
+          </div>
+        </div>
+        <div class="mx-3 narrowCols">
+          <label> حالة المهمة </label>
+          <div class="mt-2 py-3 px-3 flex">
+            <p-checkbox
+              formControlName="isCompeleted"
+              [binary]="true"
+              inputId="binary"
+              class=""
+            ></p-checkbox>
+            <label class="mx-2 check-label"> مكتملة</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="buttons-content">
+        <button [disabled]="taskForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button
+          class="buttons-white"
+          type="button"
+          (click)="onCloseAddEditePopup()"
+        >
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  (addNewEvent)="openAdd()"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم تقم بإضافة أي مهمة بعد، ستظهر المهام المضافة هنا... يمكنك البدء بإضافة أول مهمة',
+  noDataButtonText: 'مهمة جديدة ',
+  }"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  المهام'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف المهمة؟  سيتم حذفها نهائيًا من قائمة المهام',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

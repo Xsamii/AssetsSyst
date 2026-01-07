@@ -1,0 +1,160 @@
+:host ::ng-deep .p-menuitem-separator {
+  transform: rotate(-0.5turn);
+  color: #797f8f;
+}
+.header-title {
+  color: #16968C ;
+}
+:host ::ng-deep .p-menuitem-text {
+  color: #797f8f;
+  padding: 10px;
+}
+.addColor {
+  color: red;
+}
+.button-icon {
+  color: white;
+}
+
+:host ::ng-deep .p-dialog-content {
+  background-color: white;
+  // padding: 15px;
+
+  border-radius: 8px;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05),
+    0px 1px 4px rgba(0, 0, 0, 0.08);
+
+  label {
+    color: #16968C ;
+    font-weight: 500;
+  }
+  h2 {
+    color: #16968C ;
+
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 27px;
+  }
+}
+
+.buttonSection {
+  button {
+    padding: 10px 30px;
+    border-radius: 10px;
+  }
+
+  .saveBtn {
+    background: #16968C ;
+    color: #ffffff;
+  }
+  .cancelBtn {
+    border: 1px solid #16968C ;
+    color: #16968C ;
+  }
+}
+:host ::ng-deep .p-component {
+  // width: 100%;
+}
+:host ::ng-deep .p-dropdown-items {
+  width: 100%;
+  background-color: white;
+}
+:host ::ng-deep .p-element.p-dropdown-item {
+  @apply px-4 py-4;
+}
+:host ::ng-deep .p-dropdown-filter-container {
+  .p-icon-wrapper{
+    position: relative;
+    left: 3rem;
+    bottom: 0.75rem;
+  }
+}
+.overlay {
+  background: linear-gradient(
+    150.57deg,
+    rgba(12, 88, 139, 0.162) 15.91%,
+    rgba(21, 90, 138, 0.186) 48.08%,
+    rgba(38, 94, 135, 0.184) 88.94%
+  );
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .popup {
+    background-color: #fff;
+    box-shadow: 0px 2px 5.27px 0px #00000009;
+
+    box-shadow: 0px 0px 37px 0px #0000000d;
+    border-radius: 8px;
+    width: 600px;
+    .title {
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 0.5px solid #7070702e;
+      color: #16968C;
+      img {
+        margin-left: 15px;
+      }
+      p {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--color-primary);
+      }
+    }
+    form {
+      padding: 24px;
+
+      .input-field {
+        margin-bottom: 5px;
+        label {
+          display: block;
+          margin-bottom: 12px;
+          font-size: 18px;
+          font-weight: 400;
+          color: #16968C ;
+          span {
+            color: #fe4035;
+          }
+        }
+        .field-icon {
+          background-color: #f6f6f6;
+          display: flex;
+          align-items: center;
+          padding: 0 15px;
+          border-radius: 8px;
+          height: 48px;
+          img {
+            margin-left: 16px;
+          }
+          input,
+          select {
+            background-color: transparent;
+            width: 100%;
+            border: none;
+            outline: none;
+          }
+        }
+        small {
+          color: #fe4035;
+        }
+      }
+
+      .buttons-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        button[disabled] {
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

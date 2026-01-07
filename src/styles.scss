@@ -1,0 +1,108 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap");
+@import "../node_modules/primeng/resources/primeng.min.css";
+@import "../node_modules/primeng/resources/primeng.css";
+@import "../node_modules/primeicons/primeicons.css";
+
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "./themes/hail-variables.scss"; 
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  direction: rtl !important;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+}
+body {
+  background-color: #46948c1a;
+
+}
+
+// =====================================
+// CONTENT
+// =====================================
+.content,
+.content-full {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  width: 100%;
+  height: calc(100vh - 139px);
+  overflow-y: scroll;
+}
+
+.content {
+  margin: 0 312px 24px 24px;
+}
+.content-full {
+  margin: 0 24px 24px 24px;
+}
+@media (max-width: 992px) {
+  .content,
+  .content-full {
+    margin: 0 24px 24px 24px;
+  }
+}
+// ===============================
+// BUTTONS
+// ===============================
+.buttons {
+  @apply bg-gradient;
+  // background: linear-gradient(150.57deg, #16968c 14.49%, #0e3434 91.35%);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  padding: 0px 22px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  i {
+    margin-left: 10px;
+    margin-top: 5px;
+  }
+}
+.buttons-white {
+  background: -webkit-linear-gradient(300deg, #16968c 14.49%, #0e3434 91.35%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  border: 1px solid #16968c;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 0px 22px;
+  height: 48px;
+  margin-right: 16px;
+}
+
+// ========================================
+// DROPDOWN ICON
+// ========================================
+.p-dropdown-trigger-icon.p-icon {
+  path {
+    color: #16968c;
+  }
+}
+
+// ========================================
+// SCROLL
+// ========================================
+::-webkit-scrollbar-thumb {
+  background-color: #16968c;
+  border-radius: 5px;
+}
+::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}

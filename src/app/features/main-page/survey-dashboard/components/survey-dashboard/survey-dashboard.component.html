@@ -1,0 +1,16 @@
+<div class="bg-[#46948c1a]" style="background: #46948c1a; padding: 24px;">
+    <div class="survey-container" *ngFor="let survey of allSurvey; let sIndex = index" [id]="'survey-' + sIndex">
+      <div class="rounded-lg mb-10">
+        <h2 class="text-4xl font-semibold text-gray-800 mb-9 text-center">{{ survey.formName }}</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div *ngFor="let question of survey.questions; let qIndex = index" class="chart-card">
+            <div class="bg-white rounded-lg border border-gray-100 p-4">
+              <h3 class="text-center font-semibold text-gray-700 mb-4 text-base">{{ question.questionName }}</h3>
+              <div [id]="'chart-' + sIndex + '-' + qIndex" class="chart-container"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

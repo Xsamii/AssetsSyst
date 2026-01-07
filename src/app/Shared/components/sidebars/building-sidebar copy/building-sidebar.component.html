@@ -1,0 +1,59 @@
+<div class="sidebar" *ngIf="showSidebarMenu">
+  <div class="items">
+    <!-- ====================== -->
+    <a class="item" routerLink="/buildings" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer   ">
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/dashboard.svg" />
+        <img class="active-icon" src="./assets/icons/dashboardActive.svg" />
+      </div>
+      <p>لوحة التحكم</p>
+    </a>
+    <!-- ====================== -->
+    <a class="item" routerLink="maintenance-contracts" routerLinkActive="active"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer">
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/mainBuildings.svg" />
+        <img class="active-icon" src="./assets/icons/projectsActive.svg" />
+      </div>
+      <p>عقود الصيانة</p>
+    </a>
+    <!-- ====================== -->
+    <a class="item" routerLink="main-buildings" routerLinkActive="active"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer  ">
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/mainBuildings.svg" />
+        <img class="active-icon" src="./assets/icons/mainBuildingsActive.svg" />
+      </div>
+      <p>المباني</p>
+    </a>
+    <!-- ====================== -->
+    <a class="item" routerLink="sub-units" routerLinkActive="active"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer  ">
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/subUnits.svg" />
+        <img class="active-icon" src="./assets/icons/subUnitsActive.svg" />
+      </div>
+      <p>المباني الفرعية</p>
+    </a>
+    <!-- ====================== -->
+    <a class="item" routerLink="malfunctions-types" routerLinkActive="active"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer">
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/malfunctionTypes.svg" />
+        <img class="active-icon" src="./assets/icons/malfunctionTypesActive.svg" />
+      </div>
+      <p>أنواع الأعطال</p>
+    </a>
+    <!-- ====================== -->
+
+    <a class="item" routerLink="maintenace-requests" routerLinkActive="active">
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/maintenanceRequests.svg" />
+        <img class="active-icon" src="./assets/icons/maintenanceRequestsActive.svg" />
+      </div>
+      <p>طلبات الصيانة</p>
+
+    </a>
+  </div>
+</div>

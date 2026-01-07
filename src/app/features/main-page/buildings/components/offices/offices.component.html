@@ -1,0 +1,271 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'إدارة الأصول'" [imageTitle]="'./assets/icons/subUnitsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: 'الغرف', routerLink: '/buildings/offices' }
+  ]" [isFilte]="true" [inputPlaceholder]="'ابحث باسم الغرفة...'" [buttonText]="'اضافة غرفة'" [saveBtnText]="'إضافة'"
+  [isShowFilter]="!showBreadcrumb" [isShowAddEdite]="false" (addButton)="openAdd()"
+  (valueSearch)="filterBySearchText($event)" (onFilterClick)="showDialog()"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- LOADING STATE -->
+<!-- ============================= -->
+<div *ngIf="isLoading" class="loading-container">
+  <p>جاري التحميل...</p>
+</div>
+
+<!-- ============================= -->
+<!-- TABLE LIST -->
+<!-- ============================= -->
+<app-list *ngIf="!isLoading" [cols]="cols" [isSearching]="isSearchingResult" [values]="values"
+  [totalPageCount]="totalPageCount" [withControles]="true" (editEvent)="openEdit($event)"
+  (deleteEvent)="confirmDelete($event)" (rowsCountChanged)="getAllBuildingOffices($event)"
+  [noData]="!showBreadcrumb"></app-list>
+
+<!-- ============================= -->
+<!-- SEARCH FILTER DIALOG -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" alt="Filter Icon" />
+      <p>تصفية الغرف</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="search()">
+      <!-- Building Selection -->
+      <div class="input-field">
+        <label for="building-filter">المبنى</label>
+        <div class="dropdown-container">
+          <p-dropdown id="building-filter" class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder="اختر المبنى" formControlName="buildingId"
+            [options]="buildingLookup" [filter]="true" filterBy="name"
+            (onChange)="onBuildingChangeForSearch($event)"></p-dropdown>
+        </div>
+      </div>
+
+      <!-- Building Sub Unit Selection -->
+      <!-- <div class="input-field">
+        <label for="subunit-filter">المبنى الفرعي</label>
+        <div class="dropdown-container">
+          <p-dropdown id="subunit-filter" class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background: 'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder="اختر المبنى الفرعي" formControlName="buildingSubUnitId"
+            [options]="buildingSubUnitLookup" [filter]="true" filterBy="name"
+            [disabled]="!searchForm.get('buildingId')?.value || isLoadingSubUnits"
+            (onChange)="onSubUnitChangeForSearch($event)"></p-dropdown>
+          <small *ngIf="isLoadingSubUnits" class="loading-text">جاري التحميل...</small>
+        </div>
+      </div> -->
+
+      <!-- Floor Selection -->
+      <div class="input-field">
+        <label for="floor-filter">الطابق</label>
+        <div class="dropdown-container">
+          <p-dropdown id="floor-filter" class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background: 'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder="اختر الطابق" formControlName="floorId"
+            [options]="floorLookup" [filter]="true" filterBy="name"
+            [disabled]="!searchForm.get('buildingSubUnitId')?.value || isLoadingFloors"
+            (onChange)="onFloorChangeForSearch($event)"></p-dropdown>
+          <small *ngIf="isLoadingFloors" class="loading-text">جاري التحميل...</small>
+        </div>
+      </div>
+
+      <!-- Office Selection -->
+      <div class="input-field">
+        <label for="office-filter">الغرفة</label>
+        <div class="dropdown-container">
+          <p-dropdown id="office-filter" class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background: 'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder="اختر الغرفة" formControlName="officeId"
+            [options]="buildingOfficeLookup" [filter]="true" filterBy="name"
+            [disabled]="!searchForm.get('floorId')?.value"></p-dropdown>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="buttons-content">
+        <button class="buttons" type="submit" [disabled]="isLoading">
+          تصفية
+        </button>
+        <button class="buttons-white" type="button" (click)="hideDialog()" [disabled]="isLoading">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- ADD & EDIT POPUP -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/subUnitsActive.svg" alt="Office Icon" />
+      <p>
+        {{ isEditMode ? "تعديل الغرفة" : "إضافة غرفة" }}
+      </p>
+    </div>
+    <form [formGroup]="buildingOfficeForm" (ngSubmit)="OnSubmitData()">
+      <!-- Office Number -->
+      <div class="input-field">
+        <label for="office-number">
+          رقم الغرفة
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" alt="Name Icon" />
+          <input id="office-number" formControlName="officeNumber" type="text" placeholder="أدخل رقم الغرفة  "
+            [class.error]="formControls['officeNumber'].invalid && formControls['officeNumber'].touched" />
+        </div>
+        <small *ngIf="formControls['officeNumber'].invalid && formControls['officeNumber'].touched"
+          class="error-message">
+          برجاء إدخال رقم الغرفة
+        </small>
+      </div>
+
+      <!-- Office Name -->
+      <div class="input-field">
+        <label for="office-name">
+          اسم الغرفة
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" alt="Name Icon" />
+          <input id="office-name" formControlName="name" type="text" placeholder="أدخل اسم الغرفة  "
+            [class.error]="formControls['name'].invalid && formControls['name'].touched" />
+        </div>
+        <small *ngIf="formControls['name'].invalid && formControls['name'].touched" class="error-message">
+          برجاء إدخال اسم الغرفة
+        </small>
+      </div>
+
+      <!-- Building Selection -->
+      <div class="input-field">
+        <label for="building-select">
+          المبنى الرئيسي
+          <span>*</span>
+        </label>
+        <div class="dropdown-container">
+          <p-dropdown id="building-select" class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder="اختر المبنى الرئيسي" formControlName="buildingId"
+            [options]="buildingLookup" [filter]="true" filterBy="name" (onChange)="onBuildingChange($event)"
+            [class.error]="formControls['buildingId'].invalid && formControls['buildingId'].touched"></p-dropdown>
+        </div>
+        <small *ngIf="formControls['buildingId'].invalid && formControls['buildingId'].touched" class="error-message">
+          برجاء اختيار المبنى الرئيسي
+        </small>
+      </div>
+
+      <!-- Building Sub Unit Selection -->
+      <!-- <div class="input-field">
+        <label for="subunit-select">
+          المبنى الفرعي
+          <span>*</span>
+        </label>
+        <div class="dropdown-container">
+          <p-dropdown id="subunit-select" class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder="اختر المبنى الفرعي" formControlName="buildingSubUnitId"
+            [options]="buildingSubUnitLookup" [filter]="true" filterBy="name"
+            [disabled]="!buildingOfficeForm.get('buildingId')?.value || isLoadingSubUnits"
+            (onChange)="onSubUnitChange($event)"
+            [class.error]="formControls['buildingSubUnitId'].invalid && formControls['buildingSubUnitId'].touched"></p-dropdown>
+          <small *ngIf="isLoadingSubUnits" class="loading-text">جاري التحميل...</small>
+        </div>
+        <small *ngIf="formControls['buildingSubUnitId'].invalid && formControls['buildingSubUnitId'].touched"
+          class="error-message">
+          برجاء اختيار المبنى الفرعي
+        </small>
+      </div> -->
+
+      <!-- Floor Selection -->
+      <div class="input-field">
+        <label for="floor-select">
+          الطابق
+        </label>
+        <div class="dropdown-container">
+          <p-dropdown id="floor-select" class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder="اختر الطابق" formControlName="floorId"
+            [options]="floorLookup" [filter]="true" filterBy="name"
+            [disabled]="!buildingOfficeForm.get('buildingSubUnitId')?.value || isLoadingFloors"
+            [class.error]="formControls['floorId'].invalid && formControls['floorId'].touched"></p-dropdown>
+          <small *ngIf="isLoadingFloors" class="loading-text">جاري التحميل...</small>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="buttons-content">
+        <button class="buttons" type="submit" [disabled]="buildingOfficeForm.invalid || isLoading">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button class="buttons-white" type="button" (click)="onCloseAddEditePopup()" [disabled]="isLoading">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- NO DATA STATE -->
+<!-- ============================= -->
+<app-no-data-yet *ngIf="values.length === 0 && !isSearchingResult && !isLoading" (addNewEvent)="openAdd()"
+  [noDataElements]="{
+    noDataImg: './assets/images/no-data-search.png',
+    noDataText: 'يبدو أنك لم تقم بإضافة أي غرفة بعد، ستظهر الغرف المضافة هنا... يمكنك البدء بإضافة أول غرفة',
+    noDataButtonText: 'إضافة غرفة جديد'
+  }"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS -->
+<!-- ============================= -->
+
+<!-- SUCCESS ALERT -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض الغرف'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+
+<!-- WARNING ALERT -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+
+<!-- CONFIRM ALERT -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف الغرفة؟ سيتم حذفه نهائياً من قائمة الغرف',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+
+<!-- ERROR ALERT -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

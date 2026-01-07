@@ -1,0 +1,119 @@
+<!-- Interactive Map Dashboard -->
+<div class="map-dashboard">
+
+  <!-- Breadcrumb -->
+  <app-bread-crumb class="bg-white" [title]="'المتابعة المكانية'"
+    [imageTitle]="'./assets/icons/mainBuildingsActive.svg'" [subTitles]="[
+      { name: 'الرئيسية', routerLink: '/' },
+      { name: 'المتابعة المكانية', routerLink: '/map' }
+    ]">
+  </app-bread-crumb>
+
+  <!-- Controls Section - Above Map -->
+  <div class="controls-section" [formGroup]="filterForm">
+    <!-- Building Filter Dropdown -->
+    <div class="filter-dropdown">
+      <p-dropdown class="w-full min-w-96" [styleClass]="'w-full bg-filterBtnBg p-3 min-w-96'" [style]="{
+          background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+          'background-color': '#f6f6f6',
+          'padding-right': '35px'
+        }" optionLabel="name" optionValue="id" placeholder="المبني" formControlName="buildingId"
+        [options]="buildingsList" [filter]="true" filterBy="name" [showClear]="true"
+        (onChange)="onBuildingChange($event)">
+      </p-dropdown>
+    </div>
+
+    <!-- Reset Button -->
+    <button class="reset-btn" (click)="resetFilters()" type="button" title="إعادة ضبط التصفية">
+      <i class="fas fa-redo"></i>
+      إعادة ضبط
+    </button>
+  </div>
+
+  <!-- Results Info -->
+  <div class="results-info" *ngIf="!isLoading">
+    <span class="results-count">
+      عرض {{ filteredMapData.length }} من أصل {{ allMapData.length }} موقع
+    </span>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="loading-indicator" *ngIf="isLoading">
+    <i class="fas fa-spinner fa-spin"></i>
+    <span>جاري تحميل المواقع...</span>
+  </div>
+
+  <!-- Map Container -->
+  <div class="map-container">
+    <!-- Google Map -->
+    <google-map [mapTypeId]="hybrid" width="100%" height="100%" [center]="center" [zoom]="zoom" [dir]="'rtl'"
+      class="google-map">
+      <!-- Map Markers -->
+      <map-marker [dir]="'rtl'" *ngFor="let markerPosition of markerPositions; trackBy: trackByPosition"
+        [position]="markerPosition" [options]="markerOptions" #markerRef="mapMarker"
+        (mapClick)="openInfoWindow(markerPosition, markerRef)"></map-marker>
+
+      <!-- Info Window -->
+      <map-info-window #infoWindow>
+        <div *ngIf="selectedProject && mainBuildingData" class="info-window">
+          <div class="info-header">
+            <h4>{{ mainBuildingData?.name || 'اسم المبني غير محدد' }}</h4>
+          </div>
+
+          <div class="info-content">
+            <div class="info-item">
+              <span class="label">الموقع الجغرافي:</span>
+              <span class="value">{{ mainBuildingData?.location || 'غير محدد' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">المباني :</span>
+              <span class="value">{{ mainBuildingData?.subUnits || 'غير محدد' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">إجمالي الأصول:</span>
+              <span class="value">{{ mainBuildingData?.assetsCount || 'غير محدد' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">إجمالي الطلبات:</span>
+              <span class="value">{{ mainBuildingData?.requestsCount || 'غير محدد' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">عقد الصيانة الاستشاري:</span>
+              <span class="value">{{ mainBuildingData?.supervisorProject || 'غير محدد' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">عقد الصيانة التنفيذي:</span>
+              <span class="value">{{ mainBuildingData?.executableProject || 'غير محدد' }}</span>
+            </div>
+          </div>
+
+          <div class="info-actions">
+            <button class="details-btn" (click)="viewBuildingDetails()">
+              <i class="fas fa-eye"></i>
+              عرض التفاصيل
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading state for info window -->
+        <div *ngIf="selectedProject && !mainBuildingData" class="info-loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <span>جاري تحميل البيانات...</span>
+        </div>
+      </map-info-window>
+    </google-map>
+
+    <!-- No Results Message -->
+    <div class="no-results" *ngIf="!isLoading && filteredMapData.length === 0">
+      <div class="no-results-content">
+        <i class="fas fa-map-marker-alt"></i>
+        <h3>لا توجد مواقع مطابقة</h3>
+        <p>لم يتم العثور على أي مواقع تطابق معايير البحث المحددة</p>
+        <button class="reset-search-btn" (click)="resetFilters()">
+          إعادة ضبط البحث
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

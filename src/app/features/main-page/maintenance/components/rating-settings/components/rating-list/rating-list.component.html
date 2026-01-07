@@ -1,0 +1,138 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'إدارة الأصول'"
+  [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: ' ادارة الصيانة', routerLink: '/maintenance' },
+    { name: 'اعدادات مؤشرات التقييم', routerLink: '/maintenance/rating-settings' }
+  ]"
+  [inputPlaceholder]="'ابحث بالأسم .....'"
+  [buttonText]="'اضافة مؤشر تقييم'"
+
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+
+  (valueSearch)="filterBySearchText($event)"
+  (addButton)="routeToAddPage()"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- SEARCH DIALOG  -->
+<!-- ============================= -->
+<!-- <div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية عقود الصيانة</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="OnSubmitData()">
+   
+      <div class="addForm input-field">
+
+        <div class="narrowCols">
+          <label for=""> نوع المشروع</label>
+          <p-dropdown class="w-full"
+          (onChange)="getOfficesByProjectType($event.value)" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+        background:
+          'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+        'background-color': '#f6f6f6',
+        'padding-right': '35px'
+      }" optionLabel="name" optionValue="id" placeholder="اختر نوع المشروع" formControlName="ProjectTypeId"
+            [options]="projectTypeList"></p-dropdown>
+        </div>
+
+        <div class="narrowCols">
+          <label for=""> الغرف</label>
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'"
+            (onChange)="getAllProjectManagersByOfficeId($event.value)" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder="اختر المقاول التابع له المشروع "
+            formControlName="OfficeId" [options]="officeList"></p-dropdown>
+        </div>
+      </div>
+     
+
+  
+      <div class="addForm input-field">
+        <div class="narrowCols">
+          <label for="">المدير</label>
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="fullName" optionValue="id" placeholder=" اختر المدير التابع له المشروع"
+            formControlName="ProjectManagerId" [options]="projectManagerList"></p-dropdown>
+        </div>
+      </div>
+     
+
+      <div class="buttons-content mt-3">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div> -->
+
+<!-- ======================================================== -->
+<!-- TABEL LIST -->
+<!-- ======================================================== -->
+
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values"
+  [totalPageCount]="totalPageCount" [withControles]="true" (editEvent)="openEdit($event)"
+  (deleteEvent)="deleteSurvey($event)" (rowsCountChanged)="getData($event)" [copy]="true" (copyLink)="copyLink($event)"
+  [noData]="showBreadcrumb ? false : true"></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" (addNewEvent)="routeToAddPage()" [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم تقم بإضافة أي  مؤشر تقييم بعد، ستظهر مؤشرات التقييم المضافة هنا... يمكنك البدء بإضافة أول مؤشر تقييم',
+  noDataButtonText: 'مؤشر تقييم جديد',
+  }"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض عقود الصيانة '
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف مؤشر التقييم؟ سيتم حذفه نهائيًا من قائمة مؤشرات التقييم',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM HARD DELETE (when survey has answers) -->
+<app-sweet-alert-message *ngIf="alertConfirmHardDelete" [data]="{
+    type: 'confirm',
+    text: 'هذا الاستبيان لديه إجابات، هل أنت متأكد أنك تريد حذفه؟ سيتم حذف جميع الإجابات المرتبطة به',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmHardDeleteFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

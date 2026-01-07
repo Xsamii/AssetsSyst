@@ -1,0 +1,242 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="' القطع'"
+  [imageTitle]="'./assets/icons/PiecesActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/inventory/pieces' },
+    { name: 'المخزون  ', routerLink: '/inventory/pieces' },
+    { name: 'القطع ', routerLink: '/inventory/pieces' }
+  ]"
+  [isFilte]="true"
+  [inputPlaceholder]="'ابحث بالرقم، اسم القطعة، الكود، الكمية...'"
+  [buttonText]="'قطعة جديدة'"
+  [saveBtnText]="'إضافة'"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [isShowAddEdite]="false"
+  (addButton)="openAdd()"
+  (valueSearch)="filterBySearchTesxt($event)"
+  (onFilterClick)="showDialog()"
+  [showAddButton]="userRole == 1 || userRole == 2"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- SEARCH DIALOG  -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية المشاريع</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="OnSubmitData()">
+      <!-- First Row -->
+      <div class="addForm input-field">
+        <div class="narrowCols">
+          <label for=""> التصنيف</label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/types-icon-fill.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder=" اختر التصنيف  "
+            formControlName="classificationId"
+            [options]="pieceCategoryList"
+          ></p-dropdown>
+        </div>
+      </div>
+      <!-- End of First Row -->
+      <!-- Second Row -->
+      <div class="addForm input-field">
+        <div class="narrowCols">
+          <label for=""> وحدة القياس</label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر وحدة القياس"
+            formControlName="inventoryItemUnitId"
+            [options]="pieceMeasuringUnitList"
+          ></p-dropdown>
+        </div>
+      </div>
+      <!-- End of Second Row -->
+
+      <div class="buttons-content mt-3">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- RECEIVE QUANTITY DIALOG  -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayRecieveDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/PiecesActive.svg" />
+      <p class="receive-dialog-title">استلام كمية جديدة</p>
+    </div>
+    <form [formGroup]="newQuantityForm" (ngSubmit)="addNewQuantity()">
+      <!-- First Row -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col narrowCols">
+          <label class="themed-label font-medium">
+            الكمية<span class="error-text">*</span>
+          </label>
+          <input
+            class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none"
+            type="text"
+            placeholder=" أدخل الكمية"
+            formControlName="quantity"
+            style="
+              background: url('./assets/icons/info-icon.svg')
+                no-repeat right 15px center;
+              background-color: #f6f6f6;
+              padding-right: 35px;
+            "
+          />
+          <small
+            class="default-attention"
+            *ngIf="( newQuantityForm.controls['quantity'].errors?.['required'] && (newQuantityForm.controls['quantity'].dirty || newQuantityForm.controls['quantity'].touched))"
+            >اسم المشروع مطلوب
+          </small>
+        </div>
+
+        <div class="flex flex-col narrowCols">
+          <label class="themed-label font-medium">
+            ملاحظات
+          </label>
+          <input
+            class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none"
+            type="text"
+            placeholder="أدخل ملاحظاتك إن وُجدت"
+            formControlName="description"
+            style="
+              background: url('./assets/icons/notes-icon.svg')
+                no-repeat right 15px center;
+              background-color: #f6f6f6;
+              padding-right: 35px;
+            "
+          />
+        </div>
+      </div>
+      <!-- END OF FIRST ROW -->
+
+      <!-- SECOND ROW -->
+      <div class="mt-4">
+        <label class="themed-label font-medium">
+          مرفقات
+        </label>
+        <app-uploadFile
+          [uploadedFiles]="uploadedFiles"
+          [editMode]="false"
+          [showTitle]="false"
+          [currentId]="itemId"
+          [routeName]="'pieces'"
+        ></app-uploadFile>
+      </div>
+      <!-- End of Second Row -->
+
+      <div class="buttons-content mt-3">
+        <button class="buttons" type="submit">إضافة</button>
+        <button class="buttons-white" type="button" (click)="closeNeqQuantityDialog()">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- TABEL LIST -->
+<!-- ======================================================== -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  [showPiecesActionMenu]="true"
+  (recieveRequest)="openRecieve($event)"
+  (showRequest)="openView($event)"
+  (editEvent)="openEdit($event)"
+  (deleteEvent)="deleteProject($event)"
+  (rowsCountChanged)="getData($event)"
+  [noData]="showBreadcrumb ? false : true"
+></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  (addNewEvent)="openAdd()"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: [1,2].includes(userRole)? 'يبدو أنك لم تقم بإضافة أي قطعة بعد، ستظهر القطع المضافة هنا... يمكنك البدء بإضافة أول قطعة' : 'لا يوجد أي مشاريع مضافة  ستظهر المشاريع المضافة هنا...',
+  noDataButtonText: [1,2].includes(userRole)?'قطعة جديدة': '',
+  }"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض القطع '
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف القطعة؟ سيتم حذفه نهائيًا من قائمة القطع',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

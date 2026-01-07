@@ -1,0 +1,208 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<div class="bread-crumb">
+  <div class="right">
+    <div class="title">
+      <img src="./assets/icons/maintenanceRequestsActive.svg" />
+      <h3>تفاصيل الطلب</h3>
+      <span [class]="'statusColor_' + visitRequestStatusId">{{
+        visitRequestStatusId == 1
+          ? "لم يتم التخصيص"
+          : visitRequestStatusId == 2
+          ? "تم التخصيص"
+          : visitRequestStatusId == 3
+          ? "غير مكتمل"
+          : visitRequestStatusId == 4
+          ? "مكتملة"
+          : visitRequestStatusId == 5
+          ? "تم الرفض"
+          : ""
+      }}</span>
+    </div>
+    <div class="links">
+      <a routerLink='/projects'>الرئيسية</a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a routerLink="/projects">إدارة المشاريع</a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a routerLink="/projects/visit-requests">طلبات الزيارة </a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a *ngIf="userRole !== userTypes.Admin" routerLink="/projects/visit-requests/outgoing-requests">
+        الطلبات الصادرة
+      </a>
+      <a *ngIf="userRole === userTypes.Admin"  routerLink="/projects/visit-requests">
+        الطلبات
+      </a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a routerLink="">تفاصيل الطلب </a>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- Request Details -->
+<!-- =================================================== -->
+<div class="request-details-content">
+  <div class="title">
+    <img src="./assets/icons/maintenanceRequestsActive.svg" />
+    <h3>تفاصيل الطلب</h3>
+  </div>
+
+  <div class="box">
+    <img src="./assets/icons/pen-ruler-icon.svg" />
+    <p>
+      المشروع:
+      <span> {{ requestData["projectName"] }}</span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/check-list.svg" />
+    <p>
+      المهمة:
+      <span> {{ requestData["projectTaskName"] }}</span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/malfunction-outline.svg" />
+    <p>
+      نوع الطلب:
+      <span> {{ requestData["visitRequestTypeName"] }}</span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/locationIcon.svg" />
+    <p>
+      عنوان الطلب:
+      <span> {{ requestData["requestAdress"] }}</span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/calender.svg" />
+    <p>
+      تاريخ الزيارة: <span> {{ requestData["visitDateTime"] | date }}</span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/time.svg" />
+    <p>
+      وقت الزيارة:
+      <span> {{ requestData["visitDateTime"] | date : "a h:mm  - EEEE" }}</span>
+    </p>
+  </div>
+  <div class="box" *ngIf="visitRequestStatusId != 1">
+    <img src="./assets/icons/userIcon.svg" />
+    <p>
+      الموظف المخصص له الطلب:
+      <span> {{ requestData["userAssignFullName"] }}</span>
+    </p>
+  </div>
+  <div class="box" *ngIf="visitRequestStatusId != 1">
+    <img src="./assets/icons/notes-icon.svg" />
+    <p>
+      ملاحظات تخصيص الطلب:
+      <span> {{ requestData["description"] }}</span>
+    </p>
+  </div>
+  <div
+    class="box"
+    *ngIf="visitRequestStatusId == 3 || visitRequestStatusId == 4"
+  >
+    <img src="./assets/icons/notes-icon.svg" />
+    <p>
+      ملاحظات الزيارة:
+      <span> {{ requestData["descriptionUserAssignOrRefuse"] }}</span>
+    </p>
+  </div>
+</div>
+<!-- ================================== -->
+<!-- FILES -->
+<!-- ================================== -->
+<!-- <div class="request-details-content">
+  <div class="title">
+    <img src="./assets/icons/fileUploadedIcon.svg" />
+    <h3>مرفقات الطلب</h3>
+  </div>
+  <div class="box" *ngFor="let files of requestData['updateFiles']">
+    <img
+      style="width: 25px; height: 25px"
+      src="./assets/icons/fileUploadedIcon.svg"
+    />
+    <a [href]="files.fullPath" target="_blank">
+      <p>
+        {{ files.originalName }}:
+        <span>
+          {{
+            files.fileSize
+              ? files.fileSize + "ميجا بايت"
+              : "حجم الملف غير موجود"
+          }}
+        </span>
+      </p>
+    </a>
+  </div>
+  <div *ngIf="requestData['updateFiles'].length == 0">
+    <h2>لا يوجد مرفقات...</h2>
+  </div>
+</div> -->
+
+<!-- ================================== -->
+<!-- FILES -->
+<!-- ================================== -->
+<div class="request-details-content">
+  <div class="title">
+    <img src="./assets/icons/fileUploadedIcon.svg" />
+    <h3>مرفقات الطلب</h3>
+  </div>
+  <ng-container *ngFor="let files of requestData['updateFiles']">
+    <div class="box" *ngIf="files.attachTypeId == null">
+      <img
+        style="width: 25px; height: 25px"
+        src="./assets/icons/fileUploadedIcon.svg"
+      />
+      <a [href]="files.fullPath" target="_blank">
+        <p>
+          {{ files.originalName }}:
+          <bdi>
+            {{
+              files.fileSize
+                ? files.fileSize + "ميجا بايت"
+                : "حجم الملف غير موجود"
+            }}
+          </bdi>
+        </p>
+      </a>
+    </div>
+  </ng-container>
+</div>
+<!-- ============================ -->
+<!-- مرفقات الزياره -->
+<!-- ============================ -->
+<div
+  class="request-details-content"
+  *ngIf="visitRequestStatusId == 3 || visitRequestStatusId == 4"
+>
+  <div class="title">
+    <img src="./assets/icons/fileUploadedIcon.svg" />
+    <h3>مرفقات الزيارة</h3>
+  </div>
+  <ng-container *ngFor="let files of requestData['updateFiles']">
+    <div class="box" *ngIf="files.attachTypeId == 1">
+      <img
+        style="width: 25px; height: 25px"
+        src="./assets/icons/fileUploadedIcon.svg"
+      />
+      <a [href]="files.fullPath" target="_blank">
+        <p>
+          {{ files.originalName }}:
+          <bdi>
+            {{
+              files.fileSize
+                ? files.fileSize + "ميجا بايت"
+                : "حجم الملف غير موجود"
+            }}
+          </bdi>
+        </p>
+      </a>
+    </div>
+  </ng-container>
+</div>

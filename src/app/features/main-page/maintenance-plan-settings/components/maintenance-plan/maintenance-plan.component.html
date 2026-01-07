@@ -1,0 +1,88 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="' خطة الصيانة'"
+  [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: ' ادارة الصيانة', routerLink: '/maintenance' },
+    { name: ' خطة الصيانة', routerLink: '/maintenance/maintenace-plan' }
+  ]"
+  [inputPlaceholder]="'ابحث بالأسم او النوع.....'"
+  [buttonText]="'اضافة خطة صيانة'"
+
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+
+  (valueSearch)="filterBySearchText($event)"
+  (addButton)="routeToAddPage()"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  (rowsCountChanged)="getAllMaintenancePlan($event)"
+  [noData]="showBreadcrumb ? false : true"
+  (editEvent)="openEdit($event)"
+  (deleteEvent)="deleteMaintenancePlan($event)"
+
+  ></app-list>
+
+
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText:  'لا  يوجد أي خطة صيانة مضافة ستظهر خطط الصيانة المضافة هنا...',
+  noDataButtonText:  ' خطة صيانة جديدة',
+  }"
+  (addNewEvent)="routeToAddPage()"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- Success -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض خطة الصيانة'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- error -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg
+      ? alertErrorMsg
+      : 'يبدو أنه قد حدث خطأ ما، من فضلك أعد المحاولة مجددًا',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف خطة الصيانة؟ سيتم حذفه نهائيًا من قائمة خطط الصيانة',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>

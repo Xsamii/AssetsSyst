@@ -1,0 +1,173 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'إدارة النظام'"
+  [imageTitle]="'./assets/icons/malfunctionTypesActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة النظام', routerLink: '/settings' },
+    { name: 'بنود تقيم الصيانة', routerLink: '/settings/evaluation-terms' }
+  ]"
+  [isFilte]="false"
+  [inputPlaceholder]="'ابحث باسم عقد الصيانة...'"
+  [buttonText]="'بند تقييم جديد  '"
+  [saveBtnText]="'إضافة'"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [isShowAddEdite]="false"
+  (addButton)="openAdd()"
+  (valueSearch)="filterBySearchTesxt($event)"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  (editEvent)="openEdit($event)"
+  (deleteEvent)="confirmDelete($event)"
+  (rowsCountChanged)="getAllEvaluationTerms($event)"
+  [noData]="showBreadcrumb ? false : true"
+></app-list>
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/malfunctionTypesActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل البند" : "إضافة بند جديد" }}
+      </p>
+    </div>
+    <form [formGroup]="evaluationTermsForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name"
+          >اسم البند
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input
+            formControlName="name"
+            id="name"
+            type="text"
+            placeholder="أدخل اسم البند"
+          />
+        </div>
+        <small *ngIf="formControls.name.invalid && formControls.name.touched">
+          برجاء إدخال اسم  البند
+        </small>
+      </div>
+
+
+      <div class="input-field">
+  <label for=""
+    >حدد النوع
+    <span>*</span>
+  </label>
+  <div class="flex">
+    <div class="flex items-center">
+      <p-radioButton
+        name="typeId"
+        value="{{evaluationTermsEnum.maintenanceContract}}"
+        formControlName="typeId"
+      ></p-radioButton>
+      <label class="mx-2" style="margin-bottom: 0 !important">
+        عقد صيانة</label
+      >
+    </div>
+    <div class="flex items-center">
+      <p-radioButton
+        name="typeId"
+        value="{{evaluationTermsEnum.maintenanceRequest}}"
+        formControlName="typeId"
+      ></p-radioButton>
+      <label class="mx-2" style="margin-bottom: 0 !important">طلب صيانة</label>
+    </div>
+  </div>
+</div>
+
+
+
+
+      <div class="buttons-content mt-4">
+        <button
+          [disabled]="evaluationTermsForm.invalid"
+          class="buttons"
+          type="submit"
+        >
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button
+          class="buttons-white"
+          type="button"
+          (click)="onCloseAddEditePopup()"
+        >
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ======================================================== -->
+<!-- NO DATA YET... -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  (addNewEvent)="openAdd()"
+  [noDataElements]="{
+noDataImg: './assets/images/no-data-search.png',
+noDataText: 'يبدو أنك لم تقم بإضافة أي بند تقييم  بعد، ستظهر بنود التقييم المضافة  هنا... يمكنك البدء بإضافة أول بند تقييم',
+noDataButtonText: ' إضافة بند تقييم جديد',
+}"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض بنود التقييم '
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف بند التقييم؟ سيتم حذفه نهائيًا من قائمة بنود التقييم',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

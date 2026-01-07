@@ -1,0 +1,58 @@
+.form-container {
+  border: 0.5px solid #7070702e;
+  // border-radius: 8px;
+  // padding: 15px;
+  // width: 100%;
+}
+
+.addForm {
+  @apply grid
+    grid-cols-4
+     gap-8;
+  .narrowCols {
+    @apply 2xl:col-span-2 xl:col-span-2 md:col-span-4 col-span-4;
+  }
+}
+:host ::ng-deep .p-placeholder {
+  @apply text-gray-400;
+}
+.header-title {
+  color: #125d89;
+}
+:host ::ng-deep .p-menuitem-text {
+  color: #797f8f;
+  padding: 10px;
+}
+:host ::ng-deep .p-inputtext {
+  @apply bg-filterBtnBg rounded-r-xl p-3 pr-0;
+  // color: #797f8f;
+}
+:host ::ng-deep .p-element.p-dropdown-item {
+  @apply px-4 py-4;
+}
+:host ::ng-deep .p-button-icon-only {
+  color: #125d89;
+}
+:host ::ng-deep .p-calendar.p-calendar-w-btn .p-inputtext {
+  order: 2;
+}
+:host ::ng-deep .p-calendar.p-calendar-w-btn .p-datepicker-trigger {
+  order: 1;
+}
+
+// :host ::ng-deep .p-component {
+//   width: 100%;
+// }
+:host ::ng-deep .p-dropdown-items {
+  width: 100%;
+  background-color: white;
+}
+small {
+  color: #fe4035;
+}
+span {
+  color: #fe4035;
+}
+.field-icon {
+  background: #f6f6f6;
+}

@@ -1,0 +1,23 @@
+.custom-radio input {
+  display: none;
+}
+
+.custom-radio .radio-box {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #bfdbfe;
+  border-radius: 2px; 
+  display: inline-block;
+  margin-left: 8px;
+  vertical-align: middle;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.custom-radio input:checked + .radio-box {
+  background-color: #047d7a; 
+  border-color: #047d7a;
+}
+.fa-regular.fa-star {
+  font-weight: 200 !important;
+}

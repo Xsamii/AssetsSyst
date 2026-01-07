@@ -1,0 +1,100 @@
+<section class="flex justify-center bg-white py-10">
+    <div class="w-[75%]">
+        <div class="image mb-8">
+            <img src="assets/images/survey.png" />
+        </div>
+        <div class="bg-[#047d7a] py-3 px-8 rounded-tl-3xl rounded-tr-3xl"></div>
+
+        <div class="head border-b border-blue-200 py-4 px-7 mb-3">
+            <h1 class="text-[40px] font-medium ">{{survey.formName}}</h1>
+            <p class="text-xl py-2">مرحباً, يُرجى تخصيص بضع دقائق من وقتك لملء الاستبيان التالي :</p>
+        </div>
+
+        <div *ngFor="let category of survey.surveycategories" class="category-box">
+
+            <h2 class="bg-[#047d7a] text-white text-2xl mb-3 py-2 px-8 rounded-tl-3xl rounded-tr-3xl">
+                {{category.categoryName}}</h2>
+
+            <div *ngFor="let q of category.surveyQuestions; let i = index"
+                class="question-box px-8 py-5 my-4 border border-blue-200 rounded-3xl">
+
+                <p class="font-semibold text-lg pt-1 pb-2">{{ i + 1 }}. {{ q.questionName }}</p>
+
+                <ng-container *ngIf="q.typeId === surveyEnum.Choice">
+                    <div *ngFor="let ans of q.surveyQuestions">
+                        <label class="custom-radio cursor-pointer">
+                            <input type="radio" name="q{{q.id}}" [(ngModel)]="answers[q.id].answerId"
+                                [value]="ans.id" />
+                            <span class="radio-box my-2"></span>
+                            {{ ans.answerName }}
+                        </label>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="q.typeId === surveyEnum.Text">
+                    <input type="text" class="border p-2 mt-1 w-full" [(ngModel)]="answers[q.id].note"
+                        placeholder="اكتب إجابتك هنا..." />
+                </ng-container>
+
+                <ng-container *ngIf="q.typeId === surveyEnum.Rating">
+                    <div class="flex gap-4 mt-1 px-6">
+                        <p class="px-5 py-2" *ngFor="let i of [1,2,3,4,5]">{{i}}</p>
+                    </div>
+                    <div class="flex gap-4 mt-1 px-6">
+                        <button *ngFor="let i of [1,2,3,4,5]" class="w-12 h-12 rounded-full border border-blue-200"
+                            [class.bg-[#047d7a]]="answers[q.id].rateAnswer === i"
+                            (click)="answers[q.id].rateAnswer = i">
+                        </button>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="q.typeId === surveyEnum.StarsRating">
+                    <div class="flex gap-4 px-6">
+                        <span *ngFor="let s of [1,2,3,4,5]" class="cursor-pointer text-5xl"
+                            (click)="answers[q.id].rateAnswer = s">
+                            <i [ngClass]="{
+                            'fa-regular fa-star': true,
+                            'text-[#047d7a] font-normal': s <= answers[q.id].rateAnswer,
+                            'text-[#bfdbfe] font-normal': s > answers[q.id].rateAnswer
+                            }"></i>
+                        </span>
+                    </div>
+                </ng-container>
+
+
+                <ng-container *ngIf="q.typeId === surveyEnum.BoolChoice">
+                    <div *ngFor="let ans of q.surveyQuestions">
+                        <label class="custom-radio cursor-pointer">
+                            <input type="radio" name="q{{q.id}}" [(ngModel)]="answers[q.id].answerId"
+                                [value]="ans.id" />
+                            <span class="radio-box my-2"></span>
+                            {{ ans.answerName }}
+                        </label>
+                    </div>
+                </ng-container>
+                
+            </div>
+        </div>
+
+        <button (click)="submitSurvey()" type="button" [disabled]="!isSurveyComplete()"
+            class="text-white text-lg bg-[#047d7a] py-2 px-5 my-2 rounded disabled:opacity-60 disabled:cursor-not-allowed">
+            حفظ
+        </button>
+
+    </div>
+</section>
+
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض مؤشرات التقييم'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

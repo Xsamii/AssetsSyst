@@ -1,0 +1,47 @@
+:host::ng-deep .p-datatable-thead>tr>th {
+    height: 46px !important;
+    background-color: #00999540 !important;
+    color: #121217 !important;
+    font-weight: 500 !important;
+    font-size: 18px !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    text-align: center !important;
+}
+:host::ng-deep .p-datatable-thead>tr>th:first-child {
+    border-bottom-right-radius: 12px !important;
+    text-align: right !important;
+}
+
+:host::ng-deep .p-datatable-thead>tr>th:last-child {
+    border-bottom-left-radius: 12px !important;
+}
+
+:host::ng-deep .p-datatable-tbody>tr>td {
+    background-color: white !important;
+    text-align: center !important;
+}
+
+
+:host ::ng-deep .custom-table thead tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0;
+}
+
+:host ::ng-deep .custom-table tbody tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr; 
+    gap: 1rem; 
+}
+
+:host ::ng-deep .custom-table th,
+:host ::ng-deep .custom-table td {
+    padding: 0.5rem 1rem !important;
+    text-align: center;
+}
+button[disabled] {
+  cursor: not-allowed;
+  opacity: .8;
+}

@@ -1,0 +1,152 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'التصنيفات'"
+  [imageTitle]="'./assets/icons/malfunctionTypesActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/projects' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    { name: 'المشاريع ', routerLink: '/projects/projects-menu' },
+    {
+      name: 'التصنيفات',
+      routerLink: '/projects/projects-menu/projects-categories'
+    }
+  ]"
+  [isFilte]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث بالرقم، اسم التصنيف...'"
+  [buttonText]="'تصنيف جديد'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  (valueSearch)="filterBySearchText($event)"
+  (addButton)="openAdd()"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  [noData]="showBreadcrumb ? false : true"
+  (rowsCountChanged)="getAllProjectGategories($event)"
+  (deleteEvent)="confirmDelete($event)"
+  (editEvent)="openEdit($event)"
+></app-list>
+<!--
+(editEvent)="openEdit($event)"
+(deleteEvent)="confirmDelete($event)" -->
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/malfunctionTypesActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل التصنيف " : " إضافة تصنيف" }}
+      </p>
+    </div>
+    <form [formGroup]="classificationForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name"
+          >اسم التصنيف
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input
+            formControlName="name"
+            id="name"
+            type="text"
+            placeholder="أدخل اسم التصنيف"
+          />
+        </div>
+        <!-- VALIDATIONS -->
+        <div
+          *ngIf="
+            formControls.name?.invalid &&
+            (formControls.name?.touched || formControls.name?.dirty)
+          "
+        >
+          <small
+            class="tw-text-red-500"
+            *ngIf="formControls.name?.errors?.['required'] || formControls.name?.errors?.['pattern']"
+          >
+            <i class="fa-solid fa-circle-xmark tw-ml-1"></i>
+            برجاء إدخال اسم التصنيف
+          </small>
+        </div>
+      </div>
+
+      <div class="buttons-content">
+        <button
+          [disabled]="classificationForm.invalid"
+          class="buttons"
+          type="submit"
+        >
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button
+          class="buttons-white"
+          type="button"
+          (click)="onCloseAddEditePopup()"
+        >
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  (addNewEvent)="openAdd()"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم تقم بإضافة أي تصنيف  بعد، ستظهر التصنيفات المضافة  هنا... يمكنك البدء بإضافة أول تصنيف',
+  noDataButtonText: 'تصنيف جديد ',
+  }"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  التصنيفات'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف التصنيف؟ سيتم حذفه نهائيًا من قائمة التصنيفات',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

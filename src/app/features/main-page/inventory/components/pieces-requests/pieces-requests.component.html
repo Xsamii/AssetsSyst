@@ -1,0 +1,194 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'طلبات القطع'"
+  [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/inventory/pieces' },
+    { name: 'المخزون', routerLink: '/inventory/pieces' },
+    { name: 'طلبات القطع', routerLink: '/buildings/parts-requests' }
+  ]"
+  [isFilte]="true"
+  [inputPlaceholder]="'ابحث، بالرقم، رقم الطلب......'"
+  [buttonText]=" 'طلب جديد' "
+
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  [showAddButton]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  (onFilterClick)="onShowFilterPopup()"
+  (valueSearch)="filterBySearchText($event)"
+  (addButton)="routeToAddPage()"
+></app-bread-crumb>
+
+
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  (rowsCountChanged)="getAllPartsRequest($event)"
+  [noData]="showBreadcrumb ? false : true"
+  (showRequest)="showRequest($event)"
+  (editEvent)="openEdit($event)"
+ [isPiecesRequestsView]="isParts"
+ (deleteEvent)="deletePartRequest($event)"
+ (approveEvent)="openAprrovelConfirem($event)"
+  ></app-list>
+
+
+
+
+<!-- ============================= -->
+<!-- POPUP FILTER-->
+<!-- ============================= -->
+
+<div class="overlay" *ngIf="showFilterPopup">
+    <div class="popup">
+      <div class="title">
+        <img src="./assets/icons/search-filter.svg" />
+        <p>تصفية طلبات القطع</p>
+      </div>
+
+      <form [formGroup]="filterForm">
+
+        <!-- ---------------------------------------------------------------- -->
+        <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+        <!-- ---------------------------------------------------------------- -->
+        <div class="two-inputs-fields">
+          <div class="input-field">
+            <label > حالة الطلب </label>
+            <div class="field-icon">
+              <img src="./assets/icons/info-icon.svg" />
+              <p-dropdown
+                class="w-full"
+                [styleClass]="'w-full bg-filterBtnBg'"
+                optionLabel="name"
+                optionValue="id"
+                formControlName="StatusId"
+                placeholder="اختر  حالة الطلب  "
+                [options]="partRequestsStatusLookup"
+              ></p-dropdown>
+            </div>
+          </div>
+          <div class="input-field">
+            <label for="main-building">  تاريخ الطلب </label>
+            <div class="field-icon">
+              <img src="./assets/icons/info-icon.svg" />
+              <input type="date" name="" id="" class="form-control" formControlName="CreatedAt">
+              <!-- <p-calendar [(ngModel)]="date" [showIcon]="true"  formControlName="PartsRequestsdate"></p-calendar> -->
+
+
+
+            </div>
+          </div>
+        </div>
+        <!-- =======================BUTTONS================== -->
+        <div class="buttons-content">
+          <button class="buttons" type="button" (click)="popupFilter()">
+            تصفية
+          </button>
+          <button
+            class="buttons-white"
+            type="button"
+            (click)="closePopupFilter()"
+          >
+            إعادة ضبط
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: ' يبدو أنك لم تقم بإضافة أي طلب قطع بعد، ستظهر الطلبات المضافة هنا... يمكنك البدء بإضافة أول طلب قطع ',
+  noDataButtonText:  'طلب  قطع جديد'
+  }"
+  [showButton]="false"
+  (addNewEvent)="routeToAddPage()"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- Success -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض طلبات القطع'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- error -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg
+      ? alertErrorMsg
+      : 'يبدو أنه قد حدث خطأ ما، من فضلك أعد المحاولة مجددًا',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف الطلب؟ سيتم حذفه نهائيًا من قائمة طلبات القطع',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+
+<!-- approve -->
+<app-sweet-alert-message
+  *ngIf="appovelVisible"
+  [data]="{
+    type: 'subSuccess',
+    text: 'هل أنت متأكد أنك تُريد الاعتماد ؟ '
+   ,
+    buttonText: 'اعتماد'
+  }"
+  (confirmMessage)="submitApprove($event)"
+></app-sweet-alert-message>
+
+<app-sweet-alert-message
+  *ngIf="approveSuccess"
+  [data]="{
+    type: 'success',
+    text: 'تم الاعتماد  بنجاح، يمكنك المتابعة'
+   ,
+    buttonText: 'عرض طلبات القطع'
+  }"
+  (confirmMessage)="goToParts($event)"
+></app-sweet-alert-message>
+<!-- error -->
+<app-sweet-alert-message
+  *ngIf="approveErrorVisible"
+  [data]="{
+    type: 'error',
+    text:approveErrorMassage
+
+      ? approveErrorMassage
+      : 'يبدو أنه قد حدث خطأ ما، من فضلك أعد المحاولة مجددًا',
+    buttonText: ''
+  }"
+  (confirmMessage)="approveErrorVisibleFun($event)"
+></app-sweet-alert-message>

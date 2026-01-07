@@ -1,0 +1,206 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="' إدارة الأصول'"
+  [imageTitle]="'./assets/icons/Simplificationactive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: ' الارشيف', routerLink: '/monthly-report/main-tab' },
+    { name: this.mainNameTab, routerLink: '/monthly-report/main-tab' },
+    { name: this.subname, routerLink: '/monthly-report/sub-tab' }
+  ]"
+  [buttonText]="' اضافة ملف جديد'"
+  [saveBtnText]="'إضافة'"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [isShowAddEdite]="false"
+  [isSearch]="false"
+  (addButton)="toggleAddFilePopup()"
+></app-bread-crumb>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 m-2 rounded-lg">
+  <div
+    *ngFor="let sub of subList"
+    class="bg-[color:var(--background-color)] rounded-lg p-5"
+  >
+    <!-- File Row -->
+    <div class="flex items-center justify-between mb-4 p-2">
+      <!-- File name + icon -->
+      <div
+        class="flex items-center gap-3 cursor-pointer"
+        (click)="openFolder(sub)"
+      >
+        <!-- PDF -->
+        <ng-container *ngIf="sub.originalName.includes('pdf')">
+          <img src="/assets/icons/pdf.svg" class="w-6 h-6" />
+        </ng-container>
+
+        <!-- Word -->
+        <ng-container
+          *ngIf="
+            sub.originalName.includes('.doc') ||
+            sub.originalName.includes('.txt') ||
+            sub.originalName.includes('.docx')
+          "
+        >
+          <img src="/assets/icons/wordTab.svg" class="w-6 h-6" />
+        </ng-container>
+
+        <!-- Excel -->
+        <ng-container *ngIf="sub.originalName.includes('.xlsx')">
+          <img src="/assets/icons/Excel.svg" class="w-6 h-6" />
+        </ng-container>
+        <!-- DEFAULT  -->
+        <ng-container
+          *ngIf="
+            !(
+              sub.originalName.toLowerCase().includes('.pdf') ||
+              sub.originalName.toLowerCase().includes('.doc') ||
+              sub.originalName.toLowerCase().includes('.docx') ||
+              sub.originalName.toLowerCase().includes('.txt') ||
+              sub.originalName.toLowerCase().includes('.xlsx')
+            )
+          "
+        >
+          <img src="/assets/icons/files.svg" class="w-6 h-7" />
+        </ng-container>
+        <h5 class="font-medium text-[color:var(--secondary-color)]">
+          {{
+            sub.originalName.length > 30
+              ? sub.originalName.slice(0, 30) + "..."
+              : sub.originalName
+          }}
+        </h5>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <button
+          (click)="downloadFile(sub)"
+          class="text-[color:var(--secondary-color)]"
+        >
+          <i class="fas fa-download"></i>
+        </button>
+
+        <button
+          (click)="confirmDelete(sub)"
+          class="text-red-500 hover:text-red-600 cursor-pointer"
+        >
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Info Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-right text-sm">
+      <p class="text-[#7F7D7D]">
+        تاريخ الانشاء :
+        <span class="text-[color:var(--secondary-color)] font-medium">
+          {{ sub.createdAt | date : "dd/MM/yyyy" }}
+        </span>
+      </p>
+
+      <p class="text-[#7F7D7D]">
+        بواسطة :
+        <span class="text-[color:var(--secondary-color)] font-medium">
+          {{ sub.createdBYUserName }}
+        </span>
+      </p>
+
+      <p class="text-[#7F7D7D]">
+        حجم الملف :
+        <span class="text-[color:var(--secondary-color)] font-medium">
+          {{ sub.size | number : "1.0-2" }} ميجا
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT  Sub Tab -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddFile">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/Simplificationactive.svg" />
+      <p>إضافة تبويب فرعي</p>
+    </div>
+
+    <form>
+      <div class="grid grid-cols-12">
+        <div class="input-field col-span-12">
+          <label for="name"> مرفقات </label>
+          <div>
+            <app-uploadFile
+              [uploadedFiles]="uploadedFiles"
+              [editMode]="false"
+              [showTitle]="false"
+              [currentId]="this.id"
+              [routeName]="'/sub-tab'"
+              accept=".pdf, .txt, .xlsx, .doc, .docx , .kml, .skp, .rar, .dwg "
+            ></app-uploadFile>
+          </div>
+        </div>
+      </div>
+      <!-- Buttons -->
+      <div class="buttons-content">
+        <button class="buttons" type="submit" (click)="AddSubFile()">
+          إضافة
+        </button>
+
+        <button
+          class="buttons-white"
+          type="button"
+          (click)="toggleAddFilePopup()"
+        >
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: ' عرض التبويبات  '
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: ' هل أنت متأكد أنك تريد حذف  التبويب الفرعي؟ سيتم حذفه نهائيًا من قائمة التبويبات',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

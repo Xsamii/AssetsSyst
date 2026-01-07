@@ -1,0 +1,97 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="' إدارة الأصول'"
+  [imageTitle]="'./assets/icons/projectsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '' },
+    { name: 'إدارة الأصول', routerLink: '/buildings/assets' },
+    {
+      name: '  سجل الكشف الدوري للصيانة ',
+      routerLink: '/buildings/assets/maintenance-log-for-asset'
+    },
+    {
+      name: assetName,
+    }
+  ]"
+  [isFilte]="false"
+  [inputPlaceholder]="' بحث بالأسم او الموقع او الشركه المنتجة او الوكيل او..'"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [isShowAddEdite]="false"
+  (valueSearch)="filterBySearchTesxt($event)"
+  [buttonText]="' اضافة سجل كشف'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  (addButton)="openAdd()"
+></app-bread-crumb>
+
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  (deleteEvent)="deleteAsset($event)"
+  (rowsCountChanged)="getData($event)"
+  [noData]="showBreadcrumb ? false : true"
+  [isinspectionLog]="true"
+  (showRequest)="viewassetLog($event)"
+  (editEvent)="openEdit($event)"
+></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" [noDataElements]="{
+    noDataImg: './assets/images/no-data-search.png',
+    noDataText: 'يبدو أنك لم تقم بإضافة أي سجل الكشف الدوري  بعد، ستظهر السجلات المضافة  هنا... يمكنك البدء بإضافة أول  سجل الكشف الدوري ',
+    noDataButtonText: ' اضافة سجل الكشف الدوري  ',
+    }"
+    (addNewEvent)="openAdd()"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  سجل الكشف الدوري  '
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف  سجل الكشف الدوري ؟ سيتم حذفه نهائيًا من قائمة  السجلات',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

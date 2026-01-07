@@ -1,0 +1,166 @@
+<div class="bg-white px-5 pt-3 rounded" style="height: 100%">
+  <!-- ============================= -->
+  <!-- BREAD CRUMB -->
+  <!-- ============================= -->
+  <app-bread-crumb
+    [title]="'إدارة الأصول  '"
+    [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'"
+    [subTitles]="subTitle"
+    [saveBtnText]="editMode ? 'تعديل' : 'إضافة'"
+    [isShowAddEdite]="true"
+    [isShowFilter]="true"
+    (submitReq)="onSubmit()"
+    (cancelReq)="onCancle()"
+    [validity]="maintenanceInspectionLogForm.valid"
+  ></app-bread-crumb>
+  <!-- ============================= -->
+  <!-- add-edit-form -->
+  <!-- ============================= -->
+  <form [formGroup]="maintenanceInspectionLogForm">
+    <div class="grid grid-cols-12 gap-4 mt-3">
+      <div class="input-field col-span-6">
+        <label for="name"> رقم الأصل <span>*</span></label>
+        <div class="field-icon">
+          <input type="text" class="form-control" [value]="assetName"  readonly />
+        </div>
+      </div>
+
+     <div class="input-field col-span-6">
+  <label for="name"> عناصر الصيانة <span>*</span> </label>
+  <div class="">
+    <p-multiSelect
+      class="w-full"
+      [styleClass]="'w-full bg-filterBtnBg py-3'"
+      [style]="{
+        'padding-right': '20px'
+      }"
+      formControlName="regularMaintenanceItems"
+      [options]="enhancedMaintenanceList"
+      optionLabel="name"
+      optionValue="id"
+      placeholder="اختر عناصر الصيانة الدورية"
+      display="chip"
+      (onFilter)="onDropdownFilter($event)"
+      [filter]="true">
+    </p-multiSelect>
+  </div>
+</div>
+
+      <div class="input-field col-span-6">
+        <label for="name"> حالة الكشف <span>*</span> </label>
+        <div class="">
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              'padding-right': '20px'
+            }"
+            optionLabel="name"
+            optionValue="status"
+            placeholder="  اختر  حالة الكشف     "
+            formControlName="isChecked"
+            [options]="statusList"
+            [filter]="true"
+            filterBy="name"
+          ></p-dropdown>
+        </div>
+      </div>
+
+      <div class="input-field col-span-6">
+        <label for="name"> تاريخ القيام بالكشف <span>*</span></label>
+        <div class="field-icon">
+
+            <img src="./assets/icons/calender.svg" />
+            <p-calendar
+              class=" outline-none w-full"
+              formControlName="checkDate"
+              [placeholder]="'  اختر تاريخ القيام بالكشف'"
+              [styleClass]="'w-full h-12 '"
+              [inputStyleClass]="'bg-gray-100'"
+              [showIcon]="false"
+            ></p-calendar>
+        </div>
+      </div>
+      <div class="input-field col-span-6">
+        <label for="name"> المقاول <span>*</span> </label>
+        <div class="field-icon">
+                    <input type="text" class="form-control" [value]="officeName"  readonly
+                  >
+        </div>
+      </div>
+        <div class="input-field col-span-6">
+        <label for="name"> نوع الصيانة  </label>
+          <div class="">
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              'padding-right': '20px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="  اختر  نوع الصيانة     "
+            formControlName="regularCheckTypeId"
+            [options]="regularCheckTypesList"
+            [filter]="true"
+            filterBy="name"
+          ></p-dropdown>
+        </div>
+      </div>
+      <div class="input-field col-span-12">
+        <label for="name"> الملاحظات <span>*</span></label>
+
+        <textarea
+          class="form-control"
+          formControlName="notes"
+          placeholder=" ادخل ملاحظاتك"
+          style="
+            resize: none;
+            width: 100%;
+            background-color: #f6f6f6;
+            padding: 10px;
+          "
+          rows="4"
+        ></textarea>
+      </div>
+    </div>
+      <!-- File upload container -->
+  <div class="form-container my-3 p-2 rounded-lg w-full">
+
+    <div class="fileContainer flex flex-col col-span-3 w-full">
+      <app-uploadFile
+        [uploadedFiles]="uploadedFiles"
+        [currentId]="editeId"
+        [editMode]="editMode"
+        [showTitle]="false"
+        [routeName]="'maintenance-inspection-log'"
+        [filesTitle]="'مرفقات'"
+      ></app-uploadFile>
+    </div>
+  </div>
+  </form>
+</div>
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  الاصول'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

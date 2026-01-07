@@ -1,0 +1,240 @@
+<div [ngClass]="curentRoute === 'profile' ? 'profile' : ''">
+  <!-- ============================= -->
+  <!-- BREAD CRUMB -->
+  <!-- ============================= -->
+  <div class="bread-crumb">
+    <div class="right">
+      <div class="title">
+        <img src="./assets/icons/user-active.svg" />
+        <h3>الملف الشخصي</h3>
+      </div>
+      <div class="links">
+        <a routerLink="/">الرئيسية</a>
+        <i class="fa-solid fa-angle-left"></i>
+        <a routerLink=""> الملف الشخصي </a>
+      </div>
+    </div>
+    <div class="left">
+      <div>
+        <button class="save-button" type="button" (click)="update()">
+          حفظ
+        </button>
+        <button class="cancle-button" type="button" (click)="routeBack()">
+          الغاء
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- ------------------------------ -->
+  <!-- USER DETAILS -->
+  <!-- ------------------------------ -->
+
+  <div class="user-details">
+    <!-- ============================ -->
+    <!-- TITLE -->
+    <!-- ============================ -->
+    <div class="title">
+      <img src="./assets/icons/user-active.svg" />
+      <h3>تفاصيل المستخدم</h3>
+    </div>
+    <!-- ============================ -->
+    <!-- USER INFO -->
+    <!-- ============================ -->
+    <div class="user-info">
+      <div class="userImg">
+        <img
+          [src]="imgSrc ? imgSrc : './assets/images/defaultProfileImage.jpg'"
+        />
+        <label for="profile-image"><img src="./assets/icons/edit.svg" /></label>
+        <input
+          (change)="onFileChanged($event)"
+          id="profile-image"
+          type="file"
+        />
+      </div>
+      <div class="userText">
+        <h2>{{ profileData?.fullName }}</h2>
+        <h3>{{ profileData?.email }}</h3>
+        <span>{{ profileData?.jobName ?? "لم يتم تحديد الوظيفة" }}</span>
+      </div>
+    </div>
+    <!-- ============================ -->
+    <!-- FORM -->
+    <!-- ============================ -->
+    <!-- ------------------------------ -->
+    <!-- USER FORM -->
+    <!-- ------------------------------ -->
+    <form [formGroup]="profileForm">
+      <!-- ************ -->
+      <div class="row-inputs">
+        <!--  -->
+        <div class="input-field">
+          <label>الاسم</label>
+          <div class="input-icon">
+            <img src="./assets/icons/userIcon.svg" />
+            <input
+              formControlName="fullName"
+              type="text"
+              placeholder="اسم المستخدم بالكامل"
+            />
+          </div>
+        </div>
+        <!--  -->
+        <div class="input-field">
+          <label>البريد الإلكتروني</label>
+          <div class="input-icon">
+            <img src="./assets/icons/email.svg" />
+            <input
+              readonly
+              formControlName="email"
+              type="email"
+              placeholder="البريد الإلكتروني"
+            />
+          </div>
+        </div>
+        <!--  -->
+      </div>
+      <!-- ************ -->
+      <div class="row-inputs">
+        <!--  -->
+        <div class="input-field">
+          <label>رقم الهاتف</label>
+          <div class="input-icon">
+            <img src="./assets/icons/phone.svg" />
+            <input
+              formControlName="mobile"
+              type="tel"
+              placeholder="رقم الهاتف"
+            />
+          </div>
+        </div>
+        <!--  -->
+        <div class="input-field">
+          <label>رقم الهوية</label>
+          <div class="input-icon">
+            <img src="./assets/icons/code-icon.svg" />
+            <input
+              formControlName="nationId"
+              type="text"
+              placeholder="رقم الهوية"
+            />
+          </div>
+        </div>
+        <!--  -->
+      </div>
+      <!-- ************ -->
+      <div class="row-inputs">
+        <!--  -->
+        <div class="input-field">
+          <label> تاريخ الميلاد</label>
+          <div class="input-icon">
+            <img src="./assets/icons/calender.svg" />
+            <p-calendar
+              class="bg-gray-100 rounded-lg boeder-none outline-none w-full"
+              [placeholder]="'تاريخ الميلاد'"
+              [styleClass]="'w-full h-12 '"
+              [inputStyleClass]="'bg-gray-100'"
+              [showIcon]="false"
+            ></p-calendar>
+            <!-- formControlName="visitDateTime" -->
+          </div>
+        </div>
+        <!--  -->
+        <div class="input-field">
+          <label>الوظيفة</label>
+          <div class="input-icon">
+            <img src="./assets/icons/info-icon.svg" />
+            <input
+              readonly
+              formControlName="jobName"
+              type="text"
+              placeholder="الوظيفة"
+            />
+          </div>
+        </div>
+        <!--  -->
+      </div>
+      <!-- ************ -->
+      <div class="row-inputs">
+        <!--  -->
+        <div class="input-field">
+          <label>كلمة المرور</label>
+          <div class="input-icon">
+            <img src="./assets/icons/password.svg" />
+            <div class="password-icon">
+              <input
+                formControlName="password"
+                [type]="passwordType"
+                placeholder="أدخل كلمة المرور إذا أردت تغييرها"
+              />
+              <div (click)="onShowPassword()" class="show-password">
+                <img
+                  *ngIf="!showPassword"
+                  src="./assets/icons/show-password.svg"
+                  style="width: 19px; height: 19px"
+                />
+                <img
+                  *ngIf="showPassword"
+                  src="./assets/icons/unshow-password.svg"
+                  style="width: 19px; height: 19px"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--  -->
+        <div class="input-field">
+          <label>تأكيد كلمة المرور</label>
+          <div class="input-icon">
+            <img src="./assets/icons/password.svg" />
+            <div class="password-icon">
+              <input
+                [type]="confirmPasswordType"
+                placeholder="أدخل كلمة المرور إذا أردت تغييرها"
+              />
+              <div (click)="onShowConfirmPassword()" class="show-password">
+                <img
+                  *ngIf="!showConfirmPassword"
+                  src="./assets/icons/show-password.svg"
+                  style="width: 19px; height: 19px"
+                />
+                <img
+                  *ngIf="showConfirmPassword"
+                  src="./assets/icons/unshow-password.svg"
+                  style="width: 19px; height: 19px"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--  -->
+      </div>
+      <!-- ************ -->
+    </form>
+  </div>
+</div>
+
+<!-- -------------------------------------- -->
+<!-- SWEET ALERTS -->
+<!-- -------------------------------------- -->
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="errorAlert"
+  (confirmMessage)="errorFunction($event)"
+  [data]="{
+    type: 'error',
+    text: 'يبدو أنه قد حدث خطأ ما، من فضلك أعد المحاولة مجددًا',
+    buttonText: ''
+  }"
+></app-sweet-alert-message>
+
+<!-- SUCCESS DELETE -->
+<app-sweet-alert-message
+  *ngIf="successAlert"
+  (confirmMessage)="successFunction($event)"
+  [data]="{
+    type: 'success',
+    text: 'تم تعديل الملف الشخصي بنجاح، يمكنك المتابعة',
+    buttonText: 'يمكنك المتابعة'
+  }"
+></app-sweet-alert-message>

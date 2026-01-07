@@ -1,0 +1,233 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'الطلبات المخصصة'"
+  [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'"
+  [subTitles]="userRole === 5
+  ? [
+      { name: 'الرئيسية', routerLink: '/projects' },
+      { name: 'الطلبات المخصصة', routerLink: '/projects/visit-requests/specified-requests' }
+    ]
+  : [
+      { name: 'الرئيسية', routerLink: '/projects' },
+      { name: 'إدارة المشاريع', routerLink: '/projects' },
+      { name: 'طلبات الزيارة ', routerLink: '/projects/visit-requests' },
+      { name: 'الطلبات المخصصة', routerLink: '/projects/visit-requests/specified-requests' }
+    ]"
+  [isFilte]="true"
+  [inputPlaceholder]="'ابحث باسم المشروع، المهمة.'"
+  [buttonText]="'مشروع جديد'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  [showAddButton]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  (onFilterClick)="showDialog()"
+  (valueSearch)="filterBySearchText($event)"
+></app-bread-crumb>
+
+<!-- ======================================================== -->
+<!-- TABEL LIST -->
+<!-- ======================================================== -->
+
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  [noData]="showBreadcrumb ? false : true"
+  (rowsCountChanged)="getAllRequests($event)"
+  [isShowRequest]="true"
+  (showRequest)="redirectToRequestDetails($event)"
+></app-list>
+<!-- ============================= -->
+<!-- SEARCH DIALOG  -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية الطلبات المخصصة</p>
+    </div>
+    <form [formGroup]="filterForm">
+      <!-- First Row -->
+      <!-- <div class="addForm input-field">
+        <div class="narrowCols">
+          <label for="">طبيعة المشروع</label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر طبيعة المشروع"
+            formControlName="GlobalProjectTypeId"
+            [options]="projectOrginList"
+            (onChange)="
+              getMyExcutiveProjectsByGlobalProjectType(
+                formControlls.GlobalProjectTypeId.value
+              )
+            "
+          ></p-dropdown>
+        </div>
+        <div class="narrowCols">
+          <label for="">المشروع</label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/pen-ruler-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر المشروع"
+            formControlName="project"
+            (onChange)="
+              getProjectTaskByProjectId(formControlls.project.value);
+              getMaintenanceRequestByProjectId(formControlls.project.value)
+            "
+            [options]="projectList"
+          ></p-dropdown>
+        </div>
+      </div> -->
+      <!-- End of First Row -->
+      <!-- Second Row -->
+      <div
+        class="addForm input-field"
+        *ngIf="
+          globalProjectId == 1 ||
+          globalProjectId == undefined ||
+          globalProjectId == null
+        "
+      >
+        <div class="narrowCols">
+          <label for=""> المهمة</label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/check-list.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder=" اختر  المهمة "
+            formControlName="tasks"
+            [options]="tasksList"
+          ></p-dropdown>
+        </div>
+        <div class="narrowCols">
+          <label for="">نوع الطلب</label>
+          <p-treeSelect
+            class="w-full"
+            [containerStyleClass]="'w-full bg-filterBtnBg py-3'"
+            [containerStyle]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            formControlName="requestType"
+            [panelStyle]="{ 'max-height': '200px', overflow: 'hidden' }"
+            [options]="requestTypeList"
+            placeholder="اختر نوع الطلب"
+            [selectionMode]="'single'"
+            [(ngModel)]="selectedNodes"
+          >
+          </p-treeSelect>
+        </div>
+      </div>
+      <!-- End of Second Row -->
+      <!-- Third Row -->
+      <div class="addForm input-field">
+        <div
+          class="narrowCols"
+          *ngIf="globalProjectId == 1 || globalProjectId == undefined"
+        >
+          <label for=""> حالة الطلب</label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر حالة الطلب "
+            formControlName="requestStatus"
+            [options]="requestStatusList"
+          ></p-dropdown>
+        </div>
+        <!-- ------------------------------ -->
+        <!-- ------------------------------ -->
+        <!-- <div class="narrowCols" *ngIf="globalProjectId == 2">
+          <label for="">طلب الصيانة</label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر  طلب الصيانة "
+            formControlName="requestMaintainance"
+            [options]="maintenanceRequestList"
+          ></p-dropdown>
+        </div> -->
+        <!-- ------------------------------ -->
+        <!-- ------------------------------ -->
+
+        <div class="narrowCols">
+          <label> تاريخ الزيارة</label>
+          <p-calendar
+            class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+            formControlName="visitDateTime"
+            [placeholder]="' اختر تاريخ الزيارة '"
+            [styleClass]="'w-full h-12 '"
+            [inputStyleClass]="'bg-gray-100'"
+            [showIcon]="true"
+          ></p-calendar>
+        </div>
+      </div>
+      <!-- End of Third Row -->
+
+      <div class="buttons-content mt-3">
+        <button class="buttons" type="button" (click)="popupFilter()">
+          تصفية
+        </button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ======================================================== -->
+<!-- NO DATA YET... -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  [noDataElements]="{
+noDataImg: './assets/images/no-data-search.png',
+noDataText: 'يبدو أنه لم يتم تخصيصك في أي طلب بعد، ستظهر الطلبات المخصصة لك هنا...',
+noDataButtonText: '',
+}"
+></app-no-data-yet>

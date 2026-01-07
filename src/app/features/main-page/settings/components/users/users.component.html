@@ -1,0 +1,160 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'المستخدمين'"
+  [imageTitle]="'./assets/icons/usersActive.svg'"
+  [subTitles]="items"
+  [isFilte]="true"
+  [inputPlaceholder]="' ابحث باسم المستخدم، البريد الإلكتروني، رقم الهاتف، رقم الهوية '"
+  [buttonText]="'مستخدم جديد'"
+  [saveBtnText]="'إضافة'"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [isShowAddEdite]="false"
+  (addButton)="openAdd()"
+  (valueSearch)="filterBySearchTesxt($event)"
+  (onFilterClick)="showDialog()"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- SEARCH DIALOG  -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية المستخدمين</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name"> المجموعة </label>
+        <div class="">
+          <!-- <img src="./assets/icons/select-main-building-icon.svg" /> -->
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder=" اختر المجموعة "
+            formControlName="userTypeId"
+            [options] = "userTypeList"
+
+          ></p-dropdown>
+        </div>
+      </div>
+      <div class="input-field">
+        <label for="code"> حالة التتنشيط </label>
+        <div class="flex">
+          <div class="flex items-center">
+            <p-radioButton
+              name=""
+              formControlName="inActive"
+              value="false"
+            ></p-radioButton>
+            <label class="mx-2" style="margin-bottom: 0 !important">
+              مفعل</label
+            >
+          </div>
+
+          <div class="flex items-center">
+            <p-radioButton
+              name=""
+              formControlName="inActive"
+              value="true"
+            ></p-radioButton>
+            <label class="mx-2" style="margin-bottom: 0 !important"
+              >غير مفعل</label
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="buttons-content">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- TABEL LIST -->
+<!-- ======================================================== -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  (editEvent)="openEdit($event)"
+  (deleteEvent)="deleteBuilding($event)"
+  (rowsCountChanged)="getData($event)"
+  [noData]="showBreadcrumb ? false : true"
+  [withActives]="true"
+  (activeUser)="activateUser($event)"
+></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  (addNewEvent)="openAdd()"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم تقم بإضافة أي مستخدم بعد، سيظهر المستخدمون المضافون هنا... يمكنك البدء بإضافة أول مستخدم',
+  noDataButtonText: 'مستخدم جديد ',
+  }"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  المستحدمين '
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف  المستخدم؟ سيتم حذفه نهائيًا من قائمة المستخدمين',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

@@ -1,0 +1,26 @@
+<div class="geo-location-container">
+  <!-- Coordinate Display -->
+  <div class="coordinates-header">
+    <div class="coordinate-field">
+      <label>خط العرض:</label>
+      <input type="text" readonly [value]="selectedLocation?.lat || '10.24544454555'" />
+    </div>
+    <div class="coordinate-field">
+      <label>خط الطول:</label>
+      <input type="text" readonly [value]="selectedLocation?.lng || '10.2454454555'" />
+    </div>
+  </div>
+
+  <!-- Map Container -->
+  <div id="map" class="map-display"></div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <button class="buttons" type="button" (click)="confirmLocation()" [disabled]="!selectedLocation">
+      تحديد
+    </button>
+    <button class="buttons-white" type="button" (click)="onCancel()">
+      إلغاء
+    </button>
+  </div>
+</div>

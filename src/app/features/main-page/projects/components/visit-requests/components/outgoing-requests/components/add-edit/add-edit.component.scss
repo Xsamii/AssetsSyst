@@ -1,0 +1,101 @@
+.request-content {
+  margin-top: 24px;
+  padding: 24px;
+  border-radius: 8px;
+  border: 0.5px solid #7070702e;
+  .title {
+    display: flex;
+    align-items: center;
+    background-color: #eaf7ff;
+    border-radius: 8px;
+    padding: 12px 18px;
+    width: fit-content;
+    margin-bottom: 24px;
+    img {
+      width: 20px;
+      height: 20px;
+      margin-left: 15px;
+    }
+    h3 {
+      color: #0c588b;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+  label {
+    color: #0c588b;
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    display: block;
+    span {
+      color: #fe4035;
+    }
+  }
+  .narrowCols {
+    margin-bottom: 24px;
+  }
+}
+
+.addForm {
+  @apply grid
+          grid-cols-4
+           gap-8;
+  .narrowCols {
+    @apply 2xl:col-span-2 xl:col-span-2 md:col-span-4 col-span-4;
+  }
+}
+:host ::ng-deep .p-button-icon-only {
+  color: #125d89;
+}
+:host ::ng-deep .p-calendar.p-calendar-w-btn .p-inputtext {
+  order: 2;
+}
+:host ::ng-deep .p-calendar.p-calendar-w-btn .p-datepicker-trigger {
+  order: 1;
+}
+
+:host ::ng-deep .p-calendar {
+  background-color: #f6f6f6 !important;
+  border-radius: 8px;
+}
+
+:host ::ng-deep .p-treenode-content {
+  @apply px-4 py-4;
+}
+
+::ng-deep .p-ripple.p-element.p-button.p-component.p-fileupload-choose {
+  width: 100%;
+}
+:host ::ng-deep .p-dropdown-items {
+  max-width: 100%;
+  background-color: white;
+}
+:host ::ng-deep .p-element.p-dropdown-item {
+  @apply px-4 py-4;
+}
+
+.form-content {
+  margin-top: 24px;
+  border: 0.5px solid #7070702e;
+  border-radius: 8px;
+  padding: 24px;
+
+  .title {
+    background-color: #eaf7ff;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    img {
+      margin-left: 15px;
+    }
+    p {
+      color: #0c588b;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+}

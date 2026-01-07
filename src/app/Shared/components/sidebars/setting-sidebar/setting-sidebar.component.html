@@ -1,0 +1,49 @@
+<!--  -->
+<div class="sidebar" *ngIf="showSidebarMenu">
+  <div class="items">
+    <!-- ====================== -->
+    <a
+      class="item"
+      routerLink="/settings/users"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      *ngIf="
+        userRole == roles.Admin ||
+        userRole == roles.SystemOfficer ||
+        userRole == roles.OfficeManager
+      "
+    >
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/users.svg" />
+        <img class="active-icon" src="./assets/icons/usersActive.svg" />
+      </div>
+      <p>المستخدمين</p>
+    </a>
+    <!-- ====================== -->
+    <a
+      class="item"
+      routerLink="municipalities"
+      routerLinkActive="active"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer"
+    >
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/municipalities.svg" />
+        <img class="active-icon" src="./assets/icons/locationDetailsActive.svg" />
+      </div>
+      <p>البلديات</p>
+    </a>
+    <!-- ====================== -->
+    <a
+      class="item"
+      routerLink="contractros"
+      routerLinkActive="active"
+      *ngIf="userRole == roles.Admin || userRole == roles.SystemOfficer"
+    >
+      <div class="item-icon">
+        <img class="icon" src="./assets/icons/users.svg" />
+        <img class="active-icon" src="./assets/icons/usersActive.svg" />
+      </div>
+      <p>المقاولون</p>
+    </a>
+  </div>
+</div>

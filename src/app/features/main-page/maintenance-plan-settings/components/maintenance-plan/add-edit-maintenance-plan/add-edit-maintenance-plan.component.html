@@ -1,0 +1,203 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'خطة الصيانة'" [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'ادارة الصيانة', routerLink: '/maintenance' },
+    { name: 'خطة الصيانة', routerLink: '/maintenance-plan-settings/maintenace-plan' }
+  ]" [inputPlaceholder]="'ابحث بالأسم او النوع.....'" [saveBtnText]="editMode ? 'تعديل' : 'إضافة'"
+  [isShowAddEdite]="false" (submitReq)="onSubmit()" (cancelReq)="onCancelReq()"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- Form -->
+<!-- ============================= -->
+<form [formGroup]="maintenancePlanForm" (ngSubmit)="onSubmit()">
+  <div class="bg-white px-5 py-5 rounded">
+    <div class="grid grid-cols-12 gap-4 mt-3">
+
+      <!-- Maintenance Type -->
+      <div class="input-field col-span-6">
+        <label for="maintenanceType">
+          نوع الصيانة
+          <span>*</span>
+        </label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{ 'padding-right': '20px' }"
+            optionLabel="name" optionValue="id" placeholder="اختر نوع الصيانة" formControlName="maintenanceTypeId"
+            [options]="maintenanceTypsLookup" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="maintenancePlanForm.controls['maintenanceTypeId'].errors?.['required'] && (maintenancePlanForm.controls['maintenanceTypeId'].dirty || maintenancePlanForm.controls['maintenanceTypeId'].touched)">
+          نوع الصيانة مطلوب
+        </small>
+      </div>
+
+      <!-- Building -->
+      <div class="input-field col-span-6">
+        <label for="building">
+          المبنى الرئيسي
+          <span>*</span>
+        </label>
+        <div class="">
+
+
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{ 'padding-right': '20px' }"
+            optionLabel="name" optionValue="id" placeholder="اختر المبنى الرئيسي" formControlName="buildingId"
+            [options]="mainBuildingsList" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="maintenancePlanForm.controls['buildingId'].errors?.['required'] && (maintenancePlanForm.controls['buildingId'].dirty || maintenancePlanForm.controls['buildingId'].touched)">
+          المبنى الرئيسي مطلوب
+        </small>
+      </div>
+
+      <!-- Floor - MULTISELECT -->
+      <div class="input-field col-span-6">
+        <label for="floor">
+          الطوابق
+        </label>
+        <div class="">
+          <p-multiSelect class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" optionLabel="name" optionValue="id"
+            placeholder="اختر الطوابق" formControlName="floorIds" [options]="floorsList" [filter]="true" filterBy="name"
+            [disabled]="!hasSelectedBuilding" [showToggleAll]="true" [showClear]="true"
+            selectedItemsLabel="تم اختيار {0} طابق">
+          </p-multiSelect>
+        </div>
+      </div>
+         <!-- asset - MULTISELECT -->
+      <div class="input-field col-span-6">
+        <label for="assets">
+          الأصول
+        </label>
+        <div class="">
+          <p-multiSelect class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" optionLabel="name" optionValue="id"
+            placeholder="اختر الأصول" formControlName="assetIds" [options]="assetsList" [filter]="true" filterBy="name"
+            [disabled]="!hasSelectedBuilding" [showToggleAll]="true" [showClear]="true"
+            selectedItemsLabel="تم اختيار {0} أصل">
+          </p-multiSelect>
+        </div>
+      </div>
+
+      <!-- SWAPPED: Single Day Field - Show when no type selected or وقائي selected -->
+      <div class="input-field col-span-6" *ngIf="isPreventiveOrNoType">
+        <label for="planDay">
+          حدد اليوم
+          <span *ngIf="isPreventiveMaintenance">*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/calender.svg" />
+          <p-calendar class="outline-none w-full" formControlName="planDay" placeholder="اختر يوم الصيانة"
+            [styleClass]="'w-full h-12'" [inputStyleClass]="'bg-gray-100'" [showIcon]="false"></p-calendar>
+        </div>
+        <small class="default-attention"
+          *ngIf="maintenancePlanForm.controls['planDay'].errors?.['required'] && (maintenancePlanForm.controls['planDay'].dirty || maintenancePlanForm.controls['planDay'].touched)">
+          يوم الصيانة مطلوب
+        </small>
+      </div>
+
+      <!-- SWAPPED: Period Fields - Show when دوري selected -->
+      <ng-container *ngIf="isPeriodicMaintenance">
+        <!-- Period From -->
+        <div class="input-field col-span-6">
+          <label for="dateFrom">
+            الفترة من
+            <span>*</span>
+          </label>
+          <div class="field-icon">
+            <img src="./assets/icons/calender.svg" />
+            <p-calendar class="outline-none w-full" formControlName="dateFrom" placeholder="اختر الفترة من"
+              [styleClass]="'w-full h-12'" [inputStyleClass]="'bg-gray-100'" [showIcon]="false"></p-calendar>
+          </div>
+          <small class="default-attention"
+            *ngIf="maintenancePlanForm.controls['dateFrom'].errors?.['required'] && (maintenancePlanForm.controls['dateFrom'].dirty || maintenancePlanForm.controls['dateFrom'].touched)">
+            الفترة من مطلوبة
+          </small>
+        </div>
+
+        <!-- Period To -->
+        <div class="input-field col-span-6">
+          <label for="dateTo">
+            الفترة إلى
+            <span>*</span>
+          </label>
+          <div class="field-icon">
+            <img src="./assets/icons/calender.svg" />
+            <p-calendar class="outline-none w-full" formControlName="dateTo" placeholder="اختر الفترة إلى"
+              [styleClass]="'w-full h-12'" [inputStyleClass]="'bg-gray-100'" [showIcon]="false"></p-calendar>
+          </div>
+          <small class="default-attention"
+            *ngIf="maintenancePlanForm.controls['dateTo'].errors?.['required'] && (maintenancePlanForm.controls['dateTo'].dirty || maintenancePlanForm.controls['dateTo'].touched)">
+            الفترة إلى مطلوبة
+          </small>
+        </div>
+      </ng-container>
+
+      <!-- Contractor -->
+      <div class="input-field col-span-6">
+        <label for="contractor">المقاول
+          <span>*</span>
+        </label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{ 'padding-right': '20px' }"
+            optionLabel="name" optionValue="id" placeholder="اختر المقاول" formControlName="officeId"
+            [options]="officeList" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+      </div>
+
+      <!-- Plan Malfunction Type -->
+      <div class="input-field col-span-6">
+        <label for="planMalfunctionType">
+          كود نوع العطل
+          <span>*</span>
+        </label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{ 'padding-right': '20px' }"
+            optionLabel="code" optionValue="id" placeholder="اختر كود نوع العطل" formControlName="planMalfunctionTypeId"
+            [options]="planMalfunctionTypesList" [filter]="true" filterBy="name"></p-dropdown>
+        </div>
+        <small class="default-attention"
+          *ngIf="maintenancePlanForm.controls['planMalfunctionTypeId'].errors?.['required'] && (maintenancePlanForm.controls['planMalfunctionTypeId'].dirty || maintenancePlanForm.controls['planMalfunctionTypeId'].touched)">
+          كود نوع العطل مطلوب
+        </small>
+      </div>
+
+    </div>
+
+    <!-- Submit Buttons -->
+    <div class="buttons-content mt-5">
+      <button class="buttons" type="submit" [disabled]="!maintenancePlanForm.valid">
+        {{ editMode ? "تعديل" : "إضافة" }}
+      </button>
+      <button class="buttons-white" type="button" (click)="onCancelReq()">
+        إلغاء
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS -->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض خطة الصيانة'
+  }" (confirmMessage)="alertSuccessFun($event)">
+</app-sweet-alert-message>
+
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)">
+</app-sweet-alert-message>
+
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)">
+</app-sweet-alert-message>

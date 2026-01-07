@@ -1,0 +1,16 @@
+<div class="no-data">
+  <div class="no-data-img">
+    <img [src]="noDataElements.noDataImg" />
+  </div>
+  <div class="no-data-text" [ngClass]="marginForList ? 'tw-mt-12' : 'tw-mt-0'">
+    <p class="popup-text">
+      {{ noDataElements.noDataText }}
+    </p>
+  </div>
+  <div class="no-data-button" *ngIf="noDataElements.noDataButtonText && showButton">
+    <button class="buttons" (click)="addNew()">
+      <i class="fa-solid fa-plus tw-ml-2"></i>
+      {{ noDataElements.noDataButtonText }}
+    </button>
+  </div>
+</div>

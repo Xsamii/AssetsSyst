@@ -1,0 +1,108 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb-report [imageTitle]="'./assets/images/orbit.svg'" [isFilte]="true"
+  [inputPlaceholder]="' ابحث بإسم المشروع، رقم المشروع'" [buttonText]=" ' تحميل التقارير' " [isShowAddEdite]="false"
+  [isShowFilter]="showBreadcrumb ? false : true" (onFilterClick)="onShowFilterPopup()"
+  (valueSearch)="filterBySearchText($event)" (addButton)="exportReport($event , {})"
+  (BackButton)="BackButton()"></app-bread-crumb-report>
+
+
+<iframe [src]="pdfSrc" width="100%" height="950px" *ngIf="pdfSrc"></iframe>
+
+
+<!-- ============================= -->
+<!-- POPUP FILTER-->
+<!-- ============================= -->
+
+<div class="overlay" *ngIf="showFilterPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية تقارير الصيانة</p>
+    </div>
+    <!--  (ngSubmit)="OnSubmitData()" -->
+
+    <form [formGroup]="filterForm">
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+      <!-- ---------------------------------------------------------------- -->
+      <div class="two-inputs-fields">
+        <div class="input-field">
+          <label for="main-building"> المبنى </label>
+          <div class="field-icon">
+            <img src="./assets/icons/select-main-building-icon.svg" />
+
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              placeholder="اختر  المبنى" formControlName="buildingId" [options]="builldingLookup"
+              (onChange)="getAllBuildingSubUnit(filterForm.value.buildingId)" [filter]="true"
+              [filterBy]="'name'"></p-dropdown>
+          </div>
+        </div>
+ <div class="input-field">
+          <label for="main-building"> حالة الطلب </label>
+          <div class="field-icon">
+            <img src="./assets/icons/info-icon.svg" />
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              formControlName="maintenanceRequestStatusId" placeholder="اختر  حالة الطلب  "
+              [options]="visitRequestsStatusLookup" [filter]="true" [filterBy]="'name'"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+      <!-- ---------------------------------------------------------------- -->
+      <div class="two-inputs-fields">
+        <div class="input-field">
+          <label for="main-building"> نوع العطل الرئيسي </label>
+          <div class="field-icon">
+            <img src="./assets/icons/types-icon-fill.svg" />
+            <!-- -------------------------------- -->
+            <!-- -------------------------------- -->
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              formControlName="mainCategoryType" placeholder="اختر  نوع العطل الرئيسي "
+              [options]="primaryMaintenanceTypeLookup"
+              (onChange)="getMaintTypesByParent(filterForm.value.mainCategoryType)" [filter]="true"
+              [filterBy]="'name'"></p-dropdown>
+            <!-- -------------------------------- -->
+            <!-- -------------------------------- -->
+          </div>
+        </div>
+        <div class="input-field">
+          <label for="main-building"> نوع العطل الفرعي </label>
+          <div class="field-icon">
+            <img src="./assets/icons/types-icon-fill.svg" />
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              formControlName="subCategoryType" placeholder="اختر  نوع العطل الفرعي "
+              [options]="secondaryMaintenanceTypeLookup" [filter]="true" [filterBy]="'name'"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+      <!-- ---------------------------------------------------------------- -->
+      <div class="two-inputs-fields">
+
+        <div class="input-field">
+          <label for="main-building"> أولوية الطلب </label>
+          <div class="field-icon">
+            <img src="./assets/icons/info-icon.svg" />
+
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              formControlName="requestPriorety" placeholder="اختر  أولوية الطلب  " [options]="requestPrioretyLookup"
+              [filter]="true" [filterBy]="'name'"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <!-- =======================BUTTONS================== -->
+      <div class="buttons-content">
+        <button class="buttons" type="button" (click)="popupFilter()">
+          تصفية
+        </button>
+        <button class="buttons-white" type="button" (click)="closePopupFilter()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

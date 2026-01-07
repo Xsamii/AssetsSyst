@@ -1,0 +1,157 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'إعدادات بنود التقييم'"
+  [imageTitle]="'./assets/icons/projectsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'تقييم عقود الأداء', routerLink: '/performance-contracts-evaluation' },
+    { name: 'إعدادات بنود التقييم', routerLink: '/performance-contracts-evaluation/evaluation-settings' },
+    { name: editMode ? 'تعديل بند التقييم' : 'إضافة بند تقييم' }
+  ]"
+  [isFilte]="false"
+  [inputPlaceholder]="'ابحث...'"
+  [buttonText]="'بند تقييم جديد'"
+  [saveBtnText]="editMode ? 'تعديل' : 'إضافة'"
+  [isShowAddEdite]="true"
+  (submitReq)="save()"
+  (cancelReq)="alertWarning = true"
+  [validity]="evaluationSettingsForm.valid"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- FORM-->
+<!-- ============================= -->
+<form [formGroup]="evaluationSettingsForm">
+  <!-- ============ -->
+  <div class="form-content">
+    <div class="tow-inputs-field">
+      <div class="input-field">
+        <label>نوع خطة الصيانة <span>*</span></label>
+        <div class="dropdown-wrapper">
+          <p-dropdown
+            formControlName="maintTypeId"
+            [options]="planTypesList"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر نوع خطة الصيانة"
+            [styleClass]="'w-full'"
+          ></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="formControls.maintTypeId.invalid && formControls.maintTypeId.touched"
+          >برجاء اختيار نوع خطة الصيانة</small
+        >
+      </div>
+      <div class="input-field">
+        <label>المدة <span>*</span></label>
+        <div class="dropdown-wrapper">
+          <p-dropdown
+            formControlName="periodId"
+            [options]="durationsList"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر المدة"
+            [styleClass]="'w-full'"
+          ></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small
+          *ngIf="
+            formControls.periodId.invalid &&
+            formControls.periodId.touched
+          "
+          >برجاء اختيار المدة</small
+        >
+      </div>
+    </div>
+
+    <!-- Evaluation Items Table -->
+    <div class="evaluation-items-section">
+      <div class="table-header">
+        <div class="column-header weight-header">البند</div>
+        <div class="column-header item-header">الوزن</div>
+        <span class="points-tracker">{{ remainingPoints }}/{{ totalPoints }}</span>
+      </div>
+
+      <div class="evaluation-items" formArrayName="addTerms">
+        <div
+          *ngFor="let item of evaluationItems.controls; let i = index"
+          [formGroupName]="i"
+          class="evaluation-item-row"
+        >
+          <div class="drag-handle">
+            <i class="fa-solid fa-grip-vertical"></i>
+          </div>
+
+          <div class="item-input-wrapper">
+            <input
+              type="text"
+              formControlName="termName"
+              placeholder="ادخل اسم البند"
+            />
+          </div>
+
+          <div class="weight-input-wrapper">
+            <input
+              type="number"
+              formControlName="termWeight"
+              placeholder="ادخل الوزن"
+              appOnlyNumber
+              min="0"
+              [max]="getMaxAllowedForTerm(i)"
+              step="1"
+              class="no-spinner"
+            />
+          </div>
+
+          <div class="action-buttons">
+            <button type="button" class="btn-remove" (click)="removeEvaluationItem(i)">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <button type="button" class="btn-add" (click)="addEvaluationItem()">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض بنود التقييم'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>
+
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>

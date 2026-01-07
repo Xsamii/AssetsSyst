@@ -1,0 +1,84 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'الإعدادات'" [imageTitle]="'./assets/icons/settingsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    { name: 'الإعدادات', routerLink: '/projects/project-settings' },
+
+  ]" [isFilte]="false" [saveBtnText]="'حفظ'" [isShowAddEdite]="true" (submitReq)="onSubmit()"
+  (cancelReq)="alertWarning = true"></app-bread-crumb>
+
+
+<!-- ============================= -->
+<!-- FORM-->
+<!-- ============================= -->
+
+
+<form [formGroup]="projectSettingsForm">
+  <div class="form-content">
+    <div class="title">
+      <img src="./assets/icons/settingsActive.svg" />
+      <p> إعدادات النظام</p>
+    </div>
+
+    <div class="tow-inputs-field">
+      <div class="input-field flex flex-col">
+        <label for="time">الفترة الزمنية لتقديم الطلب</label>
+
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text"
+          placeholder="أدخل الفترة الزمنية لتقديم الطلب" formControlName="timePeriodForSubmittingTheApplication"
+          appOnlyNumber
+          style="background: url('./assets/icons/clock.svg') no-repeat right 15px center; background-color: #f6f6f6; padding-right: 45px;">
+      </div>
+      <div class="input-field flex flex-col">
+        <label for="time">عدد الطلبات للاستشارة في اليوم الواحد</label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text"
+          placeholder="أدخل  عدد الطلبات للاستشارة في اليوم الواحد  "
+          formControlName="numberOfRequestsForConsultationPerDay" appOnlyNumber
+          style="background: url('./assets/icons/info-icon.svg') no-repeat right 15px center; background-color: #f6f6f6; padding-right: 45px;">
+
+      </div>
+    </div>
+    <div class="tow-inputs-field">
+      <div class="input-field flex flex-col">
+        <label for="time">عدد الطلبات للتخصيص في اليوم الواحد</label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" appOnlyNumber
+          placeholder="أدخل عدد الطلبات للتخصيص في اليوم الواحد" formControlName="numberOfRequestsForCustomizablePerDay"
+          style="background: url('./assets/icons/info-icon.svg') no-repeat right 15px center; background-color: #f6f6f6; padding-right: 45px;">
+
+      </div>
+      <div class="input-field flex flex-col">
+        <label for="time">عدد الزيارات للتخصيص في اليوم الواحد</label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" appOnlyNumber
+          placeholder="أدخل عدد الزيارات للتخصيص في اليوم الواحد  " formControlName="customizableNumberOfVisitsPerDay"
+          style="background: url('./assets/icons/info-icon.svg') no-repeat right 15px center; background-color: #f6f6f6; padding-right: 45px;">
+
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+  type: 'success',
+  text: alertSuccessMsg,
+  buttonText: 'العودة إلى لوحة التحكم  '
+}" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+  type: 'error',
+  text: alertErrorMsg,
+  buttonText: ''
+}" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>
+
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+  type: 'warning',
+  text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+  buttonText: ''
+}" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>

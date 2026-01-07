@@ -1,0 +1,487 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="isEdit ? 'تعديل عقد صيانة' : 'إضافة عقد صيانة'"
+  [imageTitle]="'./assets/icons/mainBuildingsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: ' إدارة الأصول', routerLink: '/projects' },
+    { name: 'عقود الصيانة ', routerLink: '/buildings/maintenance-contracts' },
+    {
+      name: isEdit ? 'تعديل عقد صيانة' : 'إضافة عقد صيانة',
+      routerLink: isEdit
+        ? '/buildings/maintenance-contracts/edit/' + currentId
+        : '/buildings/maintenance-contracts/add'
+    }
+  ]" (submitReq)="
+    activeTab == contractTabsEnum.attachementDeets ? submit() : nextTab()
+  " (cancelReq)="cancel()" [isFilte]="true" [inputPlaceholder]="'ابحث باسم المبنى، العنوان ، الموقع...'"
+  [buttonText]="'مبنى جديد'" [saveBtnText]="
+    activeTab != contractTabsEnum.attachementDeets ? 'التالي' : 'حفظ'
+  " [validity]="projectDetailsForm.valid" [isShowAddEdite]="true"></app-bread-crumb>
+
+<div class="form-container my-8 p-6 rounded-lg w-full">
+  <div class="grid grid-cols-4 gap-7">
+    <button (click)="changeTab(contractTabsEnum.contractDeets)"
+      class="flex items-center justify-center tabs-buttons rounded-lg py-3 px-16"
+      [ngClass]="{ activeTab: activeTab == contractTabsEnum.contractDeets }">
+      <img src="./assets/icons/projectsActive.svg" alt="" />
+      <p class="mr-4 font-medium text-slate-400" [ngClass]="{ activeTab: activeTab == contractTabsEnum.contractDeets }">
+        تفاصيل عقد الصيانة
+      </p>
+    </button>
+    <button (click)="changeTab(contractTabsEnum.secondaryDeets)"
+      class="flex items-center justify-center tabs-buttons rounded-lg py-3 px-16"
+      [ngClass]="{ activeTab: activeTab == contractTabsEnum.secondaryDeets }">
+      <img src="./assets/icons/secondaryDetailsActive.svg" alt="" />
+      <p class="mr-4 font-medium text-slate-400"
+        [ngClass]="{ activeTab: activeTab == contractTabsEnum.secondaryDeets }">
+        تفاصيل فرعية
+      </p>
+    </button>
+
+    <button (click)="changeTab(contractTabsEnum.attachementDeets)"
+      class="flex items-center justify-center tabs-buttons rounded-lg py-3 px-16"
+      [ngClass]="{ activeTab: activeTab == contractTabsEnum.attachementDeets }">
+      <img src="./assets/icons/fileUploadedIcon.svg" alt="" />
+      <p class="mr-4 font-medium text-slate-400"
+        [ngClass]="{ activeTab: activeTab == contractTabsEnum.attachementDeets }">
+        مرفقات عقد الصيانة
+      </p>
+    </button>
+  </div>
+
+  <form [hidden]="activeTab != contractTabsEnum.contractDeets" [formGroup]="projectDetailsForm">
+    <div class="mt-10 h-full w-full addForm">
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          اسم عقد الصيانة <span>*</span></label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text"
+          placeholder=" أدخل اسم عقد الصيانة" formControlName="contractName" style="
+            background: url('./assets/icons/name-icon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+        <small class="default-attention"
+          *ngIf="( projectDetailsForm.controls['contractName'].errors?.['required'] && (projectDetailsForm.controls['contractName'].dirty || projectDetailsForm.controls['contractName'].touched))">اسم
+          العقد مطلوب
+        </small>
+      </div>
+
+      <!-- END OF FIRST ROW -->
+
+      <!-- SECOND ROW -->
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          رقم عقد الصيانة </label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="أدخل رقم عقد الصيانة"
+          formControlName="contractNumber" style="
+            background: url('./assets/icons/code-icon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          قيمة عقد الصيانة </label>
+        <!-- <p-inputNumber
+          inputId="integeronly"
+          class=""
+          [styleClass]="'w-full bg-filterBtnBg mt-2 rounded-lg'"
+          type="number"
+          placeholder="أدخل قيمة عقد الصيانة"
+          [min]="0"
+          formControlName="contractValue"
+          [inputStyleClass]="'bg-gray-100 w-full py-3'"
+          [style]="{
+            background:
+              'url(./assets/icons/projectValueIcon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          >></p-inputNumber
+        > -->
+        <div style="position: relative;">
+          <input class="py-3 px-3 pr-16 rounded-lg outline-none w-full bg-gray-100" type="text"
+            placeholder="أدخل قيمة عقد الصيانة" formControlName="contractValue" (keydown)="onlyNumberAndComma($event)"
+            [style]="{
+              background:
+                'url(./assets/icons/projectValueIcon.svg) no-repeat right 15px center',
+              'background-color': '#f6f6f6'
+            }" />
+          <span style="position: absolute; top: 50%; left: 40px; transform: translateY(-50%); color: #888;">
+            ريال.س
+          </span>
+        </div>
+      </div>
+      <!-- END OF SECOND ROW -->
+
+
+
+      <!-- FOURTH ROW -->
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          نوع عقد الصيانة </label>
+        <!-- (onChange)="showSupervisorProject($event)" -->
+        <p-dropdown class="w-full" (onChange)="getOfficesByProjectType($event.value)"
+          [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'" formControlName="projectTypeId" [showClear]="true" [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر نوع عقد الصيانة"
+          [options]="projectTypeList"></p-dropdown>
+
+
+
+      </div>
+
+
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> المقاول </label>
+
+        <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'" formControlName="officeId"
+          (onChange)="getAllProjectManagersByOfficeId($event.value)" [filter]="true" [style]="{
+            background:
+              'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر المقاول التابع له العقد" [options]="officeList"
+          [showClear]="true"></p-dropdown>
+
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> المدير </label>
+
+        <p-dropdown class="w-full" [filter]="true" [styleClass]="'w-full bg-filterBtnBg py-3 mt-2'"
+          formControlName="projectManagerId" [style]="{
+            background:
+              'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="fullName" optionValue="id" placeholder="اختر المدير التابع له العقد"
+          [options]="projectManagerList" [showClear]="true"></p-dropdown>
+
+
+      </div>
+      <!-- END OF FOURTH ROW -->
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          المستخلصات </label>
+
+        <p-inputNumber inputId="integeronly" class="" [styleClass]="'w-full bg-filterBtnBg mt-2 rounded-lg'"
+          type="number" placeholder="أدخل عدد المستخلصات" [min]="0" formControlName="batchesCount"
+          [inputStyleClass]="'bg-gray-100 w-full  py-3'" [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }">></p-inputNumber>
+
+      </div>
+      <!-- FIFTH ROW -->
+
+
+
+      <!-- END OF FIFTH ROW -->
+    </div>
+  </form>
+
+  <form [hidden]="activeTab != contractTabsEnum.secondaryDeets" [formGroup]="secondaryDetailsForm">
+    <div class="mt-10 h-full w-full addForm">
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> تاريخ الترسيه </label>
+        <p-calendar class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+          [maxDate]="this.secondaryDetailsForm.value.startDate" formControlName="biddingDate"
+          [placeholder]="'اختر الترسيه '" [styleClass]="'w-full h-12 '" [inputStyleClass]="'bg-gray-100'"
+          [showIcon]="true"></p-calendar>
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> تاريخ بداية العقد </label>
+        <p-calendar [placeholder]="'اختر تاريخ بداية العقد'" [minDate]="this.secondaryDetailsForm.value.biddingDate"
+          class="mt-2 bg-gray-100 rounded-lg outline-none w-full" formControlName="startDate"
+          [styleClass]="'w-full h-12'" [inputStyleClass]="'bg-gray-100'" [showIcon]="true"></p-calendar>
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> تاريخ نهاية العقد </label>
+        <p-calendar [placeholder]="'اختر تاريخ نهاية العقد'" [minDate]="this.secondaryDetailsForm.value.startDate"
+          [maxDate]="this.secondaryDetailsForm.value.deliveryDate"
+          class="mt-2 bg-gray-100 rounded-lg outline-none w-full" formControlName="endDate" [styleClass]="'w-full h-12'"
+          [inputStyleClass]="'bg-gray-100'" [showIcon]="true"></p-calendar>
+      </div>
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> تاريخ الإستلام النهائي </label>
+        <p-calendar [placeholder]="'اختر تاريخ الإستلام النهائي '" formControlName="deliveryDate"
+          [minDate]="this.secondaryDetailsForm.value.endDate" class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+          [styleClass]="'w-full h-12'" [inputStyleClass]="'bg-gray-100'" [showIcon]="true"></p-calendar>
+      </div>
+      <div class="largDiv">
+        <label class="header-title font-medium"> ملاحظات </label>
+        <textarea class="px-3 pt-3 mt-2 bg-gray-100 rounded-lg outline-none h-36 resize-none" formControlName="note"
+          type="text" placeholder="أدخل ملاحظاتك عن العقد"></textarea>
+      </div>
+    </div>
+  </form>
+
+
+
+  <div *ngIf="activeTab == contractTabsEnum.attachementDeets" class="mt-7 h-full w-full">
+
+    <!-- 1 -->
+    <div class="mt-10 h-full w-full form-container rounded-lg">
+      <div class="fileContainer flex flex-col col-span-3 w-full px-4">
+        <div class="fileContainer">
+          <label> محضر الاستلام</label>
+          <div class="flex fileBox justify-between">
+            <input class="mt-2 px-3 border-0" type="" placeholder="ارفع محضر الاستلام" readonly />
+            <p-fileUpload #fileUpload1 mode="basic" [multiple]="true" [chooseIcon]="'pi pi-upload'" name="demo[]"
+              accept="image/*, .pdf" (onSelect)="
+                SelectedFile(
+                  $event,
+                  fileUpload1,
+                  attachementTypesEnum.submissionRecord
+                )
+              " [auto]="true" chooseLabel="رفع "></p-fileUpload>
+          </div>
+          <div class="fileContainer flex flex-col col-span-3">
+            <div *ngFor="let file of projectDeliveryFiles; let i = index">
+              <div class="flex justify-between w-full col-span-3 fileUploaded my-5"
+                *ngIf="file.attachTypeId == attachementTypesEnum.submissionRecord">
+                <!-- <div class="percentageDiv fileDetails">
+                  <p class="percentage" *ngIf="file.progress!=100">
+                    % {{file.progress}}
+                  </p>
+                </div> -->
+                <div class="fileDetails py-1 flex justify-between items-center">
+                  <div class="fileDetails flex items-center">
+                    <span (click)="downloadFile(file)">
+                      <i class="fa-solid fa-file" [ngClass]="file.isPicked ? 'file-picked' : ''"></i>
+                    </span>
+                    <a class="" (click)="downloadFile(file)">
+                      {{ file?.originalName }}
+                    </a>
+                    <span>
+                      {{ file.size ? file.size : "" }}
+                    </span>
+                  </div>
+                  <div>
+                    <button class="removeButton" (click)="
+                        remove(
+                          file.filePath,
+
+                          attachementTypesEnum.submissionRecord,
+                          file
+                        )
+                      ">
+                      <i class="fa-solid fa-xmark hover:cursor-pointer"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="detailsFile1" *ngIf="file.progress != 100">
+                  <p-progressBar [value]="file.progress" [showValue]="true" [color]="'#125D89'"></p-progressBar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="mt-10 h-full w-full form-container rounded-lg">
+      <div class="fileContainer flex flex-col col-span-3 w-full px-4">
+        <div class="fileContainer">
+          <label> محضر الترسية</label>
+          <div class="flex fileBox justify-between">
+            <input class="mt-2 px-3 border-0" type="" placeholder="ارفع محضر الترسية" readonly />
+            <!-- <span class="mt-2 py-3 px-3">ارفع المرفقات إن وجدت </span> -->
+            <p-fileUpload #fileUpload2 mode="basic" [multiple]="true" [chooseIcon]="'pi pi-upload'" name="demo[]"
+              accept="image/*, .pdf" (onSelect)="
+                SelectedFile(
+                  $event,
+                  fileUpload2,
+                  attachementTypesEnum.awardRecord
+                )
+              " [auto]="true" chooseLabel="رفع " (onProgress)="fileOnProgress($event)"></p-fileUpload>
+          </div>
+          <div class="fileContainer flex flex-col col-span-3">
+            <div *ngFor="let file of awardedProjectRecordFiles; let i = index">
+              <div class="flex justify-between w-full col-span-3 fileUploaded my-5"
+                *ngIf="file.attachTypeId == attachementTypesEnum.awardRecord">
+                <div class="fileDetails py-1 flex justify-between items-center">
+                  <div class="fileDetails flex items-center">
+                    <span (click)="downloadFile(file)">
+                      <i class="fa-solid fa-file" [ngClass]="file.isPicked ? 'file-picked' : ''"></i>
+                    </span>
+                    <a class="" (click)="downloadFile(file)">
+                      {{ file?.originalName }}
+                    </a>
+                    <span>
+                      {{ file.size ? file.size : "" }}
+                    </span>
+                  </div>
+                  <div>
+                    <button class="removeButton" (click)="
+                        remove(
+                          file.filePath,
+
+                          attachementTypesEnum.awardRecord,
+                          file
+                        )
+                      ">
+                      <i class="fa-solid fa-xmark hover:cursor-pointer"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="detailsFile1" *ngIf="file.progress != 100">
+                  <p-progressBar [value]="file.progress" [showValue]="true" [color]="'#125D89'"></p-progressBar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="mt-10 h-full w-full form-container rounded-lg">
+      <div class="fileContainer flex flex-col col-span-3 w-full px-4">
+        <div class="fileContainer">
+          <label> المخطط </label>
+          <div class="flex fileBox justify-between">
+            <input class="mt-2 px-3 border-0" type="" placeholder="ارفع المخطط" readonly />
+            <p-fileUpload #fileUpload3 mode="basic" [multiple]="true" [chooseIcon]="'pi pi-upload'" name="demo[]"
+              accept="image/*, .pdf" (onSelect)="
+                SelectedFile($event, fileUpload3, attachementTypesEnum.plan)
+              " [auto]="true" chooseLabel="رفع " (onProgress)="fileOnProgress($event)"></p-fileUpload>
+          </div>
+          <div class="fileContainer flex flex-col col-span-3">
+            <div *ngFor="let file of planFiles; let i = index">
+              <div class="flex justify-between w-full col-span-3 fileUploaded my-5"
+                *ngIf="file.attachTypeId == attachementTypesEnum.plan">
+                <div class="fileDetails py-1 flex justify-between items-center">
+                  <div class="fileDetails flex items-center">
+                    <span (click)="downloadFile(file)">
+                      <i class="fa-solid fa-file" [ngClass]="file.isPicked ? 'file-picked' : ''"></i>
+                    </span>
+                    <a class="" (click)="downloadFile(file)">
+                      {{ file?.originalName }}
+                    </a>
+                    <span>
+                      {{ file.size ? file.size : "" }}
+                    </span>
+                  </div>
+                  <div>
+                    <button class="removeButton" (click)="
+                        remove(
+                          file.filePath,
+
+                          attachementTypesEnum.plan,
+                          file
+                        )
+                      ">
+                      <i class="fa-solid fa-xmark hover:cursor-pointer"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="detailsFile1" *ngIf="file.progress != 100">
+                  <p-progressBar [value]="file.progress" [showValue]="true" [color]="'#125D89'"></p-progressBar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="mt-10 h-full w-full form-container rounded-lg">
+      <div class="fileContainer flex flex-col col-span-3 w-full px-4">
+        <div class="fileContainer">
+          <label>العقد</label>
+          <div class="flex fileBox justify-between">
+            <input class="mt-2 px-3 border-0" type="" placeholder="ارفع العقد" readonly />
+            <p-fileUpload #fileUpload4 mode="basic" [multiple]="true" [chooseIcon]="'pi pi-upload'" name="demo[]"
+              accept="image/*, .pdf" (onSelect)="
+                SelectedFile($event, fileUpload4, attachementTypesEnum.contract)
+              " [auto]="true" chooseLabel="رفع " (onProgress)="fileOnProgress($event)"></p-fileUpload>
+          </div>
+          <div class="fileContainer flex flex-col col-span-3">
+            <div *ngFor="let file of contractFiles; let i = index">
+              <div class="flex justify-between w-full col-span-3 fileUploaded my-5"
+                *ngIf="file.attachTypeId == attachementTypesEnum.contract">
+                <div class="fileDetails py-1 flex justify-between items-center">
+                  <div class="fileDetails flex items-center">
+                    <span (click)="downloadFile(file)">
+                      <i class="fa-solid fa-file" [ngClass]="file.isPicked ? 'file-picked' : ''"></i>
+                    </span>
+                    <a class="" (click)="downloadFile(file)">
+                      {{ file?.originalName }}
+                    </a>
+                    <span>
+                      {{ file.size ? file.size : "" }}
+                    </span>
+                    <!-- <span>{{file.fileSize}}</span> -->
+                  </div>
+                  <div>
+                    <button class="removeButton" (click)="
+                        remove(
+                          file.filePath,
+
+                          attachementTypesEnum.contract,
+                          file
+                        )
+                      ">
+                      <i class="fa-solid fa-xmark hover:cursor-pointer"></i>
+                    </button>
+                  </div>
+                </div>
+                <!-- <div class="detailsFile1" *ngIf="file.progress!=100">
+                  <p-progressBar [value]="file.progress" [showValue]="true" [color]="'#125D89'"></p-progressBar>
+                </div> -->
+
+                <div *ngIf="file.progress != 100">
+                  <div class="w-full h-6 bg-gray-200 rounded-md dark:bg-gray-700">
+                    <div
+                      class="progressBar h-6 text-md font-normal text-white text-center content-center p-0.5 leading-4 rounded-md"
+                      [style]="'width:' + file.progress + '%'">
+                      {{ file.progress }}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  عقود  الصيانة'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

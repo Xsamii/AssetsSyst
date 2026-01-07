@@ -1,0 +1,193 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'تقييم المقاولين'"
+  [imageTitle]="'./assets/icons/projectsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'تقييم عقود الأداء', routerLink: '/performance-contracts-evaluation' },
+    { name: 'تقييم المقاولين', routerLink: '/performance-contracts-evaluation/contractors-evaluation' },
+    { name: editMode ? 'تعديل تقييم المقاول' : 'إضافة تقييم مقاول' }
+  ]"
+  [isFilte]="false"
+  [inputPlaceholder]="'ابحث...'"
+  [buttonText]="'تقييم مقاول جديد'"
+  [saveBtnText]="editMode ? 'تعديل' : 'إضافة'"
+  [isShowAddEdite]="true"
+  (submitReq)="save()"
+  (cancelReq)="alertWarning = true"
+  [validity]="contractorsEvaluationForm.valid"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- FORM-->
+<!-- ============================= -->
+<form [formGroup]="contractorsEvaluationForm">
+  <!-- ============ -->
+  <div class="form-content">
+    <div class="tow-inputs-field">
+      <div class="input-field">
+        <label>المبنى <span>*</span></label>
+        <div class="dropdown-wrapper">
+          <p-dropdown
+            formControlName="buildingId"
+            [options]="buildingsList"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="المبنى"
+            [styleClass]="'w-full'"
+          ></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="formControls.buildingId.invalid && formControls.buildingId.touched"
+          >برجاء اختيار المبنى</small
+        >
+      </div>
+      <div class="input-field">
+        <label>المقاول <span>*</span></label>
+        <div class="dropdown-wrapper">
+          <p-dropdown
+            formControlName="contractorId"
+            [options]="contractorsList"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="المقاول"
+            [styleClass]="'w-full'"
+          ></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small
+          *ngIf="
+            formControls.contractorId.invalid &&
+            formControls.contractorId.touched
+          "
+          >برجاء اختيار المقاول</small
+        >
+      </div>
+    </div>
+
+    <div class="one-input-field">
+      <div class="input-field">
+        <label>نوع خطة الصيانة والمدة <span>*</span></label>
+        <div class="dropdown-wrapper">
+          <p-dropdown
+            formControlName="evaluationContractorId"
+            [options]="evaluationSettingsList"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر نوع خطة الصيانة والمدة"
+            [styleClass]="'w-full'"
+            (onChange)="onEvaluationSettingChange($event)"
+          ></p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small
+          *ngIf="
+            formControls.evaluationContractorId.invalid &&
+            formControls.evaluationContractorId.touched
+          "
+          >برجاء اختيار نوع خطة الصيانة والمدة</small
+        >
+      </div>
+    </div>
+
+    <!-- Evaluation Terms Table -->
+    <div class="evaluation-terms-section" *ngIf="evaluationTerms.length > 0">
+      <div class="table-header">
+        <div class="column-header rating-header">التقييم</div>
+        <div class="column-header term-header">البند</div>
+      </div>
+
+      <div class="evaluation-terms" formArrayName="evaluations">
+        <div
+          *ngFor="let term of evaluationTerms.controls; let i = index"
+          [formGroupName]="i"
+          class="evaluation-term-row"
+        >
+          <div class="drag-handle">
+            <i class="fa-solid fa-grip-vertical"></i>
+          </div>
+
+          <div class="term-name">
+            {{ getTermName(i) }}
+          </div>
+
+          <div class="rating-wrapper">
+            <p-rating
+              formControlName="rating"
+            ></p-rating>
+          </div>
+
+          <div class="attachment-wrapper">
+            <input
+              type="file"
+              #fileInput
+              (change)="onFileSelected($event, i)"
+              style="display: none"
+              accept="image/*,.pdf,.doc,.docx"
+            />
+
+            <!-- Show upload button if no file -->
+            <button
+              *ngIf="!term.get('fileUploads')?.value"
+              type="button"
+              class="btn-attachment"
+              (click)="fileInput.click()"
+            >
+              <i class="fa-solid fa-paperclip"></i>
+            </button>
+
+            <!-- Show file preview if file exists -->
+            <div *ngIf="term.get('fileUploads')?.value" class="file-preview">
+              <button type="button" class="btn-delete-file" (click)="removeFile(i)">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+              <img
+                [src]="getFilePreviewUrl(term.get('fileUploads')?.value)"
+                alt="Preview"
+                class="preview-image"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض تقييمات المقاولين'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>
+
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>

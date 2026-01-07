@@ -1,0 +1,476 @@
+:host ::ng-deep .p-datatable {
+  margin-top: 30px;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+  border: 0.5px solid #7070702e;
+  border-top: 0px;
+  td {
+    // @apply py-2 px-2;
+  }
+  tr:not(:last-child) {
+    border-bottom: 1px solid #7070702e;
+  }
+}
+
+:host ::ng-deep th {
+  background-color: #f6f6f6;
+  height: 54px;
+  text-align: center;
+  color: #797f8f;
+}
+
+:host ::ng-deep td {
+  text-align: center;
+  height: 43px;
+  color: #231f20;
+}
+
+:host ::ng-deep th:first-child {
+  border-top-right-radius: 10px;
+}
+
+:host ::ng-deep th:last-child {
+  border-top-left-radius: 10px;
+}
+
+::ng-deep .p-menu-overlay {
+  .p-menuitem-content {
+    // @apply p-3 text-base;
+    // color: #707070b2;
+  }
+  .p-menuitem-content:hover {
+  }
+  .p-menuitem-link {
+    padding: 10.5px 17.5px;
+  }
+  .p-menuitem-text {
+    margin-right: 4px;
+    color: #797f8f;
+  }
+  .p-menuitem-icon {
+    margin-left: 4px;
+  }
+}
+
+:host ::ng-deep {
+  .p-paginator-element {
+    background: #f5f5f5;
+    color: #797f8f;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+  }
+  .p-paginator-last,
+  .p-paginator-next,
+  .p-paginator-first,
+  .p-paginator-prev {
+    transform: rotate(180deg);
+    background: #f5f5f5;
+    color: var(--secondary-color); // Dynamic color instead of hardcoded #0e3434
+    margin: 0 2px;
+    min-width: 2rem;
+    height: 2rem;
+    border-radius: 5px;
+  }
+  .p-highlight {
+    border: 1.5px solid;
+    background: var(--gradient); // Dynamic gradient instead of hardcoded
+    color: #ffffff;
+    border-radius: 5px;
+  }
+  .p-link {
+    min-width: 2rem;
+    height: 2rem;
+  }
+  .p-dropdown {
+    background: #f5f5f5;
+  }
+  .p-dropdown-trigger-icon {
+    color: var(--secondary-color); // Dynamic color instead of hardcoded #0e3434
+  }
+  .p-dropdown-label {
+    background-color: #f5f5f5;
+  }
+  .p-element.p-dropdown-item {
+    padding: 1px 2px;
+  }
+  .p-paginator-element {
+    margin: 0 2px;
+  }
+}
+
+.paginatorContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  .nestedDiv {
+    .spanText {
+      color: #797f8f;
+      font-weight: 400;
+      font-size: 16px;
+    }
+  }
+}
+
+.userColors {
+  @apply text-center;
+  &_1 {
+    @apply py-1.5 text-sm font-bold px-6 rounded-lg;
+    background-color: rgba(36, 192, 219, 0.25);
+    color: rgba(36, 192, 219, 1);
+  }
+  &_2 {
+    @apply py-1.5 text-sm font-bold px-6 rounded-lg;
+    background-color: rgba(26, 170, 85, 0.25);
+    color: rgba(26, 170, 85, 1);
+  }
+  &_3 {
+    @apply py-1.5 text-sm font-bold px-6 rounded-lg;
+    background-color: rgba(253, 97, 47, 0.25);
+    color: rgba(253, 97, 47, 1);
+  }
+  &_4 {
+    @apply py-1.5 text-sm font-bold px-6 rounded-lg;
+    background-color: rgba(168, 96, 227, 0.25);
+    color: rgba(188, 121, 241, 1);
+  }
+  &_5 {
+    @apply py-1.5 text-sm font-bold px-6 rounded-lg;
+    background-color: rgba(255, 149, 0, 0.25);
+    color: rgba(255, 149, 0, 1);
+  }
+  &_6 {
+    @apply py-1.5 text-sm font-bold px-6 rounded-lg;
+    background-color: #348fa34d;
+    color: #348fa3;
+  }
+  &_7 {
+    @apply py-1.5 text-sm font-bold px-6 rounded-lg;
+    background-color: #f8b50040;
+    color: #f8b500;
+  }
+}
+
+// -------------Request priority----------------
+.high-priority {
+  color: #fd612f;
+  font-size: 10px;
+  margin-left: 10px;
+}
+.low-priority {
+  color: #797f8f;
+  font-size: 10px;
+  margin-left: 10px;
+}
+
+// -------------Maintenance Request Status ----------------
+.maintenanceRequestStatusIdColors {
+  &_1 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #ffe4bf;
+    color: #ff9500;
+    font-weight: 500;
+  }
+  &_2 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #1aaa5540;
+    color: #1aaa55;
+    font-weight: 500;
+  }
+  &_3 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #c8eff6;
+    color: #24c0db;
+    font-weight: 500;
+  }
+  &_4 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #e7c40c33;
+    color: #e7c40c;
+    font-weight: 500;
+  }
+  &_5 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #e9d7f8;
+    color: #bc79f1;
+    font-weight: 500;
+  }
+  &_6 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #d8d8d8;
+    color: #707070;
+    font-weight: 500;
+  }
+  &_7 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #fd612f33;
+    color: #fd612f;
+    font-weight: 500;
+  }
+  &_8 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #f64fe633;
+    color: #f64fe6;
+    font-weight: 500;
+  }
+  &_9 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #7fd32a33;
+    color: #7fd32a;
+    font-weight: 500;
+  }
+}
+
+// ------------- Parts REQUEST Status ----------------
+.statusPartsIDColors {
+  &_1 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    color: rgba(255, 149, 0, 1);
+    background-color: rgba(255, 226, 186, 1);
+    font-weight: 500;
+  }
+  &_2 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    color: rgba(127, 211, 42, 1);
+    background-color: rgba(127, 211, 42, 0.2);
+    font-weight: 500;
+  }
+  &_3 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    color: rgba(39, 163, 0, 1);
+    background-color: rgba(102, 153, 0, 0.2);
+    font-weight: 500;
+  }
+}
+
+// -------------Visit Request Status ----------------
+.visitRequestStatusIdColors {
+  &_1 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #ffe4bf;
+    color: #ff9500;
+    font-weight: 500;
+  }
+  &_2 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #1aaa5540;
+    color: #1aaa55;
+    font-weight: 500;
+  }
+  &_3 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #c8eff6;
+    color: #24c0db;
+    font-weight: 500;
+  }
+  &_4 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #e9d7f8;
+    color: #bc79f1;
+    font-weight: 500;
+  }
+  &_5 {
+    padding: 3px 15px;
+    border-radius: 8px;
+    background-color: #fed7cb;
+    color: rgba(253, 97, 47, 1);
+    font-weight: 500;
+  }
+}
+
+::ng-deep {
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-color); // Dynamic scrollbar color
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+// =======================================
+/* The switch - the box around the slider */
+// =======================================
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background: var(--gradient); // Dynamic gradient for toggle switch
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--primary-color); // Dynamic focus color
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+// ellipsis icon
+.ellipsis {
+  color: var(--secondary-color); // Dynamic color instead of hardcoded #0e3434
+  font-size: 24px;
+}
+
+button {
+  outline: none !important;
+  border: none !important;
+}
+
+::ng-deep .p-menu-list {
+  li {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 5px 0;
+    &:first-child {
+      // margin-bottom: 12px;
+    }
+  }
+  .p-menuitem-text.ng-star-inserted {
+    // margin-right: 10px;
+  }
+}
+
+::ng-deep
+  .ng-trigger.ng-trigger-overlayAnimation.p-menu.p-component.p-menu-overlay.ng-star-inserted {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: space-around;
+}
+
+::ng-deep {
+  .fa-pen-to-square::before,
+  .fa-circle-check::before,
+  .fa-file-lines::before,
+  .fa-circle-plus::before,
+  .fa-lock::before,
+  .fa-flag::before,
+  .fa-user-plus::before,
+  .fa-location-crosshairs::before {
+    color: var(--secondary-color); // Dynamic color instead of hardcoded #0e3434
+  }
+
+  .fa-trash-can::before {
+    color: #fe4035;
+  }
+}
+
+.color-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .isColor {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    margin-left: 10px;
+  }
+}
+
+// --------------------------
+// TASK STATUS COLOR
+// --------------------------
+.statues_task_colors {
+  @apply whitespace-nowrap;
+  border-radius: 5px;
+  padding: 0.5em 2.5rem;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14.22px;
+  &.status-true {
+    background-color: rgba(52, 199, 89, 0.27);
+    color: rgba(52, 199, 89, 1);
+  }
+  &.status-false {
+    color: #ff9500;
+    background-color: #ffe2ba;
+  }
+}
+
+.file-picked {
+  @apply bg-[#ff9500] bg-clip-text text-transparent;
+}
+
+.file-uploaded {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// Dynamic styling for expanded row content
+.filesContainer {
+  .border-class {
+    .label-color {
+      color: var(--primary-color) !important; // Dynamic color for labels
+    }
+  }
+}

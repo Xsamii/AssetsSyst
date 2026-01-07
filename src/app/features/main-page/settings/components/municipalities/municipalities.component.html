@@ -1,0 +1,105 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'البلديات'" [imageTitle]="'./assets/icons/locationDetailsActive.svg'" [subTitles]="items"
+  [isFilte]="false" [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث باسم البلدية، نوع البلدية...'" [buttonText]="'بلدية جديدة '" [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false" (valueSearch)="filterBySearchText($event)" (addButton)="openAdd()"></app-bread-crumb>
+
+
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
+  [withControles]="true" [noData]="showBreadcrumb ? false : true" (rowsCountChanged)="getData($event)"
+  (deleteEvent)="confirmDelete($event)" (editEvent)="openEdit($event)" [showLocationMenuItem]="true"></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+
+<app-no-data-yet *ngIf="values?.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم نقم بإضافة بلديات  بعد',
+  noDataButtonText: '  بلدية جديدة',
+  }"></app-no-data-yet>
+
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/malfunctionTypesActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل البلدية " : " إضافة بلدية" }}
+      </p>
+    </div>
+    <form [formGroup]="municipalitiesForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name">اسم البلدية
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="name" id="name" type="text" placeholder="أدخل اسم البلدية" />
+        </div>
+        <small *ngIf="formControls.name.invalid && formControls.name.touched ">
+          برجاء إدخال اسم البلدية
+        </small>
+      </div>
+      <div class="input-field">
+        <label for="name">نوع البلدية
+          <span>*</span>
+        </label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+            background:
+              'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder=" اختر المشروع  " formControlName="typeId"
+            [options]="municipalitiesTypeList"></p-dropdown>
+        </div>
+        <small *ngIf="formControls.name.invalid && formControls.name.touched ">
+          برجاء إدخال اسم التصنيف
+        </small>
+      </div>
+
+
+      <div class="buttons-content">
+        <button [disabled]="municipalitiesForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button class="buttons-white" type="button" (click)="onCloseAddEditePopup()">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  البلديات'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف البلدية؟ سيتم حذفها نهائيًا من قائمة البلديات',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

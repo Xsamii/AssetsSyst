@@ -1,0 +1,119 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'إدارة الأصول '" [imageTitle]="'./assets/icons/subUnitsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: 'المواقع ', routerLink: '/buildings/sites' }
+  ]" [isFilte]="false" [inputPlaceholder]="'ابحث باسم الموقع...'" [buttonText]="'اضافة موقع'" [saveBtnText]="'إضافة'"
+  [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false" (addButton)="openAdd()"
+  (valueSearch)="filterBySearchText($event)" (onFilterClick)="showDialog()"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
+  [withControles]="true" (editEvent)="openEdit($event)" (deleteEvent)="confirmDelete($event)"
+  (rowsCountChanged)="getAllSites($event)" [noData]="showBreadcrumb ? false : true"></app-list>
+
+
+
+
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/subUnitsActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل الموقع" : "إضافة موقع" }}
+      </p>
+    </div>
+    <form [formGroup]="siteForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="siteName">
+          اسم الموقع
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="siteName" id="siteName" type="text" placeholder="أدخل اسم الموقع" />
+        </div>
+        <small *ngIf="formControls.siteName.invalid && formControls.siteName.touched">
+          برجاء إدخال اسم الموقع
+        </small>
+      </div>
+
+      <div class="input-field">
+        <label for="uniqueNumber">
+          الرقم المميز
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="uniqueNumber" id="uniqueNumber" type="text" placeholder="أدخل الرقم المميز" />
+        </div>
+        <small *ngIf="formControls.uniqueNumber.invalid && formControls.uniqueNumber.touched">
+          برجاء إدخال الرقم المميز
+        </small>
+      </div>
+
+      <div class="input-field">
+        <label for="notes">
+          الملاحظات
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <textarea formControlName="notes" id="notes" rows="4" placeholder="أدخل الملاحظات" ></textarea>
+        </div>
+      </div>
+
+      <div class="buttons-content">
+        <button [disabled]="siteForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button class="buttons-white" type="button" (click)="onCloseAddEditePopup()">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ======================================================== -->
+<!-- NO DATA YET... -->
+<!-- ======================================================== -->
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+noDataImg: './assets/images/no-data-search.png',
+noDataText: 'يبدو أنك لم تقم بإضافة أي موقع بعد، ستظهر المواقع المضافة  هنا... يمكنك البدء بإضافة أول موقع',
+noDataButtonText: 'إضافة موقع جديد',
+}"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض المواقع '
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف الموقع؟ سيتم حذفه نهائيًا من قائمة المواقع',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

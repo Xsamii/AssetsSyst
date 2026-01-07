@@ -1,0 +1,54 @@
+<div class="bread-crumb py-4" >
+    <div class="cramb-right">
+      <div class="right-title">
+        <!-- <img [src]="imageTitle" /> -->
+      </div>
+
+    </div>
+    <div class="cramb-left" *ngIf="!isShowFilter">
+      <div class="input-search">
+        <div><img src="./assets/icons/seacrhIcon.svg" /></div>
+        <input
+          type="text"
+          [placeholder]="inputPlaceholder"
+          #search
+          (change)="valueSearchFun(search.value)"
+        />
+
+      </div>
+   <div class="filter">
+    <button *ngIf="isFilte"  (click)="onFilterClickFun()">
+      <img src="./assets/icons/seacrhIconr.svg" />
+    </button>
+   </div>
+
+    </div>
+    <div class="btn">
+      <!-- <button
+      *ngIf="showAddButton && buttonText !== ''"
+      class="btn-white"
+      (click)="addButtonFun()"
+    >
+      <i class="fa-solid fa-download"></i>
+      {{ buttonText }}
+    </button> -->
+    <button
+    *ngIf="showAddButton && buttonText !== ''"
+    class="btn-white"
+    (click)="menu.toggle($event)"
+  >
+    <i class="fa-solid fa-download"></i>
+    {{ buttonText }}
+  </button>
+    <p-menu #menu [model]="items" [popup]="true" />
+
+    <button class="text-white ml-10 mr-5"
+    (click)="backButton()"
+  >
+    <i class="fa-solid fa-reply"></i>
+    رجوع
+  </button>
+
+    </div>
+
+  </div>

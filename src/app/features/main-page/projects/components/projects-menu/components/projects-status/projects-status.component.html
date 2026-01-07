@@ -1,0 +1,170 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'الحالات'"
+  [imageTitle]="'./assets/icons/secondaryDetailsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/projects' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    { name: 'المشاريع ', routerLink: '/projects/projects-menu' },
+    {
+      name: 'الحالات',
+      routerLink: '/projects/projects-menu/projects-status'
+    }
+  ]"
+  [isFilte]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث باسم الحالة...'"
+  [buttonText]="'حالة جديدة'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  (addButton)="openAdd()"
+  (valueSearch)="filterBySearchText($event)"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  [noData]="showBreadcrumb ? false : true"
+  (rowsCountChanged)="getAllProjectStatue($event)"
+  (deleteEvent)="confirmDelete($event)"
+  (editEvent)="openEdit($event)"
+></app-list>
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/secondaryDetailsActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل الحالة " : " إضافة حالة" }}
+      </p>
+    </div>
+    <form [formGroup]="statusForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name"
+          >اسم الحالة
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input
+            formControlName="name"
+            id="name"
+            type="text"
+            placeholder="أدخل اسم الحالة"
+          />
+        </div>
+        <!-- <small *ngIf="formControls.name.invalid && formControls.name.touched ">
+          برجاء إدخال اسم الحالة
+        </small> -->
+        <!-- VALIDATIONS -->
+        <div
+          *ngIf="
+            formControls.name?.invalid &&
+            (formControls.name?.touched || formControls.name?.dirty)
+          "
+        >
+          <small
+            class="tw-text-red-500"
+            *ngIf="formControls.name?.errors?.['required'] || formControls.name?.errors?.['pattern']"
+          >
+            <i class="fa-solid fa-circle-xmark tw-ml-1"></i>
+            برجاء إدخال اسم الحالة
+          </small>
+        </div>
+      </div>
+      <div class="input-field">
+        <label for="name"
+          >لون الحالة
+          <span>*</span>
+        </label>
+        <div
+          class="px-3 flex justify-between items-center rounded-xl h-11 bg-filterBtnBg mt-2"
+        >
+          <p class="colorHolder" [ngStyle]="{ 'background-color': color }">
+            {{ color }}
+          </p>
+          <p-colorPicker
+            class="custom pt-3 px-2"
+            [appendTo]="'body'"
+            formControlName="color"
+            [(ngModel)]="color"
+          ></p-colorPicker>
+        </div>
+        <small *ngIf="formControls.color.invalid && formControls.color.touched">
+          برجاء إدخال لون الحالة
+        </small>
+      </div>
+
+      <div class="buttons-content">
+        <button [disabled]="statusForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button
+          class="buttons-white"
+          type="button"
+          (click)="onCloseAddEditePopup()"
+        >
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  (addNewEvent)="openAdd()"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم تقم بإضافة أي حالة  بعد، ستظهر الحالات المضافة  هنا... يمكنك البدء بإضافة أول حالة',
+  noDataButtonText: 'حالة جديدة ',
+  }"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  الحالات'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف الحالة؟  سيتم حذفه نهائيًا من قائمة الحالات',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

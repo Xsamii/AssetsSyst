@@ -1,0 +1,226 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'أنواع الطلبات'"
+  [imageTitle]="'./assets/icons/malfunctionTypesActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/projects' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    { name: 'طلبات الزيارة ', routerLink: '/projects/visit-requests' },
+    {
+      name: 'أنواع الطلبات',
+      routerLink: '/projects/visit-requests/requests-types'
+    }
+  ]"
+  [isFilte]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث باسم نوع الطلب...'"
+  [buttonText]="' نوع طلب جديد'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  (addButton)="openAdd()"
+  (valueSearch)="filterBySearchText($event)"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+
+<div class="mt-7" *ngIf="showBreadcrumb">
+  <p-treeTable
+    [value]="tree"
+    [scrollable]="true"
+    [tableStyle]="{ 'min-width': '15rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th [style]="'width:80%'">نوع الطلب</th>
+
+        <th [style]="'width:20%'">إعدادات</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+      <tr [ttRow]="rowNode">
+        <td [style]="'width:80%'" (click)="openWhenClickTd(rowData.id)">
+          <p-treeTableToggler
+            [dir]="'rtl'"
+            [rowNode]="rowNode"
+          ></p-treeTableToggler>
+          {{ rowData.name }}
+        </td>
+
+        <td [style]="'width:20%'">
+          <p-menu
+            #menu
+            [popup]="true"
+            [model]="menuItems"
+            [styleClass]="'rtl'"
+            appendTo="body"
+          ></p-menu>
+          <!-- <button type="button" pButton icon="fa-solid fa-ellipsis tw-text-gold-color tw-text-2xl"
+            (click)="initializeMenu(rowData); menu.toggle($event)"
+            class="tw-outline-none focus:tw-outline-none focus:tw-shadow-none focus:tw-border-0 ellipsis"
+            [style]="{margin: '0', padding:'0'}"></button> -->
+          <button
+            pButton
+            class="tw-outline-none focus:tw-outline-none focus:tw-shadow-none focus:tw-border-0 ellipsis"
+            type="button"
+            (click)="initializeMenu(rowData); menu.toggle($event)"
+            icon="fa-solid fa-ellipsis tw-text-gold-color tw-text-2xl"
+            label=""
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-treeTable>
+  <div class="paginatorContainer">
+    <p-paginator
+      (onPageChange)="onPageChange($event)"
+      [first]="first"
+      [rows]="rows"
+      [totalRecords]="totalItemsCount"
+      [showCurrentPageReport]="false"
+      [pageLinkSize]="3"
+    ></p-paginator>
+    <div class="nestedDiv">
+      <span class="spanText"> عدد العناصر لكل صفحة : </span>
+      <p-dropdown
+        [appendTo]="'body'"
+        [options]="options"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="rows"
+        (onChange)="onPageChange({ page: 1, first: 0, rows: rows })"
+      ></p-dropdown>
+    </div>
+  </div>
+</div>
+<!-- ======================================================== -->
+<!-- NO DATA YET... -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="tree?.length == 0 && !isSearchingReasult"
+  (addNewEvent)="openAdd()"
+  [noDataElements]="{
+    noDataImg: './assets/images/no-data-search.png',
+    noDataText: 'يبدو أنك لم نقم بإضافة أنواع طلبات بعد',
+    noDataButtonText: 'نوع طلب جديد'
+  }"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/tasks.svg" />
+      <p>
+        {{ isEditMode ? "تعديل نوع الطلب " : " إضافة نوع طلب" }}
+      </p>
+    </div>
+    <form [formGroup]="requestTypeForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name"
+          >اسم نوع الطلب
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input
+            formControlName="name"
+            id="name"
+            type="text"
+            placeholder="أدخل اسم نوع الطلب"
+          />
+        </div>
+        <!-- VALIDATIONS -->
+        <div
+          *ngIf="
+            formControls.name?.invalid &&
+            (formControls.name?.touched || formControls.name?.dirty)
+          "
+        >
+          <small
+            class="tw-text-red-500"
+            *ngIf="formControls.name?.errors?.['required'] || formControls.name?.errors?.['pattern']"
+          >
+            <i class="fa-solid fa-circle-xmark tw-ml-1"></i>
+            برجاء إدخال اسم نوع الطلب
+          </small>
+        </div>
+      </div>
+      <div class="input-field">
+        <label for="name">نوع الطلب الرئيسي</label>
+        <p-treeSelect
+          class="w-full"
+          [containerStyleClass]="'w-full bg-filterBtnBg py-3'"
+          [containerStyle]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          [options]="requestTypeList"
+          placeholder="اختر نوع الطلب"
+          [selectionMode]="'single'"
+          [(ngModel)]="selectedNodes"
+          [ngModelOptions]="{ standalone: true }"
+        >
+        </p-treeSelect>
+      </div>
+
+      <div class="buttons-content">
+        <button
+          [disabled]="requestTypeForm.invalid"
+          class="buttons"
+          type="submit"
+        >
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button
+          class="buttons-white"
+          type="button"
+          (click)="onCloseAddEditePopup()"
+        >
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  المهام'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف نوع الطلب؟  سيتم حذفها نهائيًا من قائمة أنواع الطلبات',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

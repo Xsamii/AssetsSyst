@@ -1,0 +1,179 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="isEdit ? 'تعديل المستخدم' : 'إضافة مستخدم'"
+  [imageTitle]="'./assets/icons/mainBuildingsActive.svg'" [subTitles]="items" (submitReq)="submit()"
+  (cancelReq)="cancel()" [isFilte]="true" [buttonText]="'مبنى جديد'" [saveBtnText]="isEdit ? 'حفظ' : 'إضافة'"
+  [isShowAddEdite]="true" [validity]="formData.valid"></app-bread-crumb>
+
+<form [formGroup]="formData">
+  <div class="form-container my-8 p-6 rounded-lg w-full">
+    <!-- Container Header -->
+    <div class="flex items-center justify-around p-3 rounded-lg bg-primary-light max-w-44 min-h-12">
+      <img src="./assets/icons/user-active.svg" class="w-5" alt="" />
+      <label class="header-title font-medium">تفاصيل المستخدم </label>
+    </div>
+
+    <!-- Container Body -->
+    <div class="addForm my-6">
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">الاسم<span>*</span></label>
+
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text"
+          placeholder="أدخل اسم المستخدم بالكامل" formControlName="fullName" [maxlength]="100" style="
+            background: url('./assets/icons/userIcon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+
+        <small class="default-attention"
+          *ngIf="( formData.controls['fullName'].errors?.['required'] && (formData.controls['fullName'].dirty || formData.controls['fullName'].touched))">اسم
+          المستخدم مطلوب
+        </small>
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          البريد الإلكتروني<span>*</span></label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="email"
+          placeholder="أدخل البريد الإلكتروني" formControlName="email" [readOnly]="isEdit"
+          [ngStyle]="{ cursor: isEdit ? 'default' : 'text' }" style="
+            background: url('./assets/icons/email.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+        <small class="default-attention"
+          *ngIf="(formData.controls['email'].errors?.['required'] && (formData.controls['email'].dirty || formData.controls['email'].touched)) ">
+          البريد الإلكتروني مطلوب
+        </small>
+        <small class="default-attention"
+          *ngIf="(formData.controls['email'].touched && (formData.controls['email'].errors?.['email'])) ">
+          من فضلك ادخل بريد الالكتروني صحيح</small>
+      </div>
+    </div>
+    <div class="addForm my-6">
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">رقم الهاتف<span>*</span></label>
+
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="أدخل رقم الهاتف"
+          formControlName="mobile" [maxlength]="10" appOnlyNumber style="
+            background: url('./assets/icons/phone.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+
+        <small class="default-attention"
+          *ngIf="(formData.controls['mobile'].errors?.['required'] && (formData.controls['mobile'].dirty || formData.controls['mobile'].touched))">
+          رقم الهاتف مطلوب
+        </small>
+        <small class="default-attention"
+          *ngIf="(formData.controls['mobile'].touched && formData.controls['mobile']?.errors?.['minlength'])">
+          يجب ان يكون رقم الهاتف 10 ارقام</small>
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          رقم الهوية<span>*</span></label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="أدخل رقم الهوية"
+          formControlName="nationId" [maxlength]="10" appOnlyNumber style="
+            background: url('./assets/icons/hash.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 30px;
+          " />
+        <small class="default-attention"
+          *ngIf="(formData.controls['nationId'].errors?.['required'] && (formData.controls['nationId'].dirty || formData.controls['nationId'].touched))">
+          رقم الهوية مطلوب
+        </small>
+        <small class="default-attention"
+          *ngIf="(formData.controls['nationId'].touched && (formData.controls['nationId']?.errors?.['minlength']))">
+          يجب ان يكون رقم الهوية 10 ارقام</small>
+      </div>
+    </div>
+
+    <div class="addForm my-4">
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> المجموعة <span>*</span></label>
+        <p-dropdown class="mt-2 outline-none" [readonly]="isEdit" [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id" placeholder="اختر المجموعة"
+          formControlName="userTypeId" [options]="userTypeList" (onChange)="showOfficeList($event.value)"></p-dropdown>
+        <small class="default-attention"
+          *ngIf="( formData.controls['userTypeId'].errors?.['required'] && (formData.controls['userTypeId'].dirty || formData.controls['userTypeId'].touched)) ">
+          نوع المجموعة مطلوب
+        </small>
+      </div>
+
+      <div *ngIf="showOffice" class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> المقاول <span>*</span></label>
+        <p-dropdown class="mt-2 outline-none" [readonly]="isEdit" [style]="{
+            background:
+              'url(./assets/icons/info-icon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id" placeholder="اختر المقاول "
+          formControlName="officeId" [options]="officeList" [filter]="true" filterBy="name"></p-dropdown>
+        <small class="default-attention"
+          *ngIf="( formData.controls['officeId'].errors?.['required'] && (formData.controls['officeId'].dirty || formData.controls['officeId'].touched))">
+          المقاول مطلوب</small>
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> تاريخ الميلاد</label>
+        <p-calendar class="mt-2 bg-gray-100 rounded-lg outline-none w-full" [placeholder]="'اختر تاريخ الميلاد'"
+          [styleClass]="'w-full h-12 pr-0'" [inputStyleClass]="'bg-gray-100 pr-0'" [showIcon]="true"
+          formControlName="dateOfBirth"></p-calendar>
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> الرقم الوظيفي</label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="أدخل الرقم الوظيفي"
+          formControlName="jobId" style="
+            background: url('./assets/icons/hash.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">الوظيفة</label>
+        <input class="mt-2 py-3 px-3 bg-gray-100 rounded-lg outline-none" type="text" placeholder="ادخل اسم الوظيفة"
+          formControlName="jobName" style="
+            background: url('./assets/icons/info-icon.svg')
+              no-repeat right 15px center;
+            background-color: #f6f6f6;
+            padding-right: 35px;
+          " />
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  المستخدمين'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

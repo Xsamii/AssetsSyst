@@ -1,0 +1,88 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'تقييم المقاولين'"
+  [imageTitle]="'./assets/icons/projectsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'تقييم عقود الأداء', routerLink: '/performance-contracts-evaluation' },
+    { name: 'تقييم المقاولين', routerLink: '/performance-contracts-evaluation/contractors-evaluation' }
+  ]"
+  [isFilte]="false"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث بالرقم، اسم التقييم، الوصف'"
+  [buttonText]="'تقييم مقاول'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  (valueSearch)="filterBySearchText($event)"
+  (addButton)="openAdd()"
+  [isContractorsEvaluation]="true"
+  [contractorsList]="contractorsList"
+  [buildingsList]="buildingsList"
+  (contractorId)="filterByContractorId($event)"
+  (buildingId)="filterByBuildingId($event)"
+></app-bread-crumb>
+ 
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  [noData]="showBreadcrumb ? false : true"
+  (rowsCountChanged)="getAllContractorsEvaluation($event)"
+  (editEvent)="openEdit($event)"
+  (deleteEvent)="confirmDelete($event)"
+></app-list>
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values.length == 0 && !isSearchingReasult"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم تقم بإضافة أي تقييم مقاول بعد، ستظهر تقييمات المقاولين المضافة هنا... يمكنك البدء بإضافة أول تقييم مقاول',
+  noDataButtonText: 'تقييم مقاول ',
+  }"
+  (addNewEvent)="openAdd()"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض تقييمات المقاولين'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف تقييم المقاول؟ سيتم حذفه نهائيًا من قائمة تقييمات المقاولين',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

@@ -1,0 +1,176 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'لوحة التحكم'" [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'" [isFilte]="true"
+  [showAddButton]="false" [isShowFilter]="true" [isShowAddEdite]="false"></app-bread-crumb>
+
+<div class="grid grid-cols-12 gap-4">
+  <div class="cardContainersmall card mb-0">
+    <div class="titleConatiner">
+      <p>مشاريع المقاول</p>
+      <h3>
+        {{ data?.executiveProjectCount }}
+      </h3>
+    </div>
+    <div class="icon-data">
+      <img src="./assets/icons/contractordashboardicon.svg" alt="" />
+    </div>
+  </div>
+  <div class="cardContainersmall card mb-0">
+    <div class="titleConatiner">
+      <p>مشاريع الاستشاري</p>
+      <h3>
+        {{ data?.advisorProjectCount }}
+      </h3>
+    </div>
+    <div class="icon-data">
+      <img src="./assets/icons/consultantdashboardicon.svg" alt="" />
+    </div>
+  </div>
+  <div class="cardContainersmall card mb-0">
+    <div class="titleConatiner">
+      <p>طلبات الزيارة</p>
+      <h3>
+        {{ data?.visitRequestsCount }}
+      </h3>
+    </div>
+    <div class="icon-data">
+      <img src="./assets/icons/requestsdashboardicon.svg" alt="" />
+    </div>
+  </div>
+  <div class="cardContainersmall card mb-0">
+    <div class="titleConatiner">
+      <p>الزيارات المكتملة</p>
+      <h3>
+        {{ data?.visitsCount }}
+      </h3>
+    </div>
+    <div class="icon-data">
+      <img src="./assets/icons/visitsdashboardicon.svg" alt="" />
+    </div>
+  </div>
+
+  <div class="cardContainerlarge card mb-0">
+    <h3>تصنيفات المشاريع</h3>
+    <div class="col-span-12" id="columnChartContainer"></div>
+  </div>
+  <div class="cardContainerlarge card mb-0">
+    <h3>حالة المشاريع</h3>
+    <div class="col-span-12" id="pieChartContainer"></div>
+  </div>
+  <div class="cardContainerlarge card">
+    <h3>حالة الطلبات</h3>
+    <div class="col-span-12" id="barsChartContainer"></div>
+  </div>
+  <div class="cardContainerlarge card">
+    <h3>حالة الزيارات</h3>
+    <div class="col-span-12" id="lineChartContainer"></div>
+  </div>
+  <div class="cardContainerlarge card mb-0">
+
+    <h3> حالة انجاز المشاريع</h3>
+    <div class=" text-left mb-5">
+
+      <div class="arrow-button " (click)="loadTaskCompletionPage(currentPage - 1)">
+        <i class="fa-solid fa-less-than"></i>
+      </div>
+
+
+      <div class="arrow-button " (click)="loadTaskCompletionPage(currentPage + 1)">
+        <i class="fa-solid fa-greater-than "></i>
+      </div>
+    </div>
+    <div class="col-span-12" id="columnChartContainer1"></div>
+  </div>
+
+  <div class="cardContainerlarge card  ">
+    <google-map [mapTypeId]="hybrid" class="rounded-lg " width="100%" height="95%" [center]="center" [zoom]="zoom"
+      [dir]="'rtl'">
+      <map-marker [dir]="'rtl'" #marker="mapMarker" *ngFor="let markerPosition of markerPositions"
+        [position]="markerPosition" [options]="markerOptions" (mapClick)="openInfoWindow(marker)"></map-marker>
+      <map-info-window>
+        <div class="pl-20">
+          <h4 class="p-1"> الاسم : <span class="text-[#717171]"> {{ projectData?.name }}</span></h4>
+          <h4 class="p-1"> النوع : <span class="text-[#717171]"> {{ projectData?.projectTypeId == 1 ? "استشاري" :
+              "تنفيذي" }}
+            </span></h4>
+          <h4 class="p-1"> التصنيف :<span class="text-[#717171]"> {{ projectData?.projectClassificationName }}
+            </span></h4>
+          <h4 class="p-1"> الحالة :<span class="text-[#717171]"> {{ projectData?.projectStatueName }}
+            </span></h4>
+
+          <h4 class="p-1"> المستخلصات :<span class="text-[#717171]"> {{ projectData?.extractsNumber | number }}
+
+            </span></h4>
+          <div class="text-center py-3 mr-20">
+            <button class="border border-teal-600 text-teal-600 px-6 py-1 rounded-md hover:bg-teal-50 transition"
+              (click)="viewData()">
+              المزيد
+            </button>
+          </div>
+        </div>
+        <!-- <div class="valuesContainer">
+          <p class="titles">الاسم:</p>
+          <p class="values">
+            {{ projectData?.name }}
+          </p>
+        </div>
+        <div class="valuesContainer">
+          <p class="titles">رقم المشروع:</p>
+          <p class="values">
+            {{ projectData?.number }}
+          </p>
+        </div>
+        <div class="valuesContainer">
+          <p class="titles">القيمة:</p>
+          <p class="values">
+            {{ projectData?.value | number }}
+          </p>
+        </div>
+        <div class="valuesContainer">
+          <p class="titles">النوع:</p>
+          <p class="values">
+            {{ projectData?.projectTypeId == 1 ? "استشاري" : "تنفيذي" }}
+          </p>
+        </div>
+        <div class="valuesContainer">
+          <p class="titles">التصنيف:</p>
+          <p class="values">
+            {{ projectData?.projectClassificationName }}
+          </p>
+        </div>
+        <div class="valuesContainer">
+          <p class="titles">الحالة:</p>
+          <p class="values">
+            {{ projectData?.projectStatueName }}
+          </p>
+        </div>
+        <div class="valuesContainer">
+          <p class="titles">الغرفة:</p>
+          <p class="values">
+            {{ projectData?.officeName }}
+          </p>
+        </div>
+        <div class="valuesContainer">
+          <p class="titles">المدير:</p>
+          <p class="values">
+            {{ projectData?.projectManagerName! }}
+          </p>
+        </div>
+        <div class="valuesContainer">
+          <p class="titles">المستخلصات:</p>
+          <p class="values">
+            {{ projectData?.extractsNumber | number }}
+          </p>
+        </div>
+        <div class="valuesContainer">
+          <p class="titles">التسليم:</p>
+          <p class="values">
+            {{ projectData?.deliveryDate | date }}
+          </p>
+        </div> -->
+      </map-info-window>
+    </google-map>
+  </div>
+
+</div>

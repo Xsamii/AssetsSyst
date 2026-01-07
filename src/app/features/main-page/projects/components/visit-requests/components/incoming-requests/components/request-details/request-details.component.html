@@ -1,0 +1,357 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<div class="bread-crumb">
+  <div class="right">
+    <div class="title">
+      <img src="./assets/icons/maintenanceRequestsActive.svg" />
+      <h3>تفاصيل الطلب</h3>
+      <span [class]="'statusColor_' + visitRequestStatusId">{{
+        visitRequestStatusId == 1
+          ? "لم يتم التخصيص"
+          : visitRequestStatusId == 2
+          ? "تم التخصيص"
+          : visitRequestStatusId == 3
+          ? "غير مكتمل"
+          : visitRequestStatusId == 4
+          ? "مكتملة"
+          : visitRequestStatusId == 5
+          ? "تم الرفض"
+          : ""
+      }}</span>
+    </div>
+    <div class="links">
+      <a routerLink='/projects'>الرئيسية</a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a routerLink="/projects">إدارة المشاريع</a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a routerLink="/projects/visit-requests">طلبات الزيارة </a>
+      <i class="fa-solid fa-angle-left"></i>
+     <a *ngIf="userRole !== userTypes.Admin" routerLink="/projects/visit-requests/outgoing-requests">
+        الطلبات الصادرة
+      </a>
+      <a *ngIf="userRole === userTypes.Admin"  routerLink="/projects/visit-requests">
+        الطلبات
+      </a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a routerLink="/projects/visit-requests/incoming-requests/request-details"
+        >تفاصيل الطلب
+      </a>
+    </div>
+  </div>
+  <div class="left" *ngIf="visitRequestStatusId == 1">
+    <div *ngIf="!showCustomizeOrder">
+      <button
+        class="customize-button"
+        type="button"
+        (click)="onCustomizeOrder()"
+      >
+        تخصيص
+      </button>
+      <button
+        class="reject-button"
+        type="button"
+        (click)="refuseVisitRequestToUser()"
+      >
+        رفض الطلب
+      </button>
+    </div>
+    <div *ngIf="showCustomizeOrder">
+      <button
+        class="save-button"
+        type="submit"
+        (click)="assignVisitRequestToUser()"
+      >
+        حفظ
+      </button>
+      <button class="cancle-button" type="button" (click)="onCustomizeOrder()">
+        الغاء
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================== -->
+<!-- Customize order -->
+<!-- ================================== -->
+<div
+  class="request-details-content"
+  *ngIf="showCustomizeOrder && visitRequestStatusId == 1"
+>
+  <div class="title">
+    <img src="./assets/icons/fileUploadedIcon.svg" />
+    <h3>تخصيص الطلب</h3>
+  </div>
+  <form [formGroup]="assignUserForm">
+    <div class="narrowCols">
+      <label for="">الموظف المخصص <span>*</span></label>
+      <p-dropdown
+        formControlName="userAssignId"
+        class="w-full"
+        [styleClass]="'w-full bg-filterBtnBg py-3'"
+        [style]="{
+          background:
+            'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+          'background-color': '#f6f6f6',
+          'padding-right': '35px'
+        }"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="  اختر الموظف المخصص "
+        [options]="usersForAssignList"
+      ></p-dropdown>
+      <div
+        *ngIf="
+          formControl.userAssignId.invalid && formControl.userAssignId.touched
+        "
+      >
+        <small style="color: #fe4035">برجاء اختيار الموظف المخصص</small>
+      </div>
+    </div>
+    <div class="textarea-content">
+      <label for="">ملاحظات</label>
+      <div class="textarea">
+        <img src="./assets/icons/notes-icon.svg" />
+        <textarea
+          formControlName="description"
+          placeholder="أدخل ملاحظاتك إن وُجدت"
+        ></textarea>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- =================================================== -->
+<!-- Request Details -->
+<!-- =================================================== -->
+
+<div class="request-details-content">
+  <div class="title">
+    <img src="./assets/icons/maintenanceRequestsActive.svg" />
+    <h3>تفاصيل الطلب</h3>
+  </div>
+
+  <div class="box">
+    <img src="./assets/icons/pen-ruler-icon.svg" />
+    <p>
+      المشروع:
+      <span> {{ requestData["projectName"] }}</span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/check-list.svg" />
+    <p>
+      المهمة:
+      <span> {{ requestData["projectTaskName"] }}</span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/malfunction-outline.svg" />
+    <p>
+      نوع الطلب:
+      <span> {{ requestData["visitRequestTypeName"] }}</span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/locationIcon.svg" />
+    <p>
+      عنوان الطلب:
+      <span> {{ requestData["requestAdress"] }}</span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/calender.svg" />
+    <p>
+      تاريخ الزيارة:
+      <span>
+        {{ requestData["visitDateTime"] | date }}
+      </span>
+    </p>
+  </div>
+  <div class="box">
+    <img src="./assets/icons/time.svg" />
+    <p>
+      وقت الزيارة:
+      <span> {{ requestData["visitDateTime"] | date : "a h:mm  - EEEE" }}</span>
+    </p>
+  </div>
+  <div class="box" *ngIf="visitRequestStatusId != 1">
+    <img src="./assets/icons/userIcon.svg" />
+    <p>
+      الموظف المخصص له الطلب:
+      <span> {{ requestData["userAssignFullName"] }}</span>
+    </p>
+  </div>
+  <div class="box" *ngIf="visitRequestStatusId != 1">
+    <img src="./assets/icons/notes-icon.svg" />
+    <p>
+      ملاحظات تخصيص الطلب:
+      <span> {{ requestData["description"] }}</span>
+    </p>
+  </div>
+  <div
+    class="box"
+    *ngIf="visitRequestStatusId == 3 || visitRequestStatusId == 4"
+  >
+    <img src="./assets/icons/notes-icon.svg" />
+    <p>
+      ملاحظات الزيارة:
+      <span> {{ requestData["descriptionUserAssignOrRefuse"] }}</span>
+    </p>
+  </div>
+</div>
+<!-- ================================== -->
+<!-- FILES -->
+<!-- ================================== -->
+<!-- <div class="request-details-content">
+  <div class="title">
+    <img src="./assets/icons/fileUploadedIcon.svg" />
+    <h3>مرفقات الطلب</h3>
+  </div>
+  <div class="box" *ngFor="let files of requestData['updateFiles']">
+    <img
+      style="width: 25px; height: 25px"
+      src="./assets/icons/fileUploadedIcon.svg"
+    />
+    <a [href]="files.fullPath" target="_blank">
+      <p>
+        {{ files.originalName }}:
+        <span>
+          {{
+            files.fileSize
+              ? files.fileSize + "ميجا بايت"
+              : "حجم الملف غير موجود"
+          }}
+        </span>
+      </p>
+    </a>
+  </div>
+  <div *ngIf="requestData['updateFiles'].length == 0">
+    <h2>لا يوجد مرفقات...</h2>
+  </div>
+</div> -->
+<!-- ================================== -->
+<!-- FILES -->
+<!-- ================================== -->
+<div class="request-details-content">
+  <div class="title">
+    <img src="./assets/icons/fileUploadedIcon.svg" />
+    <h3>مرفقات الطلب</h3>
+  </div>
+  <ng-container *ngFor="let files of requestData['updateFiles']">
+    <div class="box" *ngIf="files.attachTypeId == null">
+      <img
+        style="width: 25px; height: 25px"
+        src="./assets/icons/fileUploadedIcon.svg"
+      />
+      <a [href]="files.fullPath" target="_blank">
+        <p>
+          {{ files.originalName }}:
+          <bdi>
+            {{
+              files.fileSize
+                ? files.fileSize + "ميجا بايت"
+                : "حجم الملف غير موجود"
+            }}
+          </bdi>
+        </p>
+      </a>
+    </div>
+  </ng-container>
+</div>
+<!-- ============================ -->
+<!-- مرفقات الزياره -->
+<!-- ============================ -->
+<div
+  class="request-details-content"
+  *ngIf="visitRequestStatusId == 3 || visitRequestStatusId == 4"
+>
+  <div class="title">
+    <img src="./assets/icons/fileUploadedIcon.svg" />
+    <h3>مرفقات الزيارة</h3>
+  </div>
+  <ng-container *ngFor="let files of requestData['updateFiles']">
+    <div class="box" *ngIf="files.attachTypeId == 1">
+      <img
+        style="width: 25px; height: 25px"
+        src="./assets/icons/fileUploadedIcon.svg"
+      />
+      <a [href]="files.fullPath" target="_blank">
+        <p>
+          {{ files.originalName }}:
+          <bdi>
+            {{
+              files.fileSize
+                ? files.fileSize + "ميجا بايت"
+                : "حجم الملف غير موجود"
+            }}
+          </bdi>
+        </p>
+      </a>
+    </div>
+  </ng-container>
+</div>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض الطلبات الواردة'
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text: errorMsg,
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+
+<!-- ===================================== -->
+<!-- ===================================== -->
+<!-- ===================================== -->
+<div class="overlay" *ngIf="alertConfirm">
+  <div class="sweet-alert">
+    <!-- ================================ -->
+    <!-- SWEET ALERT ICOM IMG -->
+    <!-- ================================ -->
+    <div class="sweet-img">
+      <div>
+        <img src="../../../../assets/icons/alert-error.svg" />
+      </div>
+    </div>
+    <div class="sweet-text popup-text">هل ترغب حقًا في رفض الطلب؟</div>
+    <div class="sweet-buttons">
+      <button class="confirm" (click)="alertConfirmFun(true)">رفض</button>
+      <button
+        (click)="alertConfirmFun(false)"
+        class="tw-mr-3"
+        ngClass="confirm-cancle"
+      >
+        إلغاء
+      </button>
+
+      <!-- ========================================================= -->
+      <!-- ========================================================= -->
+    </div>
+  </div>
+</div>

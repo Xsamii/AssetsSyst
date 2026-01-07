@@ -1,0 +1,322 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<div class="bread-crumb">
+  <div class="right">
+    <div class="title">
+      <img src="./assets/icons/maintenanceRequestsActive.svg" />
+      <h3>تفاصيل الطلب</h3>
+      <span [class]="'statusColor_' + maintenanceRequestStatusId">{{
+        maintenanceRequestStatusId == 1
+        ? "تحت المراجعة"
+        : maintenanceRequestStatusId === 2
+        ? "تم المراجعة"
+        : maintenanceRequestStatusId === 3
+        ? "قيد التنفيذ"
+        : maintenanceRequestStatusId === 4
+        ? "تحت الاستلام"
+        : maintenanceRequestStatusId === 5
+        ? "تم التخصيص"
+        : maintenanceRequestStatusId === 6
+        ? "تم رفض المعالجة"
+        : maintenanceRequestStatusId === 7
+        ? "تم تأكيد الرفض "
+        : maintenanceRequestStatusId === 8
+        ? "تم قبول المعالجة "
+        : maintenanceRequestStatusId === 9
+        ? "تم تأكيد المعالجة "
+        : ""
+        }}</span>
+    </div>
+    <div class="links">
+      <a routerLink="/">الرئيسية</a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a [routerLink]="mainRoute == 'projects' ? '/projects' : '/buildings'">{{
+        mainRoute == "projects" ? "إدارة المشاريع" : "إدارة الاصول"
+        }}</a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a routerLink="/buildings/maintenace-requests">طلبات الصيانة </a>
+      <i class="fa-solid fa-angle-left"></i>
+      <a routerLink="">تفاصيل الطلب </a>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- Request Details -->
+<!-- =================================================== -->
+
+<div class="request-container">
+  <div class="tabs">
+    <div class="tab" (click)="toggle('details')" [class.active-tab]="activeTab == 'details'">
+      <img src="./assets/icons/maintenanceRequestsActive.svg" *ngIf="activeTab === 'details'" />
+      <img src="./assets/icons/details-gray-icon.svg" *ngIf="activeTab === 'history'" />
+
+      <h3>تفاصيل الطلب</h3>
+    </div>
+
+    <div class="tab" (click)="toggle('history')" [class.active-tab]="activeTab == 'history'">
+      <img src="./assets/icons/info-icon.svg" />
+      <h3>سجل الطلب</h3>
+    </div>
+  </div>
+
+  <!-- uncomment this -->
+  <div class="request-details-content" *ngIf="activeTab === 'details'">
+    <div class="box">
+      <img src="./assets/icons/mainBuildingOutLine.svg" />
+      <p>
+        المبنى:
+        <span>
+          {{ requestDetails?.["buildingName"] ?? "لم يتم تحديد المبني" }}</span>
+      </p>
+    </div>
+    <!-- <div class="box">
+      <img src="./assets/icons/mainBuildingOutLine.svg" />
+      <p>
+        المبنى الفرعي:
+        <span>
+          {{
+          requestDetails?.["buildingSubUnitName"] ?? "لم يتم تحديد المبنى الفرعي"
+          }}</span>
+      </p>
+    </div> -->
+    <div class="box">
+      <img src="./assets/icons/mainBuildingOutLine.svg" />
+      <p>
+        الطابق:
+        <span>
+          {{ requestDetails?.["floorNumber"] ?? "لم يتم تحديد الطابق" }}
+        </span>
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/mainBuildingOutLine.svg" />
+      <p>
+        الغرفة:
+        <span>
+          {{ requestDetails?.["buildingOfficeName"] ?? "لم يتم تحديد الغرفة" }}
+        </span>
+      </p>
+    </div>
+
+    <!-- <div class="box"> 
+      <img src="./assets/icons/mainBuildingOutLine.svg" />
+      <p>
+        الأصل:
+        <span>
+          {{ requestDetails?.["assetName"] ?? "لم يتم تحديد الأصل" }}
+        </span>
+      </p>
+    </div> -->
+    <!-- <div class="box">
+      <img src="./assets/icons/calender.svg" />
+      <p>
+        تاريخ الطلب:
+        <span> {{ requestDetails?.["createdAt"] | date }}</span>
+      </p>
+    </div> -->
+    <div class="box">
+      <img src="./assets/icons/pen-ruler-icon.svg" />
+      <p>
+        عقد الصيانة (التنفيذي):
+        <span>
+          {{
+          requestDetails?.["executableProjectName"] ??
+          "لم يتم تحديد المشروع التنفيذي"
+          }}</span>
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/pen-icon.svg" />
+      <p>
+        عقد الصيانة (الإستشاري):
+        <span>
+          {{
+          requestDetails?.["supervisorProjectName"] ??
+          "لم يتم تحديد المشروع لاستشاري"
+          }}</span>
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/malfunction-outline.svg" />
+      <p>
+        نوع العطل الرئيسي:
+        <span>
+          {{
+          requestDetails?.["mainCategoryTypeName"] ??
+          "لم يتم تحديد نوع العطل الرئيسي"
+          }}</span>
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/malfunction-outline.svg" />
+      <p>
+        نوع العطل الفرعي:
+        <span>
+          {{
+          requestDetails?.["subCategoryTypeName"] ?? "لم يتم تحديد نوع العطل الفرعي"
+          }}</span>
+      </p>
+    </div>
+    <div class="box">
+      <img src="./assets/icons/info-icon.svg" />
+      <p>
+        أولوية الطلب:
+        <span>
+          {{
+          requestDetails?.["maintenanceRequestPriorityName"] ??
+          "لم يتم تحديد أولوية الطلب"
+          }}</span>
+      </p>
+    </div>
+    <!-- <div class="box">
+      <img src="./assets/icons/info-icon.svg" />
+      <p>
+        نوع الصيانة:
+        <span>
+          {{
+          requestDetails?.["maintenanceTypeName"]
+          }}</span>
+      </p>
+    </div> -->
+    <!-- <div class="box">
+      <img src="./assets/icons/person.svg" />
+      <p>
+        طالب الخدمة :
+        <span> {{ requestDetails?.["createdByName"] }}</span>
+      </p>
+    </div> -->
+
+    <!-- <div class="box">
+      <img src="./assets/icons/locationIcon.svg" />
+      <p>
+        عنوان الطلب:
+        <span>
+          {{
+          requestDetails?.["locationDescription"] ?? "لم يتم تحديد عنوان الطلب"
+          }}</span>
+      </p>
+    </div> -->
+
+    <div class="box">
+      <img src="./assets/icons/notes-icon.svg" />
+      <p>
+        وصف المشكلة:
+        <span>
+          {{
+          requestDetails?.["proplemDescription"] ?? "لم يتم تحديد وصف المشكلة"
+          }}</span>
+      </p>
+    </div>
+    <!-- <div class="box">
+      <img src="./assets/icons/notes-icon.svg" />
+      <p>
+        ملاحظة الإستشاري:
+        <span>
+          {{
+          requestDetails?.["consultantNotes"] ?? "لم يتم تحديد ملاحظة الاستشاري"
+          }}</span
+        >
+      </p>
+    </div> -->
+  </div>
+
+  <!-- ================================== -->
+  <!-- FILES -->
+  <!-- ================================== -->
+
+  <!-- uncomment this -->
+  <div class="request-details-content" *ngIf="activeTab === 'details'">
+    <div class="title">
+      <img src="./assets/icons/fileUploadedIcon.svg" />
+      <h3>مرفقات الطلب</h3>
+    </div>
+    <div class="box" *ngFor="let files of requestDetails?.['fileUploads']">
+      <img style="width: 25px; height: 25px" src="./assets/icons/fileUploadedIcon.svg" />
+      <a style="cursor: pointer" (click)="downloadFile(files)">
+        <p>
+          {{ files?.originalName }}
+
+        </p>
+        <span>
+          {{ files?.fileSize ? files?.fileSize + "ميجا بايت" : " " }}
+        </span>
+      </a>
+    </div>
+    <h3 *ngIf="requestDetails?.['fileUploads']?.length == 0">
+      لا يوجد مرفقات...
+    </h3>
+  </div>
+
+  <!-- ================================== -->
+  <!-- Request History -->
+  <!-- ================================== -->
+
+  <div class="request-history-content" *ngIf="activeTab === 'history'">
+    <div class="table-wrapper">
+      <app-list [cols]="cols" [values]="values" [isSearching]="true" [history]="false"
+        (rowsCountChanged)="getReuestHistoryByID($event)" [viewButton]="true"
+        (viewSelectedItem)="clickItem($event)"></app-list>
+    </div>
+    <div class="details-wrapper">
+      <div class="header">
+        <img src="./assets/icons/info-icon.svg" />
+        <h3>تفاصيل</h3>
+      </div>
+      <div class="details">
+        <div class="item" *ngIf="[3, 5].includes(currentItemData?.maintenanceRequestStatusId)">
+          <div class="item-name">
+            <img src="./assets/icons/person.svg" /> الموظف المختص:
+          </div>
+          <div class="item-value">
+            {{ currentItemData?.assignedEmployeeName }}
+          </div>
+        </div>
+
+        <div class="item" *ngIf="[4].includes(currentItemData?.maintenanceRequestStatusId)">
+          <div class="item-name">
+            <img src="./assets/icons/calender.svg" /> تاريخ المعاينة:
+          </div>
+          <div class="item-value">
+            {{ currentItemData?.previewDateTime | date }}
+          </div>
+        </div>
+        <div class="item" *ngIf="[4].includes(currentItemData?.maintenanceRequestStatusId)">
+          <div class="item-name">
+            <img src="./assets/icons/clock.svg" /> وقت المعاينة:
+          </div>
+          <div class="item-value">
+            {{ currentItemData?.previewDateTime | date : "HH:mm" }}
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-name">
+            <img src="./assets/icons/notes-icon.svg" /> ملاحظات :
+          </div>
+
+          <div class="item-value">{{ currentItemData?.note || "لا يوجد" }}</div>
+        </div>
+        <div class="item">
+          <div class="item-name">
+            <img src="./assets/icons/files.svg" /> مرفقات:
+          </div>
+          <div class="item-value" *ngIf="currentItemData?.fileUploads.length === 0">
+            لا يوجد
+          </div>
+
+          <div *ngIf="currentItemData?.fileUploads?.length > 0">
+            <div class="box" *ngFor="let files of currentItemData?.fileUploads">
+              <img style="width: 25px; height: 25px" src="./assets/icons/fileUploadedIcon.svg" />
+              <a [href]="files.fullPath" target="_blank">
+                <p>
+                  {{ files?.originalName }}
+                </p>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

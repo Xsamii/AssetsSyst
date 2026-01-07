@@ -1,0 +1,153 @@
+form {
+  .form-content {
+    margin-top: 27px;
+    border: 0.5px solid #7070702e;
+    border-radius: 8px;
+    padding: 24px;
+    .title {
+      background-color: #eaf7ff;
+      border-radius: 8px;
+      display: flex;
+      padding: 12px 19px;
+      width: fit-content;
+      margin-bottom: 24px;
+      img {
+        margin-left: 15px;
+      }
+      p {
+        font-size: 16px;
+        font-weight: 500;
+        color: #0c588b;
+      }
+    }
+
+    // ===============
+
+    .two-inputs-fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(700px, 1fr));
+      gap: 16px;
+    }
+
+    .input-field {
+      margin-bottom: 24px;
+      label {
+        display: block;
+        margin-bottom: 12px;
+        font-size: 18px;
+        font-weight: 400;
+        color: #0c588b;
+        span {
+          color: #fe4035;
+        }
+      }
+      .field-icon {
+        background-color: #f6f6f6;
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        border-radius: 8px;
+        height: 48px;
+        img {
+          margin-left: 16px;
+        }
+        input,
+        select {
+          background-color: transparent;
+          width: 100%;
+          border: none;
+          outline: none;
+        }
+      }
+      small {
+        color: #fe4035;
+      }
+    }
+  }
+}
+
+.input-textarea {
+  label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #0c588b;
+    span {
+      color: #fe4035;
+    }
+  }
+  .field-icon {
+    background-color: #f6f6f6;
+    display: flex;
+    align-items: start;
+    padding: 12px 15px;
+    border-radius: 8px;
+    height: auto;
+    img {
+      margin-left: 16px;
+    }
+    textarea {
+      background-color: transparent;
+      height: 144px;
+      width: 100%;
+      resize: none;
+      border: none;
+      outline: none;
+    }
+  }
+
+  small {
+    color: #fe4035;
+  }
+}
+
+::ng-deep .p-ripple.p-element.p-button.p-component.p-fileupload-choose {
+  width: 100%;
+}
+:host ::ng-deep .p-dropdown-items {
+  width: 100%;
+  background-color: white;
+}
+:host ::ng-deep .p-element.p-dropdown-item {
+  @apply px-4 py-4;
+}
+
+.title-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .checkbox {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    label {
+      font-size: 22px;
+      font-weight: 400;
+      color: #231f20;
+    }
+    input {
+      width: 24px;
+      height: 24px;
+      border: 1.5px solid #1aaa55;
+      border-radius: 4px;
+      margin-left: 10px;
+    }
+  }
+}
+
+input[type="checkbox"] {
+  accent-color: #1aaa55;
+}
+
+@media (max-width: 600px) {
+  form {
+    .form-content {
+      .two-inputs-fields {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+        gap: 16px;
+      }
+    }
+  }
+}

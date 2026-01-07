@@ -1,0 +1,230 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="'الطلبات'"
+  [imageTitle]="'./assets/icons/maintenanceRequestsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/projects' },
+    { name: 'إدارة المشاريع', routerLink: '/projects' },
+    { name: 'طلبات الزيارة ', routerLink: '/projects/visit-requests' },
+    { name: 'الطلبات', routerLink: '/projects/visit-requests' }
+  ]"
+  [isFilte]="true"
+  [showAddButton]="true"
+  [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث بالرقم، اسم المشروع، المهمة.'"
+  [buttonText]="'طلب جديد'"
+  [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false"
+  (valueSearch)="filterBySearchText($event)"
+  (onFilterClick)="showDialog()"
+  (addButton)="onAddNewRequest()"
+></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list
+  [cols]="cols"
+  [isSearching]="isSearchingReasult"
+  [values]="values"
+  [totalPageCount]="totalPageCount"
+  [withControles]="true"
+  [noData]="showBreadcrumb ? false : true"
+  (rowsCountChanged)="getData($event)"
+  [isOutGoing]="true"
+  (editEvent)="editRequest($event)"
+  (deleteEvent)="deleteRequest($event)"
+  (showRequest)="redirectToRequestDetails($event)"
+></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet
+  *ngIf="values?.length == 0 && !isSearchingReasult"
+  (addNewEvent)="onAddNewRequest()"
+  [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم نقم بإضافة طلبات بعد',
+  noDataButtonText: ' طلب جديد',
+  }"
+></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SEARCH DIALOG  -->
+<!-- ============================= -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup" style="width: 600px">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p>تصفية الطلبات</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="submitSearchForm()">
+      <!-- First Row -->
+      <div class="addForm input-field">
+        <div class="narrowCols">
+          <label> المشروع</label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر  المشروع"
+            formControlName="projectName"
+            [options]="projectsList"
+            (onChange)="
+              getProjectTaskByProjectId(formControls.projectName.value);
+              getMaintenanceRequestByProjectId(formControls.projectName.value)
+            "
+                        [showClear]="true"
+
+          ></p-dropdown>
+        </div>
+        <div class="narrowCols">
+          <label> المهمة </label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر المهمة"
+            formControlName="projectTaskName"
+            [options]="projectTaskList"
+            [showClear]="true"
+
+          ></p-dropdown>
+        </div>
+      </div>
+
+      <!-- End of First Row -->
+      <!-- Second Row -->
+      <div class="addForm input-field">
+        <div class="narrowCols">
+          <label> نوع الطلب</label>
+
+          <p-treeSelect
+            class="w-full"
+            [containerStyleClass]="'w-full bg-filterBtnBg py-3'"
+            [containerStyle]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            formControlName="visitRequestTypeName"
+            [options]="visitRequestTypesList"
+            placeholder="اختر نوع الطلب"
+            [selectionMode]="'single'"
+            [(ngModel)]="selectedNodes"
+            [showClear]="true"
+
+          >
+          </p-treeSelect>
+        </div>
+        <div class="narrowCols">
+          <label> حالة الطلب </label>
+          <p-dropdown
+            class="w-full"
+            [styleClass]="'w-full bg-filterBtnBg py-3'"
+            [style]="{
+              background:
+                'url(./assets/icons/info-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="اختر حالة الطلب"
+            formControlName="visitRequestStatusId"
+            [options]="visitRequestStatusList"
+            [showClear]="true"
+
+          ></p-dropdown>
+        </div>
+      </div>
+      <!-- End of Second Row -->
+      <!-- Third Row -->
+      <div class="addForm input-field">
+        <div class="narrowCols">
+          <label> تاريخ الزيارة</label>
+          <p-calendar
+            class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+            formControlName="visitDateTime"
+            [placeholder]="' اختر تاريخ الزيارة '"
+            [styleClass]="'w-full h-12 '"
+            [inputStyleClass]="'bg-gray-100'"
+            [showIcon]="true"
+
+          ></p-calendar>
+        </div>
+      </div>
+      <!-- End of Third Row -->
+
+      <div class="buttons-content mt-3">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message
+  *ngIf="alertSuccess"
+  [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض طلبات الزيارة '
+  }"
+  (confirmMessage)="alertSuccessFun($event)"
+></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message
+  *ngIf="alertWarning"
+  [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertWarningFun($event)"
+></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message
+  *ngIf="alertConfirm"
+  [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف الطلب؟ سيتم حذفه نهائيًا من قائمة الطلبات ',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertConfirmFun($event)"
+></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message
+  *ngIf="alertError"
+  [data]="{
+    type: 'error',
+    text:
+      alertErrorMsg ?? 'يبدو أنه قد حدث خطأ ما، من فضلك أعد المحاولة مجددًا',
+    buttonText: ''
+  }"
+  (confirmMessage)="alertErrorFun($event)"
+></app-sweet-alert-message>

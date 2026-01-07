@@ -1,0 +1,411 @@
+// Dashboard Component Styles
+
+.dashboard-container {
+  font-family: 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+// Dynamic color class for statistics numbers
+.text-secondary-color {
+  color: var(--secondary-color);
+}
+// Custom card hover effects
+.stat-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// KPI Circle containers
+.kpi-circle-container {
+  position: relative;
+
+  .kpi-label {
+    font-size: 11px;
+    line-height: 1.3;
+    color: #6B7280;
+    text-align: center;
+    margin-top: 8px;
+  }
+}
+
+// Chart container styling
+.chart-container {
+  position: relative;
+
+  &.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+
+    &::before {
+      content: '';
+      width: 40px;
+      height: 40px;
+      border: 3px solid #E5E7EB;
+      border-top: 3px solid #16968C;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Custom colors for teal theme
+.text-teal-primary {
+  color: #16968C;
+}
+
+.bg-teal-primary {
+  background-color: #16968C;
+}
+
+.border-teal-primary {
+  border-color: #16968C;
+}
+
+// Custom spacing for Arabic text
+.ar-spacing {
+  letter-spacing: 0.5px;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .kpi-circle-container {
+    .kpi-label {
+      font-size: 10px;
+    }
+  }
+
+  .chart-container {
+    min-height: 250px;
+  }
+}
+
+// PrimeNG TabView customization for Arabic
+::ng-deep {
+  .p-tabview {
+    .p-tabview-nav {
+      justify-content: flex-start;
+      direction: rtl;
+
+      .p-tabview-nav-link {
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        border-bottom: none;
+        border-radius: 8px 8px 0 0;
+        margin-left: 4px;
+        padding: 12px 20px;
+        font-weight: 500;
+
+        &:hover {
+          background: #e9ecef;
+          color: #495057;
+        }
+      }
+
+      .p-highlight .p-tabview-nav-link {
+        background: #16968C;
+        color: white;
+        border-color: #16968C;
+      }
+    }
+
+    .p-tabview-panels {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 0 8px 8px 8px;
+      padding: 20px;
+    }
+  }
+
+  // MultiSelect styling to match regular select dropdown
+  .p-multiselect {
+    border: 1px solid #d1d5db !important;
+    border-radius: 0.5rem !important;
+    min-height: 42px !important;
+    display: flex !important;
+    align-items: center !important;
+
+    &:hover {
+      border-color: #9ca3af !important;
+    }
+
+    &.p-focus {
+      outline: 2px solid #16968C !important;
+      outline-offset: 2px !important;
+      border-color: #16968C !important;
+      box-shadow: 0 0 0 2px rgba(22, 150, 140, 0.2) !important;
+    }
+
+    .p-multiselect-label {
+      padding: 0.5rem 1rem !important;
+      font-size: 0.875rem !important;
+      color: #374151 !important;
+
+      &.p-placeholder {
+        color: #6b7280 !important;
+      }
+    }
+
+    .p-multiselect-trigger {
+      width: 2.5rem !important;
+      color: #6b7280 !important;
+    }
+  }
+
+  // Chips styling inside multiselect
+  .p-multiselect-token {
+    background: #16968C !important;
+    color: white !important;
+    padding: 0.25rem 0.5rem !important;
+    margin-right: 0.25rem !important;
+    border-radius: 0.375rem !important;
+
+    .p-multiselect-token-icon {
+      color: white !important;
+      margin-left: 0.25rem !important;
+    }
+  }
+
+  // Panel styling
+  .p-multiselect-panel {
+    border: 1px solid #d1d5db !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+
+    .p-multiselect-header {
+      padding: 0.75rem 1rem !important;
+      border-bottom: 1px solid #e5e7eb !important;
+
+      .p-checkbox {
+        margin-left: 0.5rem !important;
+      }
+    }
+
+    .p-multiselect-items {
+      padding: 0.5rem 0 !important;
+
+      .p-multiselect-item {
+        padding: 0.5rem 1rem !important;
+        color: #374151 !important;
+
+        &:hover {
+          background: #f3f4f6 !important;
+        }
+
+        &.p-highlight {
+          background: #e0f2f1 !important;
+          color: #16968C !important;
+        }
+
+        .p-checkbox {
+          margin-left: 0.5rem !important;
+
+          .p-checkbox-box {
+            border-color: #d1d5db !important;
+
+            &.p-highlight {
+              background: #16968C !important;
+              border-color: #16968C !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Loading overlay
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #E5E7EB;
+      border-top: 4px solid #16968C;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      color: #6B7280;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+}
+
+// Error state styling
+.chart-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #9CA3AF;
+
+  .error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #EF4444;
+  }
+
+  .error-message {
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .retry-button {
+    background: #16968C;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: #138B82;
+    }
+  }
+}
+
+// Animation for cards appearing
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Custom scrollbar for chart containers
+.chart-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.chart-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.chart-container::-webkit-scrollbar-thumb {
+  background: #16968C;
+  border-radius: 3px;
+
+  &:hover {
+    background: #138B82;
+  }
+}
+
+// Print styles
+@media print {
+  .dashboard-container {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  .chart-container {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .stat-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+// News ticker styling - now inside a white card
+.news-ticker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.ticker-label {
+  color: #333;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.news-ticker {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.ticker-content {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.ticker-content p {
+  display: inline-block;
+  margin-right: 50px;
+  color: #16968C;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+// @keyframes ticker {
+//   from {
+//     transform: translateX(100%);
+//   }
+//   to {
+//     transform: translateX(-100%);
+//   }
+// }
+// @keyframes fade-in {
+//   from {
+//     opacity: 0;
+//     transform: translateY(10px);
+//   }
+//   to {
+//     opacity: 1;
+//     transform: translateY(0);
+//   }
+// }
+
+// .animate-fade-in {
+//   animation: fade-in 0.5s ease-in-out;
+// }

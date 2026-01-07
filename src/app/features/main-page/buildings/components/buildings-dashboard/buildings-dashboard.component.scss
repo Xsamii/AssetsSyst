@@ -1,0 +1,409 @@
+// Map Dashboard Styles
+.map-dashboard {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+
+  // Controls Section - Above Map
+  .controls-section {
+    @apply py-4;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: flex-end; // Align to right for RTL
+    flex-wrap: wrap;
+
+    // Reset Button
+    .reset-btn {
+      padding: 10px 16px;
+      border: 1px solid #6c757d;
+      background: white;
+      color: #6c757d;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+        border-color: #495057;
+        color: #495057;
+      }
+
+      i {
+        font-size: 12px;
+      }
+    }
+  }
+
+  // Results Info
+  .results-info {
+    padding: 0.75rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+
+    .results-count {
+      font-size: 14px;
+      color: #6c757d;
+    }
+  }
+
+  // Loading Indicator
+  .loading-indicator {
+    padding: 1rem 2rem;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+
+    i {
+      color: #28a745;
+    }
+  }
+
+  // Map Container
+  .map-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+
+    // Google Map
+    .google-map {
+      width: 100%;
+      height: 100%;
+    }
+
+    // No Results Message
+    .no-results {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(248, 249, 250, 0.95);
+      z-index: 10;
+
+      .no-results-content {
+        text-align: center;
+        padding: 2rem;
+        max-width: 400px;
+
+        i {
+          font-size: 4rem;
+          color: #dee2e6;
+          margin-bottom: 1rem;
+        }
+
+        h3 {
+          color: #495057;
+          margin-bottom: 0.5rem;
+          font-size: 1.5rem;
+        }
+
+        p {
+          color: #6c757d;
+          margin-bottom: 1.5rem;
+          line-height: 1.5;
+        }
+
+        .reset-search-btn {
+      @apply bg-gradient;
+
+          padding: 10px 20px;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background: #218838;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Enhanced Info Window Styles
+.info-window {
+  min-width: 320px;
+  max-width: 400px;
+  font-family: 'Arial', sans-serif;
+
+  .info-header {
+    padding-bottom: 12px;
+    border-bottom: 2px solid #28a745;
+    margin-bottom: 16px;
+
+    h4 {
+      margin: 0;
+      color: #2c3e50;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .group-badge {
+      @apply bg-gradient;
+
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+      margin-right: 8px;
+    }
+  }
+
+  .info-content {
+    .info-item {
+      display: flex;
+      // justify-content: space-between;
+      align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 13px;
+        flex-shrink: 0;
+        margin-left: 12px;
+        min-width: 120px;
+      }
+
+      .value {
+        color: #6c757d;
+        font-size: 13px;
+        text-align: left;
+        direction: ltr;
+        word-break: break-word;
+      }
+    }
+
+    // Group items styling
+    .group-items {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e9ecef;
+
+      h5 {
+        margin: 0 0 12px 0;
+        color: #2c3e50;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .items-list {
+        max-height: 150px;
+        overflow-y: auto;
+
+        .group-item {
+          padding: 8px 12px;
+          margin: 4px 0;
+          background: #f8f9fa;
+          border-radius: 6px;
+          border-right: 3px solid #dee2e6;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          transition: all 0.2s ease;
+
+          &.active {
+            border-right-color: #28a745;
+            background: #f0fff0;
+          }
+
+          &:hover {
+            background: #e9ecef;
+          }
+
+          .item-id {
+            font-size: 12px;
+            color: #495057;
+            font-weight: 500;
+          }
+
+          .item-building {
+            font-size: 11px;
+            color: #6c757d;
+          }
+        }
+      }
+    }
+  }
+
+  .info-actions {
+    margin-top: 16px;
+    text-align: center;
+
+    .details-btn {
+      @apply bg-gradient;
+
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+
+      &:hover {
+        background: #218838;
+      }
+
+      i {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// Info Loading State
+.info-loading {
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+
+  i {
+    color: #28a745;
+    margin-bottom: 8px;
+    font-size: 18px;
+  }
+
+  span {
+    display: block;
+    font-size: 14px;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .map-dashboard {
+    .controls-section {
+      padding: 1rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+
+      .reset-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .results-info,
+    .loading-indicator {
+      padding: 0.75rem 1rem;
+    }
+  }
+
+  .info-window {
+    min-width: 280px;
+    max-width: 320px;
+
+    .info-content {
+      .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+
+        .label {
+          margin-left: 0;
+          min-width: auto;
+        }
+
+        .value {
+          text-align: right;
+          direction: rtl;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .map-dashboard {
+    .controls-section {
+      padding: 0.75rem;
+      gap: 0.5rem;
+    }
+  }
+
+  .info-window {
+    min-width: 250px;
+    padding: 12px;
+
+    .info-header {
+      h4 {
+        font-size: 14px;
+      }
+    }
+
+    .info-content {
+      .info-item {
+        padding: 6px 0;
+
+        .label,
+        .value {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .info-actions {
+      .details-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// PrimeNG Dropdown Styles
+:host ::ng-deep .p-element.p-dropdown-item {
+  @apply px-4 py-4;
+}
+
+:host ::ng-deep .p-dropdown-items {
+  width: 100%;
+  background-color: white;
+}
+
+:host ::ng-deep .p-dropdown-filter-container {
+  .p-icon-wrapper{
+    position: relative;
+    left: 3rem;
+    bottom: 0.75rem;
+  }
+}
+
+::ng-deep .p-dropdown-clear-icon {
+  position: absolute;
+  right: 92%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}

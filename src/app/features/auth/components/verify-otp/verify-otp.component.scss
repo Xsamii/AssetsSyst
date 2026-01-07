@@ -1,0 +1,261 @@
+.auth-login {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 140px;
+
+  .login-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+
+    .timer {
+      background: var(--background-color); // Will be light mint for Orbits, teal transparent for Hail
+      width: fit-content;
+      margin: 24px auto 46px;
+      padding: 8px 40px;
+      border-radius: 8px;
+
+      p {
+        color: var(--primary-color); // Will be #613843 for Orbits, #16968C for Hail
+        font-size: 17px;
+        font-weight: 400;
+
+        span {
+          color: var(--primary-color);
+          font-size: 17px;
+          font-weight: 500;
+          margin-right: 8px;
+        }
+      }
+    }
+
+    .image {
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .login-content-left {
+      width: 610px;
+      padding: 72px 57px;
+      border-radius: 8px;
+
+      h3 {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--secondary-color); // Will be #05628C for Orbits, #0E3434 for Hail
+        margin-bottom: 12px;
+        text-align: center;
+      }
+
+      p {
+        text-align: center;
+        color: #707070;
+        font-size: 17px;
+        font-weight: 400;
+
+        span {
+          color: #707070;
+          font-size: 17px;
+          font-weight: 500;
+          margin-right: 8px;
+        }
+      }
+
+      form {
+        .input-field {
+          margin-bottom: 24px;
+
+          label {
+            display: block;
+            color: var(--primary-color); // Will be #613843 for Orbits, #16968C for Hail
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 12px;
+
+            span {
+              color: #fe4035;
+            }
+          }
+
+          .input-icon {
+            background-color: #f6f6f6;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            padding: 0 20px;
+
+            input {
+              width: 90%;
+              margin: 0 8px;
+              height: 48px;
+              background-color: transparent;
+              border: none;
+              outline: none;
+              color: var(--text-color);
+            }
+
+            .show-password {
+              width: 19px;
+              height: 16px;
+              cursor: pointer;
+
+              img {
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+
+          h4 {
+            text-align: left;
+            margin-top: 12px;
+            margin-bottom: 32px;
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--primary-color);
+            cursor: pointer;
+
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+        }
+
+        button {
+          width: 100%;
+          background: var(--gradient); // Will be solid #613843 for Orbits, gradient for Hail
+          color: #fff;
+          font-size: 18px;
+          font-weight: 500;
+          border: none;
+          border-radius: 8px;
+          padding: 9px;
+          height: 48px;
+          margin-bottom: 24px;
+          cursor: pointer;
+          transition: opacity 0.2s ease;
+
+          &:hover:not(:disabled) {
+            opacity: 0.9;
+          }
+
+          &:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+          }
+        }
+
+        p {
+          color: #707070;
+          font-size: 17px;
+          font-weight: 400;
+
+          span {
+            color: var(--primary-color); // Will be #613843 for Orbits, #16968C for Hail
+            font-size: 17px;
+            font-weight: 500;
+            margin-right: 8px;
+            cursor: pointer;
+
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .login-content-right {
+    width: 396px;
+    align-self: flex-start;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 992px) {
+  .auth-login {
+    justify-content: center;
+    padding: 0 20px;
+
+    .login-content {
+      .login-content-left {
+        max-width: 610px;
+      }
+
+      .login-content-right {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .auth-login {
+    .login-content {
+      .login-content-left {
+        max-width: 610px;
+        padding: 60px 20px;
+      }
+    }
+  }
+}
+
+// Form validation messages
+small {
+  color: var(--primary-color); // Will be #613843 for Orbits, #16968C for Hail
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+// OTP Input Styling
+::ng-deep .ng-otp-input-wrapper {
+  padding: 0 20px;
+  text-align: center;
+  margin: 46px 0 32px;
+  direction: ltr !important;
+}
+
+::ng-deep .otp-input.ng-pristine,
+::ng-deep .otp-input.ng-valid.ng-touched,
+::ng-deep .otp-input.ng-valid.ng-dirty.ng-touched {
+  border-radius: 8px !important;
+  outline: none !important;
+  border: 1px solid #e5e7eb !important;
+  background-color: white;
+  color: var(--text-color);
+
+  &:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(var(--primary-color), 0.1) !important;
+  }
+
+  &:last-child {
+    margin-right: 8px;
+  }
+}
+
+// Gradient text for timer
+.gradient-text {
+  background: var(--gradient);
+  -webkit-background-clip: text !important;
+  color: transparent !important;
+  background-clip: text !important;
+  font-weight: 600;
+}
+
+// Code text styling
+.code-text {
+  color: #797F8F !important;
+}

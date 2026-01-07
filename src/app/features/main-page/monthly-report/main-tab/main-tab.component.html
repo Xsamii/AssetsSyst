@@ -1,0 +1,30 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+  [title]="' إدارة الأصول'"
+  [imageTitle]="'./assets/icons/Simplificationactive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: ' الارشيف', routerLink: '/monthly-report/main-tab' },
+    { name: mainTabName, routerLink: '/monthly-report/main-tab' }
+  ]"
+  [isMaintab]="true"
+  [maintabList]="List"
+  [selectedTabId]="selectedTabId"
+  (maintabID)="changeselectedTab($event)"
+></app-bread-crumb>
+
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 mx-3 my-5 rounded-lg cursor-pointer"
+>
+  <div *ngFor="let main of mainList">
+    <div
+      (click)="openFolder(main)"
+      class="p-4 rounded-lg flex items-center gap-3 folder"
+    >
+      <i class="fa-solid fa-folder text-xl"></i>
+      <h5 class="font-semibold">{{ main.name }}</h5>
+    </div>
+  </div>
+</div>

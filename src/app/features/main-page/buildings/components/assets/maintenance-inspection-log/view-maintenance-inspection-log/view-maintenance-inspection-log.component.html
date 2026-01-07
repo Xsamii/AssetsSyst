@@ -1,0 +1,85 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+ <div class=" bg-white px-5 pt-3  rounded ">
+
+<app-bread-crumb
+  [title]="' إدارة الأصول'"
+  [imageTitle]="'./assets/icons/projectsActive.svg'"
+  [subTitles]="[
+    { name: 'الرئيسية', routerLink: '' },
+    { name: 'إدارة الأصول', routerLink: '/buildings/assets' },
+    {
+      name: '    عرض سجل الكشف الدوري للصيانة ',
+      routerLink: '/buildings/assets/maintenance-inspection-log-view'
+    }
+  ]"
+    [saveBtnText]="'طباعة'"
+ [isShowAddEdite]="true"
+  [isShowFilter]="true"
+  (submitReq)="print()"
+  (cancelReq)="onCancle()"
+></app-bread-crumb>
+
+<div class="mt-7 mb-5">
+  <h1 class="font-bold mb-3">معلومات الطلب</h1>
+  <hr />
+  <div class="py-5">
+    <p class="text-[#16968c] mb-5">
+       رقم الأصل   : <span class="text-[#000]">{{values?.asset.name}}</span>
+    </p>
+    <p class="text-[#16968c]">
+         تاريخ القيام بالكشف : <span class="text-[#000]">{{values?.checkDate |date}}</span>
+    </p>
+  </div>
+</div>
+</div>
+<div class=" bg-white px-5 pt-3  rounded mt-5">
+
+  <h1 class="font-bold mb-3"> بيانات الجهة المسؤولة</h1>
+  <hr />
+  <div class="py-5">
+    <p class="text-[#16968c]">
+         المقاول : <span class="text-[#000]">   {{values?.contractor.name}}</span>
+    </p>
+  </div>
+</div>
+
+
+<div class=" bg-white px-5 pt-3  rounded mt-5">
+    <h1 class="font-bold mb-3">   بيانات الأصل</h1>
+  <hr />
+   <div class="py-5" *ngFor="let val of values?.maintenanceItems">
+
+    <p class="text-[#16968c] mb-5">
+         عناصر الصيانة : <span class="text-[#000]">     {{val?.name}}</span>
+    </p>
+    <p class="text-[#16968c]">
+          حالة الكشف   : <span class="text-[#000]">       {{values?.isChecked}}</span>
+    </p>
+ </div>
+</div>
+<div class=" bg-white px-5 pt-3  rounded mt-5">
+  <h1 class="font-bold mb-3">    الوصف و المرفقات</h1>
+  <hr />
+
+ <div class="py-5">
+     <p class="text-[#16968c] mb-2">
+      الملاحظات 
+    </p>
+   <div  class="notes">
+    <p class="p-3">{{values?.notes}}
+</p>
+   </div>
+    <!-- <p class="text-[#16968c]">
+       الصور 
+    </p>
+    <div class="grid grid-cols-12 ">
+        <div class="col-span-1 my-3" *ngFor="let img of values?.fileUploads ">
+            <img [src]="img.fullpath" alt="not Found">
+        </div>
+       
+    </div> -->
+ </div>
+  
+</div>

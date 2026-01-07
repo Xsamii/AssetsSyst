@@ -1,0 +1,51 @@
+.tab {
+  background-color: rgba(255, 235, 198, 0.3);
+  color: var(--ButtonColor);
+  padding-block: 20px;
+  text-align: center;
+  border-radius: 10px;
+  margin-block: 15px;
+}
+::ng-deep {
+  .p-dropdown {
+    padding: 7px;
+  }
+
+  .p-dropdown-item {
+    padding: 5px;
+  }
+  .p-dropdown-items {
+    padding-left: 0px;
+  }
+  .p-dropdown-filter-icon {
+    display: none;
+  }
+}
+
+::ng-deep .p-dropdown-item.p-highlight {
+  color: var(--mainColor) !important;
+  background-color: #16968c0d !important;
+}
+.bg_color {
+  background-color: var(--primary-bg) !important;
+}
+
+.header-sec {
+  margin: 2px 16px 2px 16px !important;
+  padding: 0px 30px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.btn-setting {
+  border: 1px solid var(--color-primary);
+  background-color: white;
+  border-radius: 5px;
+  padding-block: 15px;
+}
+.title {
+  color: var(--color-secondary);
+}
+.folder {
+  background-color: var(--background-color) ;
+  color: var(--secondary-color);
+}

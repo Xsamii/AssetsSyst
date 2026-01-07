@@ -1,0 +1,143 @@
+   <!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb
+[title]="'تقارير المشاريع'"
+[imageTitle]="'./assets/icons/Simplificationactive.svg'"
+[subTitles]="[
+  { name: 'الرئيسية', routerLink: '/projects' },
+  { name: 'إدارة المشاريع', routerLink: '/projects' },
+  { name: 'التقارير', routerLink: '/projects/reports/fillterReports' },
+  { name: 'تقارير المشاريع', routerLink: '/projects/reports/fillterReports' }
+]"
+></app-bread-crumb>
+
+
+        <form [formGroup]="filterForm">
+
+         <div class="shadow-md p-5">
+            <div class="three-inputs-fields">
+                <div class="input-field">
+                  <label for="main-building"> النوع </label>
+                  <div class="field-icon">
+                    <img src="./assets/icons/select-main-building-icon.svg" />
+
+                    <p-dropdown
+                      class="w-full"
+                      [styleClass]="'w-full bg-filterBtnBg'"
+                      optionLabel="name"
+                      optionValue="id"
+                      placeholder="  اختر نوع المشروع"
+                      formControlName="ProjectTypeId"
+                      [options]="typeLookup"
+                      [filter]="true"
+                      [filterBy]="'name'"
+                    ></p-dropdown>
+                  </div>
+                </div>
+                <div class="input-field">
+                  <label for="main-building"> الحالة </label>
+                  <div class="field-icon">
+                    <img src="./assets/icons/select-main-building-icon.svg" />
+
+                    <p-dropdown
+                      class="w-full"
+                      [styleClass]="'w-full bg-filterBtnBg'"
+                      optionLabel="name"
+                      optionValue="id"
+                      placeholder="  اختر حالة المشروع"
+                      formControlName="ProjectStatueId"
+                      [options]="projectStatusList"
+                      [filter]="true"
+                      [filterBy]="'name'"
+                    ></p-dropdown>
+                  </div>
+                </div>
+                <div class="input-field">
+                    <label for=""> التصنيف</label>
+                    <p-dropdown
+                      class="w-full"
+                      [styleClass]="'w-full bg-filterBtnBg py-3'"
+                      [style]="{
+                        background:
+                          'url(./assets/icons/types-icon-fill.svg) no-repeat right 10px center',
+                        'background-color': '#f6f6f6',
+                        'padding-right': '35px'
+                      }"
+                      optionLabel="name"
+                      optionValue="id"
+                      placeholder=" اختر تصنيف المشروع "
+                      formControlName="ProjectClassificationId"
+                      [options]="projectClassificationList"
+                    ></p-dropdown>
+                    <!-- -------------------------------- -->
+                    <!-- -------------------------------- -->
+                  </div>
+              </div>
+
+              <div class="three-inputs-fields">
+
+                <div class="input-field">
+                  <label for=""> المقاول</label>
+                  <p-dropdown
+                    class="w-full"
+                    [styleClass]="'w-full bg-filterBtnBg py-3'"
+                    [style]="{
+                      background:
+                        'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                      'background-color': '#f6f6f6',
+                      'padding-right': '35px'
+                    }"
+                    optionLabel="name"
+                    optionValue="id"
+                    placeholder="  اختر المقاول التابع له المشروع"
+                    formControlName="OfficeId"
+                    [options]="officeList"
+                  ></p-dropdown>
+                </div>
+                <div class="input-field">
+                     <label for="main-building"> تاريخ تسليم الموقع </label>
+          <div class="field-icon">
+            <p-calendar
+              [placeholder]="'اختر تاريخ تسليم الموقع '"
+              class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+              formControlName="startDate"
+              [styleClass]="'w-full h-12'"
+              [inputStyleClass]="'bg-gray-100'"
+              [showIcon]="true"
+              selectionMode="range"
+            ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="input-field">
+                       <label for="main-building"> تاريخ الإستلام النهائي </label>
+          <div class="field-icon">
+            <p-calendar
+              [placeholder]="'اختر تاريخ الإستلام النهائي '"
+              class="mt-2 bg-gray-100 rounded-lg outline-none w-full"
+              formControlName="deliveryDate"
+              [styleClass]="'w-full h-12'"
+              [inputStyleClass]="'bg-gray-100'"
+              [showIcon]="true"
+              selectionMode="range"
+            ></p-calendar>
+                    </div>
+                  </div>
+              </div>
+
+              <!-- =======================BUTTONS================== -->
+              <div class="buttons-content">
+                <button class="buttons" type="button" (click)="Filter()">
+                  تصفية
+                </button>
+                <button
+                  class="buttons-white"
+                  type="button"
+                  (click)="closeFilter()"
+                >
+                  إعادة ضبط
+                </button>
+              </div>
+         </div>
+        </form>
+

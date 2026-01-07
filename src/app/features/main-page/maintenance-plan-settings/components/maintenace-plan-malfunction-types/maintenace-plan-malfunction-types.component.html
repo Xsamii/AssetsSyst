@@ -1,0 +1,105 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'أنواع الأعطال'" [imageTitle]="'./assets/icons/malfunctionTypesActive.svg'" [subTitles]="items"
+  [isFilte]="false" [isShowFilter]="showBreadcrumb ? false : true"
+  [inputPlaceholder]="'ابحث باسم نوع العطل، التصنيف...'" [buttonText]="'نوع عطل جديد'" [saveBtnText]="'إضافة'"
+  [isShowAddEdite]="false" (valueSearch)="filterBySearchText($event)" (addButton)="openAdd()"></app-bread-crumb>
+
+
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
+  [withControles]="true" [noData]="showBreadcrumb ? false : true" (rowsCountChanged)="getData($event)"
+  (deleteEvent)="confirmDelete($event)" (editEvent)="openEdit($event)"></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+
+<app-no-data-yet *ngIf="values?.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+  noDataImg: './assets/images/no-data-search.png',
+  noDataText: 'يبدو أنك لم نقم بإضافة أنواع أعطال بعد',
+  noDataButtonText: 'نوع عطل جديد',
+  }"></app-no-data-yet>
+
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/malfunctionTypesActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل نوع العطل" : "إضافة نوع عطل" }}
+      </p>
+    </div>
+    <form [formGroup]="malfunctionTypesForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="typeId">  التصنيف
+          <span>*</span>
+        </label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+            background:
+              'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder="اختر التصنيف" formControlName="maintTypeId"
+            [options]="malfunctionTypesList"></p-dropdown>
+        </div>
+        <small *ngIf="formControls.maintTypeId.invalid && formControls.maintTypeId.touched">
+          برجاء اختيار التصنيف
+        </small>
+      </div>
+      <div class="input-field">
+        <label for="name">  الكود
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="code" id="code" type="text" placeholder="أدخل الكود" />
+        </div>
+        <small *ngIf="formControls.code.invalid && formControls.code.touched">
+          برجاء إدخال الكود
+        </small>
+      </div>
+
+
+      <div class="buttons-content">
+        <button [disabled]="malfunctionTypesForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button class="buttons-white" type="button" (click)="onCloseAddEditePopup()">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض أنواع الأعطال'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف نوع العطل؟ سيتم حذفه نهائيًا من قائمة أنواع الأعطال',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

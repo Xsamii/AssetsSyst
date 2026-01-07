@@ -1,0 +1,335 @@
+<div class="min-h-screen bg-gray-50">
+
+  <!-- Header -->
+  <div class="bg-white shadow-sm p-4 mb-6">
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl font-bold text-gray-800">لوحة التحكم الرئيسية</h1>
+    </div>
+  </div>
+
+  <div class="p-6">
+
+    <!-- Top Statistics Cards Layout -->
+    <div class="grid grid-cols-6 gap-4 mb-8">
+
+      <!-- Large Card - spans 3 rows -->
+      <div class="row-span-3 bg-white rounded-lg shadow-sm p-8  flex flex-col justify-center items-center">
+        <div class="text-center">
+          <div class="text-xl font-semibold text-gray-600">اجمالي المباني</div>
+          <div class="text-xl font-semibold text-gray-600">الرئيسية</div>
+          <div class="text-6xl font-bold mb-4 text-secondary-color">{{ topMetrics.mainBuildings}}</div>
+        </div>
+      </div>
+
+      <!-- First Row - 5 cards -->
+      <!-- <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600">اجمالي المباني الفرعية</div>
+          <div class="text-3xl font-bold text-secondary-color mb-2">{{ topMetrics.totalUnits}}</div>
+        </div>
+      </div> -->
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600">اجمالي الغرف</div>
+          <div class="text-3xl font-bold text-secondary-color mb-2">{{ topMetrics.totalOffices }}</div>
+        </div>
+      </div>
+
+      <!-- <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600">اجمالي الاصول</div>
+          <div class="text-3xl font-bold text-secondary-color mb-2">{{ topMetrics.totalAssets}}</div>
+        </div>
+      </div> -->
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600">اجمالي الزيارات</div>
+          <div class="text-3xl font-bold text-secondary-color mb-2">{{ topMetrics.totalVisits}}</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600">اجمالي المهام</div>
+          <div class="text-3xl font-bold text-secondary-color mb-2">{{ topMetrics.totalTasks}}</div>
+        </div>
+      </div>
+
+      <!-- Second Row - 5 cards -->
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">اجمالي طلبات الصيانة</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.totalMaintenanceRequests}}</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">اجمالي الطلبات المفتوحة</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.totalExpectedRequests}}</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">اجمالي الطلبات المغلقة</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.totalExecutedRequests }}</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">متوسط مدة الاستجابة "ساعة"</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.avgResponseActive}}</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">متوسط مدة المعالجة "ساعة"</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.avgProcessingActive}}</div>
+        </div>
+      </div>
+
+      <!-- Third Row - 5 cards -->
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">مشاريع هندسية إستشاري</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.consultantProjects}}</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">مشاريع تنفيذية مقاول</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.projectsNeedingFeedback}}</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">اجمالي عقود الصيانة</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.totalContracts}}</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">اجمالي طلبات القطع</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.totalSystemRequests}}</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="text-center">
+          <div class="text-base font-semibold text-gray-600 mb-1">عدد المستخدمين</div>
+          <div class="text-xl font-bold text-secondary-color">{{ topMetrics.totalUsers}}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New 4 Charts Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <!-- Chart 1: توزيع الأصول حسب النوع -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">توزيع الأصول حسب النوع</h4>
+        <div id="assets-by-type-chart" class="h-80"></div>
+      </div>
+
+      <!-- Chart 2: توزيع الأصول حسب فئة المعدات -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">توزيع الأصول حسب فئة المعدات</h4>
+        <div id="assets-by-equipment-chart" class="h-80"></div>
+      </div>
+
+      <!-- Chart 3: توزيع الأصول حسب الشركة المصنعة -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">توزيع الأصول حسب الشركة المصنعة</h4>
+        <div id="assets-by-manufacturer-chart" class="h-80"></div>
+      </div>
+
+      <!-- Chart 4: مستوى الخطورة -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">مستوى الخطورة</h4>
+        <div id="risk-level-chart" class="h-80"></div>
+      </div>
+    </div>
+
+    <!-- First KPI Section: المؤشرات المرتبطة بتقييم طلبات الصيانة -->
+    <div class="mb-8">
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">المؤشرات المرتبطة بتقييم طلبات الصيانة</h3>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 ">
+
+          <!-- Right Column - Large KPI Circle -->
+          <div class="flex flex-col justify-center">
+            <h4 class="text-lg font-medium text-gray-700 text-center mb-4">المؤشر العام لأداء طلبات الصيانة</h4>
+            <div class="flex justify-center">
+              <div id="large-kpi-1" class="w-52 h-52"></div>
+            </div>
+          </div>
+
+          <!-- Left Column - Dynamic Small KPI Circles -->
+          <div class="lg:col-span-2">
+            <div class="grid grid-cols-2 md:grid-cols-4 ">
+
+              <!-- Dynamic KPI Circles based on API data -->
+              <div *ngFor="let kpi of getDynamicChartData(); let i = index" class="text-center">
+                <div class="text-lg font-medium text-gray-600 mb-3">{{ kpi.name }}</div>
+                <div class="relative">
+                  <div [id]="'kpi-circle-' + (i + 1)" class="w-40 h-40 mx-auto"></div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+   <!-- Second KPI Section: المؤشرات المرتبطة بتقییم أداء عقود النظافة والصیانة -->
+<div class="mb-8">
+  <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+    <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">المؤشرات المرتبطة بتقییم أداء عقود النظافة
+      والصیانة</h3>
+
+    <!-- Row 1: Large KPI + Bar Chart -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 mb-6">
+      <!-- Right: Large KPI Circle - 1 column -->
+      <div class="flex flex-col justify-center">
+        <h4 class="text-xl font-semibold text-gray-700 text-center mb-4">المؤشر العام لأداء عقود الصيانة</h4>
+        <div class="flex justify-center">
+          <div id="large-kpi-2" class="w-80 h-80"></div>
+        </div>
+      </div>
+
+      <!-- Left: Bar Chart - 2 columns -->
+      <div class="lg:col-span-2 flex flex-col border rounded-lg p-2">
+        <div class="flex justify-between items-center my-4 mx-6">
+          <h4 class="text-xl font-semibold text-gray-700">مؤشر عقود الأداء ( المقاولين )</h4>
+
+          <!-- Dropdowns Container -->
+          <div class="flex gap-3">
+            <!-- Evaluation Type Dropdown (يومي) -->
+            <select
+              class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              [(ngModel)]="selectedEvaluationType"
+              (change)="onEvaluationTypeChange($any($event.target).value)">
+              <option *ngIf="contractorsEvaluationTypes.length === 0" [value]="null" disabled>
+                لا توجد بيانات
+              </option>
+              <option *ngFor="let type of contractorsEvaluationTypes" [value]="type.id">
+                {{ type.name }}
+              </option>
+            </select>
+
+            <!-- Contractor Filter MultiSelect (للمقاول) -->
+            <p-multiSelect
+              [options]="contractorsList"
+              [(ngModel)]="selectedContractorIds"
+              (onChange)="onContractorFilterChange(selectedContractorIds)"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="جميع المقاولين"
+              [showClear]="true"
+              [style]="{'min-width': '200px'}"
+              display="chip">
+            </p-multiSelect>
+          </div>
+        </div>
+
+        <div id="contract-status-index-chart" class="h-96"></div>
+      </div>
+    </div>
+
+    <!-- Row 2: Donut Chart + Bar Chart -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 mb-6">
+      <!-- Right: Donut Chart - 1 column -->
+      <div class="flex flex-col justify-center">
+        <h4 class="text-xl font-semibold text-gray-700 text-center mb-4">مؤشر حالات الصيانة</h4>
+        <div id="maintenance-status-donut" class="h-80"></div>
+      </div>
+
+      <!-- Left: Bar Chart - 2 columns -->
+      <div class="lg:col-span-2 flex flex-col border rounded-lg p-2">
+        <h4 class="text-xl font-semibold text-gray-700 text-right my-4 mx-6">مؤشر حالات المشاريع</h4>
+        <div id="project-status-index-chart" class="h-96"></div>
+      </div>
+    </div>
+
+    <!-- Row 3: Donut Chart + Bar Chart -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
+      <!-- Right: Donut Chart - 1 column -->
+      <div class="flex flex-col justify-center">
+        <h4 class="text-xl font-semibold text-gray-700 text-center mb-4">مؤشر أنواع الأعطال</h4>
+        <div id="failure-types-donut" class="h-80"></div>
+      </div>
+
+      <!-- Left: Bar Chart - 2 columns -->
+      <div class="lg:col-span-2 flex flex-col border rounded-lg p-2">
+        <h4 class="text-xl font-semibold text-gray-700 text-right my-4 mx-6">مؤشر تصنيف المشاريع</h4>
+        <div id="project-classification-chart" class="h-96"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+    <!-- News Ticker Card - Animated Rotating Display -->
+    <!-- <div class="mt-8">
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <div *ngIf="getCurrentMaintenanceRequest(); else noMaintenanceData" class="relative overflow-hidden flex">
+
+          <label class="text-black text-xl font-semibold ml-2">طلبات الصيانة اليومية:</label>
+          <div class="transition-all duration-500 ease-in-out transform">
+            <p class="text-lg font-semibold text-teal-600 animate-fade-in">
+              ( {{ getCurrentMaintenanceRequest().name }}
+              <span class="font-semibold text-teal-600">{{ getCurrentMaintenanceRequest().totalCount }}</span>
+
+              )
+            </p>
+          </div>
+
+        </div>
+        <ng-template #noMaintenanceData>
+          <p class="text-lg font-semibold text-gray-500">
+            لا توجد طلبات صيانة يومية متاحة
+          </p>
+        </ng-template>
+      </div>
+    </div> -->
+   <!-- News Ticker Card - Animated Scrolling Display -->
+<!-- News Ticker Card - Animated Scrolling Display -->
+<div class="mt-8">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+    <div class="news-ticker-wrapper">
+      <!-- Static label outside -->
+      <span class="ticker-label">طلبات الصيانة اليومية:</span>
+
+      <!-- Ticker container -->
+      <div class="news-ticker">
+        <div class="ticker-content">
+          <ng-container *ngIf="dailyMaintenanceRequests && dailyMaintenanceRequests.length > 0; else noMaintenanceData">
+            <p *ngFor="let request of dailyMaintenanceRequests">
+              <span class="text-black font-semibold">{{ request.name }} : </span>
+              <span class="font-bold">{{ request.totalCount }}</span>
+            </p>
+          </ng-container>
+
+          <!-- No data template -->
+          <ng-template #noMaintenanceData>
+            <p class="text-gray-500">
+              لا توجد طلبات صيانة يومية متاحة
+            </p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,160 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="' إدارة الأصول'" [imageTitle]="'./assets/icons/projectsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: ' الأصول', routerLink: '/buildings/assets' }
+  ]" [isFilte]="true" [inputPlaceholder]="'   ابحث بالأسم او المنتج او الشركة المصنعة...'" [buttonText]="' اضافة اصل'"
+  [saveBtnText]="'إضافة'" [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false"
+  (addButton)="openAdd()" (valueSearch)="filterBySearchTesxt($event)" (onFilterClick)="showDialog()"></app-bread-crumb>
+
+<!-- Search Dialog -->
+<div class="overlay" *ngIf="displayDialog">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/search-filter.svg" />
+      <p> تصفية الأصول</p>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="OnSubmitData()">
+      <div class="grid  grid-cols-12 gap-4 ">
+
+        <div class="input-field col-span-6">
+          <label for="name"> المبنى </label>
+          <div class="">
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى  " formControlName="buildingId"
+              [options]="mainBuildingsList" [filter]="true" filterBy="name"
+              (onChange)="changeBulding($event)"></p-dropdown>
+          </div>
+        </div>
+        <!-- <div class="input-field col-span-6">
+          <label for="name"> المبنى </label>
+          <div class="">
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى  " formControlName="unitId"
+              [options]="subUnitsList" [filter]="true" filterBy="name" (onChange)="changeSubUnit($event)"></p-dropdown>
+          </div>
+        </div> -->
+
+        <div class="input-field col-span-6">
+          <label for="name"> الطابق </label>
+          <div class="">
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر الطابق  " formControlName="floorId"
+              [options]="floorsList" [filter]="true" filterBy="name"></p-dropdown>
+          </div>
+        </div>
+        <div class="input-field col-span-6">
+          <label for="name"> الغرفة </label>
+          <div class="">
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر الغرفة  " formControlName="officeId"
+              [options]="officesList" [filter]="true" filterBy="name"></p-dropdown>
+          </div>
+        </div>
+        <div class="input-field col-span-6">
+          <label for="name"> النظام </label>
+          <div class="">
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر النظام  " formControlName="typeAssetId"
+              [options]="typeAssetList" [filter]="true" filterBy="name"></p-dropdown>
+          </div>
+        </div>
+
+        <div class="input-field col-span-6">
+          <label for="name"> تاريخ التصنيع </label>
+          <div class=" field-icon ">
+            <input type="date" name="" id="" class="form-control" formControlName="CreatedAt">
+          </div>
+        </div>
+        <div class="input-field col-span-6">
+          <label for="name"> حالة الأصل </label>
+          <div class="">
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى  " formControlName="assetStatusId"
+              [options]="assetStatusList" [filter]="true" filterBy="name"></p-dropdown>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="buttons-content  mt-5">
+        <button class="buttons" type="submit">تصفية</button>
+        <button class="buttons-white" type="button" (click)="hideDialog()">
+          إعادة ضبط
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
+  [withControles]="true" (editEvent)="openEdit($event)" (deleteEvent)="deleteAsset($event)"
+  (rowsCountChanged)="getData($event)" [noData]="showBreadcrumb ? false : true" [isAsset]="true"
+  (maintenancelogEvent)="openmaintenancelog($event)"
+  (maintenanceinspectionlogEvent)="openmaintenanceinspectionlog($event)"></app-list>
+
+<!-- ======================================================== -->
+<!-- NO DATA -->
+<!-- ======================================================== -->
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+    noDataImg: './assets/images/no-data-search.png',
+    noDataText: 'يبدو أنك لم تقم بإضافة أي اصل بعد، ستظهر الأصول المضافة  هنا... يمكنك البدء بإضافة أول  أصل',
+    noDataButtonText: ' اضافة اصل ',
+    }"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض  الأصول '
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف  اصل؟ سيتم حذفه نهائيًا من قائمة  الأصول',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertFailureMessage,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>

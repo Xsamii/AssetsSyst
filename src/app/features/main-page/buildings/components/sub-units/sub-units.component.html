@@ -1,0 +1,132 @@
+<!-- ============================= -->
+<!-- BREAD CRUMB -->
+<!-- ============================= -->
+<app-bread-crumb [title]="'المباني الفرعية'" [imageTitle]="'./assets/icons/subUnitsActive.svg'" [subTitles]="[
+    { name: 'الرئيسية', routerLink: '/' },
+    { name: 'إدارة الأصول', routerLink: '/buildings' },
+    { name: 'المباني الفرعية', routerLink: '/buildings/sub-units' }
+  ]" [isFilte]="false" [inputPlaceholder]="'ابحث بالرقم، اسم المبنى الفرعي، اسم المبنى، الكود...'" [buttonText]="' مبنى فرعي جديد'"
+  [saveBtnText]="'إضافة'" [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false"
+  (addButton)="openAdd()" (valueSearch)="filterBySearchText($event)"></app-bread-crumb>
+
+<!-- ============================= -->
+<!-- TABLE LIST-->
+<!-- ============================= -->
+<app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
+  [withControles]="true" (editEvent)="openEdit($event)" (deleteEvent)="confirmDelete($event)"
+  (rowsCountChanged)="getAllSubUnits($event)" [noData]="showBreadcrumb ? false : true"></app-list>
+
+<!-- ============================= -->
+<!-- POPUP ADD & EDIT-->
+<!-- ============================= -->
+<div class="overlay" *ngIf="showAddEditPopup">
+  <div class="popup">
+    <div class="title">
+      <img src="./assets/icons/subUnitsActive.svg" />
+      <p>
+        {{ isEditMode ? "تعديل مبنى فرعي" : "إضافة مبنى فرعي" }}
+      </p>
+    </div>
+    <form [formGroup]="subUnitForm" (ngSubmit)="OnSubmitData()">
+      <div class="input-field">
+        <label for="name">اسم المبنى الفرعي
+          <span>*</span>
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="name" id="name" type="text" placeholder="أدخل اسم المبنى الفرعي" />
+        </div>
+        <small *ngIf="formControls.name.invalid && formControls.name.touched">
+          برجاء إدخال اسم المبنى الفرعي
+        </small>
+      </div>
+      <div class="input-field">
+        <label for="code">كود المبنى الفرعي
+          <!-- <span>*</span> -->
+        </label>
+        <div class="field-icon">
+          <img src="./assets/icons/code-icon.svg" />
+          <input formControlName="code" id="code" type="text" placeholder="أدخل كود المبنى الفرعي" />
+        </div>
+        <!-- <small *ngIf="formControls.code.invalid && formControls.code.touched">
+          برجاء إدخال كود المبنى
+        </small> -->
+      </div>
+      <div class="input-field">
+        <label for="main-building">
+          المبنى الرئيسي
+          <span>*</span>
+        </label>
+        <div class=" ">
+          <!-- <img src="./assets/icons/select-main-building-icon.svg" />
+          <select formControlName="mainBuildingId" id="main-building">
+            <option *ngFor="let build of builldingLookup" [value]="build.id">
+              {{ build.name }}
+            </option>
+          </select> -->
+
+
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+            background:
+              'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى الرئيسي " formControlName="mainBuildingId"
+            [options]="builldingLookup" [filter]="true" filterBy="name"></p-dropdown>
+
+
+        </div>
+        <small *ngIf="
+            formControls.mainBuildingId.invalid &&
+            formControls.mainBuildingId.touched
+          ">
+          برجاء إختيار المبنى الرئيسي
+        </small>
+      </div>
+      <div class="buttons-content">
+        <button [disabled]="subUnitForm.invalid" class="buttons" type="submit">
+          {{ isEditMode ? "تعديل" : "إضافة" }}
+        </button>
+        <button class="buttons-white" type="button" (click)="onCloseAddEditePopup()">
+          إلغاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ======================================================== -->
+<!-- NO DATA YET... -->
+<!-- ======================================================== -->
+<app-no-data-yet *ngIf="values.length == 0 && !isSearchingReasult" (addNewEvent)="openAdd()" [noDataElements]="{
+noDataImg: './assets/images/no-data-search.png',
+noDataText: 'يبدو أنك لم تقم بإضافة أي مبنى فرعي بعد، ستظهر المباني المضافة  هنا... يمكنك البدء بإضافة أول مبنى فرعي',
+noDataButtonText: ' إضافة مبنى فرعي جديد',
+}"></app-no-data-yet>
+
+<!-- ============================= -->
+<!-- SWEET ALERTS-->
+<!-- ============================= -->
+<!-- SUCCESS -->
+<app-sweet-alert-message *ngIf="alertSuccess" [data]="{
+    type: 'success',
+    text: alertSuccessMsg,
+    buttonText: 'عرض المباني الفرعية'
+  }" (confirmMessage)="alertSuccessFun($event)"></app-sweet-alert-message>
+<!-- WARNING -->
+<app-sweet-alert-message *ngIf="alertWarning" [data]="{
+    type: 'warning',
+    text: 'هل أنت متأكد أنك تريد المغادرة؟ سيتم تجاهل أي بيانات قمت بإدخالها',
+    buttonText: ''
+  }" (confirmMessage)="alertWarningFun($event)"></app-sweet-alert-message>
+<!-- CONFIRM -->
+<app-sweet-alert-message *ngIf="alertConfirm" [data]="{
+    type: 'confirm',
+    text: 'هل أنت متأكد أنك تريد حذف المبنى؟ سيتم حذفها نهائيًا من قائمة المباني الفرعية',
+    buttonText: ''
+  }" (confirmMessage)="alertConfirmFun($event)"></app-sweet-alert-message>
+<!-- ERROR -->
+<app-sweet-alert-message *ngIf="alertError" [data]="{
+    type: 'error',
+    text: alertErrorMsg,
+    buttonText: ''
+  }" (confirmMessage)="alertErrorFun($event)"></app-sweet-alert-message>
