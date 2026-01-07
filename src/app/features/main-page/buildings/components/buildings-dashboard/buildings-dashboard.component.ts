@@ -8,7 +8,7 @@ import {
 } from '@angular/google-maps';
 import { DashboardMintService } from './services/dashboard.service';
 import { MainBuildingsService } from '../main-buildings/services/main-buildings.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BreadCrumbComponent } from 'src/app/Shared/components/bread-crumb/bread-crumb.component';
 import { SharedService } from 'src/app/Shared/services/shared.service';
 
@@ -73,19 +73,40 @@ export class BuildingsDashboardComponent implements OnInit {
   // Loading States
   isLoading = false;
 
+  // Asset ID from query params
+  assetId: number | null = null;
+
   constructor(
     private _dashboardMintService: DashboardMintService,
     private _mainBuildingsService: MainBuildingsService,
     private sharedService: SharedService,
     private router: Router,
+    private route: ActivatedRoute,
     private fb: FormBuilder
   ) {
     this.initializeForm();
   }
 
   ngOnInit(): void {
+    this.catchAssetIdFromQueryParams();
     this.loadBuildingsList();
     this.loadMapData();
+  }
+
+  // Catch asset ID from query parameters
+  catchAssetIdFromQueryParams() {
+    this.route.queryParams.subscribe(params => {
+      if (params['data']) {
+        try {
+          // Parse the data - it's just the asset ID
+          const parsedData = JSON.parse(params['data']);
+          this.assetId = parsedData;
+          console.log('Asset ID received:', this.assetId);
+        } catch (error) {
+          console.error('Error parsing asset ID from query params:', error);
+        }
+      }
+    });
   }
 
   // Initialize reactive form
@@ -139,7 +160,7 @@ export class BuildingsDashboardComponent implements OnInit {
             buildingName: item.buildingName || `مبنى ${item.buildingId}`
           }));
 
-          // Initial load - show all data
+          // Initial load - show all data (asset ID will be used for highlighting if needed)
           this.filteredMapData = this.groupLocationsByCoordinates(this.allMapData);
           this.updateMapMarkers();
         }

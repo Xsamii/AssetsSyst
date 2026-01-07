@@ -120,6 +120,12 @@ export class AssetsComponent {
       assetName.name,
     ]);
   }
+
+  viewMap(event) {
+    console.log(event);
+
+    this.router.navigate(['/map'], { queryParams: { data: JSON.stringify(event) } });
+  }
   getData(paganations?: any) {
     this._assetService.getAllList(paganations, this.filterDataParams).subscribe(
       (data) => {

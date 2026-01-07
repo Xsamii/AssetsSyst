@@ -120,7 +120,7 @@
   [withControles]="true" (editEvent)="openEdit($event)" (deleteEvent)="deleteAsset($event)"
   (rowsCountChanged)="getData($event)" [noData]="showBreadcrumb ? false : true" [isAsset]="true"
   (maintenancelogEvent)="openmaintenancelog($event)"
-  (maintenanceinspectionlogEvent)="openmaintenanceinspectionlog($event)"></app-list>
+  (maintenanceinspectionlogEvent)="openmaintenanceinspectionlog($event)" (viewOnMap)="viewMap($event)"></app-list>
 
 <!-- ======================================================== -->
 <!-- NO DATA -->

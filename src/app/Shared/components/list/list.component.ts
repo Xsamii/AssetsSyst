@@ -73,7 +73,7 @@ export class ListComponent implements OnInit {
   @Output() deleteEvent = new EventEmitter();
   @Output() maintenancelogEvent = new EventEmitter();
   @Output() maintenanceinspectionlogEvent = new EventEmitter();
-
+  @Output() viewOnMap = new EventEmitter();
   @Output() showRequest = new EventEmitter();
   @Output() hasrEvent = new EventEmitter();
   @Output() rowsCountChanged = new EventEmitter();
@@ -105,7 +105,7 @@ export class ListComponent implements OnInit {
       .getProfile()
       .pipe(shareReplay(1))
       .subscribe((res) => {
-        this.userTypeId = res.data.officeTypeId;
+        this.userTypeId = res.data?.officeTypeId;
       });
   }
   role = +localStorage.getItem('maintainanceRole');
@@ -632,6 +632,13 @@ export class ListComponent implements OnInit {
           icon: 'fa-solid fa-file',
           command: () =>
             this.maintenanceinspectionlogEvent.emit(this.selectedId),
+        },
+        {
+          label: 'عرض في المتابعة المكانية',
+          visible: true,
+          icon: 'fa-solid fa-file',
+          command: () =>
+            this.viewOnMap.emit(this.selectedId),
         },
         {
           label: 'حذف',
