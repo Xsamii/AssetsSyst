@@ -1,10 +1,10 @@
 <!-- Spatial Tracking Map Dashboard -->
 <div class="spatial-tracking-map-dashboard">
   <!-- Breadcrumb -->
-  <app-bread-crumb 
-    class="bg-white" 
+  <app-bread-crumb
+    class="bg-white"
     [title]="'المتابعة المكانية'"
-    [imageTitle]="'./assets/icons/mainBuildingsActive.svg'" 
+    [imageTitle]="'./assets/icons/mainBuildingsActive.svg'"
     [subTitles]="[
       { name: 'الرئيسية', routerLink: '/' },
       { name: 'المتابعة المكانية', routerLink: '/map' }
@@ -15,22 +15,85 @@
   <div class="controls-section">
     <div class="filter-controls" [formGroup]="filterForm">
       <div class="filter-item">
-        <p-dropdown 
-          class="w-full min-w-96" 
-          [styleClass]="'w-full bg-filterBtnBg p-3 min-w-96'"
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg p-3'"
           [style]="{
             background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
             'background-color': '#f6f6f6',
             'padding-right': '35px'
           }"
-          optionLabel="label" 
-          optionValue="value" 
-          placeholder="اختار اسم المبنى" 
-          formControlName="buildName"
-          [options]="buildNameOptions" 
-          [filter]="true" 
+          optionLabel="label"
+          optionValue="value"
+          placeholder="اختار المجزرة"
+          formControlName="slaughterhouse"
+          [options]="slaughterhouseOptions"
+          [filter]="true"
           [showClear]="true"
-          (onChange)="onBuildNameFilterChange()">
+          (onChange)="onSlaughterhouseChange()">
+        </p-dropdown>
+      </div>
+
+      <div class="filter-item">
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg p-3'"
+          [style]="{
+            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="اختار المبنى"
+          formControlName="building"
+          [options]="buildingOptions"
+          [filter]="true"
+          [showClear]="true"
+          [disabled]="!filterForm.get('slaughterhouse')?.value"
+          (onChange)="onBuildingChange()">
+        </p-dropdown>
+      </div>
+
+      <div class="filter-item">
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg p-3'"
+          [style]="{
+            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="اختار الدور"
+          formControlName="floor"
+          [options]="floorOptions"
+          [filter]="true"
+          [showClear]="true"
+          [disabled]="!filterForm.get('building')?.value"
+          (onChange)="onFloorChange()">
+        </p-dropdown>
+      </div>
+
+      <div class="filter-item">
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg p-3'"
+          [style]="{
+            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="اختار الغرفة"
+          formControlName="room"
+          [options]="roomOptions"
+          [filter]="true"
+          [showClear]="true"
+          [disabled]="!filterForm.get('floor')?.value"
+          (onChange)="onRoomChange()">
         </p-dropdown>
       </div>
 
@@ -51,7 +114,7 @@
   <div id="mapContainer" class="w-full bg-gray-200 rounded-lg relative" style="height: calc(100vh - 140px);">
     <!-- Map View -->
     <div #mapViewNode class="map-view w-full h-full"></div>
-    
+
     <!-- Map Controls -->
     <app-map-controls
       (layerListToggle)="toggleLayerList()"

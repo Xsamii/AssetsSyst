@@ -19,7 +19,7 @@
 <!-- ============================= -->
 <!-- TABLE LIST -->
 <!-- ============================= -->
-<app-list *ngIf="!isLoading" [cols]="cols" [isSearching]="isSearchingResult" [values]="values"
+<app-list [cols]="cols" [isSearching]="isSearchingResult" [values]="values"
   [totalPageCount]="totalPageCount" [withControles]="true" (editEvent)="openEdit($event)"
   (deleteEvent)="confirmDelete($event)" (rowsCountChanged)="getAllBuildingOffices($event)"
   [noData]="!showBreadcrumb"></app-list>

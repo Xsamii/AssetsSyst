@@ -5,9 +5,10 @@ import { DropdownModule } from 'primeng/dropdown';
 import { BreadCrumbComponent } from 'src/app/Shared/components/bread-crumb/bread-crumb.component';
 import { MapControlsComponent } from './components/map-controls/map-controls.component';
 import { SpatialTrackingMapService } from './services/spatial-tracking-map.service';
-import { 
-  SPATIAL_TRACKING_LAYERS, 
-  BASEMAP_OPTIONS, 
+import { SharedService } from 'src/app/Shared/services/shared.service';
+import {
+  SPATIAL_TRACKING_LAYERS,
+  BASEMAP_OPTIONS,
   LayerConfig,
   getLayerConfigById,
   updateLayerVisibility,
@@ -52,27 +53,32 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
   availableLayers: LayerConfig[] = SPATIAL_TRACKING_LAYERS;
   basemapOptions = BASEMAP_OPTIONS;
 
-  // BuildName filter options
-  buildNameOptions = [
-    { label: 'الموقع العام لمنطقة 6', value: 'الموقع العام لمنطقة 6' },
-    { label: 'سكن', value: 'سكن' },
-    { label: 'مباني الكهرباء', value: 'مباني الكهرباء' },
-    { label: 'مباني ذبخ و سلخ', value: 'مباني ذبخ و سلخ' },
-    { label: 'مباني مضخات المياه', value: 'مباني مضخات المياه' }
-  ];
+  // Filter dropdown options (placeholders for now)
+  slaughterhouseOptions: any[] = [];
+  buildingOptions: any[] = [];
+  floorOptions: any[] = [];
+  roomOptions: any[] = [];
+
+  // Selected filter names (for map filtering)
+  private selectedSlaughterhouseName: string = '';
+  private selectedBuildingName: string = '';
+  private selectedFloorName: string = '';
+  private selectedRoomName: string = '';
 
   // Subscriptions
   private subscriptions: Subscription[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private spatialTrackingMapService: SpatialTrackingMapService
+    private spatialTrackingMapService: SpatialTrackingMapService,
+    private sharedService: SharedService
   ) {
     this.initializeForms();
   }
 
   ngOnInit(): void {
-    // Initialize forms
+    // Load initial lookup data
+    this.loadSlaughterhouseLookup();
   }
 
   ngAfterViewInit(): void {
@@ -99,7 +105,10 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
   private initializeForms(): void {
     // Filter form for filtering data
     this.filterForm = this.fb.group({
-      buildName: ['']
+      slaughterhouse: [''],
+      building: [''],
+      floor: [''],
+      room: ['']
     });
 
     // Layer control form for toggling layers
@@ -208,18 +217,211 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
   }
 
   /**
-   * Handle BuildName filter change
+   * Load slaughterhouse lookup data
    */
-  async onBuildNameFilterChange(): Promise<void> {
-    const buildName = this.filterForm.get('buildName')?.value;
-    
-    if (buildName) {
-      // Filter the assets point layer and zoom to filtered features
-      await this.spatialTrackingMapService.filterLayerByBuildName('assets-point-layer', buildName);
+  loadSlaughterhouseLookup(): void {
+    this.sharedService.GetSites().subscribe({
+      next: (res) => {
+        if (res.isSuccess && res.data) {
+          this.slaughterhouseOptions = res.data.map(item => ({
+            label: item.name,
+            value: item.id
+          }));
+        }
+      },
+      error: (err) => {
+        console.error('Error loading slaughterhouse lookup:', err);
+      }
+    });
+  }
+
+  /**
+   * Load buildings based on slaughterhouse
+   */
+  loadBuildingsLookup(): void {
+    this.sharedService.getAllBuilding().subscribe({
+      next: (res) => {
+        if (res.isSuccess && res.data) {
+          this.buildingOptions = res.data.map(item => ({
+            label: item.name,
+            value: item.id
+          }));
+        }
+      },
+      error: (err) => {
+        console.error('Error loading buildings lookup:', err);
+      }
+    });
+  }
+
+  /**
+   * Load floors based on building
+   */
+  loadFloorsLookup(buildingId: number): void {
+    if (!buildingId) return;
+
+    this.sharedService.GetBuildingFloors(buildingId).subscribe({
+      next: (res) => {
+        if (res.isSuccess && res.data) {
+          this.floorOptions = res.data.map(item => ({
+            label: item.name,
+            value: item.id
+          }));
+        }
+      },
+      error: (err) => {
+        console.error('Error loading floors lookup:', err);
+        this.floorOptions = [];
+      }
+    });
+  }
+
+  /**
+   * Load rooms based on floor
+   */
+  loadRoomsLookup(floorId: number): void {
+    if (!floorId) return;
+
+    this.sharedService.getOfficesInFloor(floorId).subscribe({
+      next: (res) => {
+        if (res.isSuccess && res.data) {
+          this.roomOptions = res.data.map(item => ({
+            label: item.name,
+            value: item.id
+          }));
+        }
+      },
+      error: (err) => {
+        console.error('Error loading rooms lookup:', err);
+        this.roomOptions = [];
+      }
+    });
+  }
+
+  /**
+   * Handle slaughterhouse filter change
+   */
+  onSlaughterhouseChange(): void {
+    // Reset dependent dropdowns
+    this.buildingOptions = [];
+    this.floorOptions = [];
+    this.roomOptions = [];
+
+    this.filterForm.patchValue({
+      building: '',
+      floor: '',
+      room: ''
+    });
+
+    // Reset dependent filter names
+    this.selectedBuildingName = '';
+    this.selectedFloorName = '';
+    this.selectedRoomName = '';
+
+    const slaughterhouseId = this.filterForm.get('slaughterhouse')?.value;
+    if (slaughterhouseId) {
+      // Find and store the selected slaughterhouse name
+      const selected = this.slaughterhouseOptions.find(opt => opt.value === slaughterhouseId);
+      this.selectedSlaughterhouseName = selected?.label || '';
+
+      // Load buildings for all slaughterhouses (not filtered by slaughterhouse)
+      this.loadBuildingsLookup();
     } else {
-      // Clear filter
-      this.spatialTrackingMapService.clearLayerFilter('assets-point-layer');
+      this.selectedSlaughterhouseName = '';
     }
+
+    // Apply filter to map
+    this.applyMapFilters();
+  }
+
+  /**
+   * Handle building filter change
+   */
+  onBuildingChange(): void {
+    // Reset dependent dropdowns
+    this.floorOptions = [];
+    this.roomOptions = [];
+
+    this.filterForm.patchValue({
+      floor: '',
+      room: ''
+    });
+
+    // Reset dependent filter names
+    this.selectedFloorName = '';
+    this.selectedRoomName = '';
+
+    const buildingId = this.filterForm.get('building')?.value;
+    if (buildingId) {
+      // Find and store the selected building name
+      const selected = this.buildingOptions.find(opt => opt.value === buildingId);
+      this.selectedBuildingName = selected?.label || '';
+
+      this.loadFloorsLookup(buildingId);
+    } else {
+      this.selectedBuildingName = '';
+    }
+
+    // Apply filter to map
+    this.applyMapFilters();
+  }
+
+  /**
+   * Handle floor filter change
+   */
+  onFloorChange(): void {
+    // Reset dependent dropdown
+    this.roomOptions = [];
+
+    this.filterForm.patchValue({
+      room: ''
+    });
+
+    // Reset dependent filter names
+    this.selectedRoomName = '';
+
+    const floorId = this.filterForm.get('floor')?.value;
+    if (floorId) {
+      // Find and store the selected floor name
+      const selected = this.floorOptions.find(opt => opt.value === floorId);
+      this.selectedFloorName = selected?.label || '';
+
+      this.loadRoomsLookup(floorId);
+    } else {
+      this.selectedFloorName = '';
+    }
+
+    // Apply filter to map
+    this.applyMapFilters();
+  }
+
+  /**
+   * Handle room filter change
+   */
+  onRoomChange(): void {
+    const roomId = this.filterForm.get('room')?.value;
+    if (roomId) {
+      // Find and store the selected room name
+      const selected = this.roomOptions.find(opt => opt.value === roomId);
+      this.selectedRoomName = selected?.label || '';
+    } else {
+      this.selectedRoomName = '';
+    }
+
+    // Apply filter to map
+    this.applyMapFilters();
+  }
+
+  /**
+   * Apply filters to the map
+   */
+  private applyMapFilters(): void {
+    this.spatialTrackingMapService.filterAssetLayer({
+      slaughterhouseName: this.selectedSlaughterhouseName,
+      buildName: this.selectedBuildingName,
+      levelAsset: this.selectedFloorName,
+      roomName: this.selectedRoomName
+    });
   }
 
   /**
@@ -228,9 +430,26 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
   async resetFilters(): Promise<void> {
     // Reset form first
     this.filterForm.reset({
-      buildName: ''
+      slaughterhouse: '',
+      building: '',
+      floor: '',
+      room: ''
     });
-    
+
+    // Clear selected filter names
+    this.selectedSlaughterhouseName = '';
+    this.selectedBuildingName = '';
+    this.selectedFloorName = '';
+    this.selectedRoomName = '';
+
+    // Clear dependent dropdown options (but keep slaughterhouse options)
+    this.buildingOptions = [];
+    this.floorOptions = [];
+    this.roomOptions = [];
+
+    // Reload slaughterhouse options
+    this.loadSlaughterhouseLookup();
+
     // Clear layer filter and reset map view to default
     await this.spatialTrackingMapService.clearLayerFilterAndResetView('assets-point-layer');
   }

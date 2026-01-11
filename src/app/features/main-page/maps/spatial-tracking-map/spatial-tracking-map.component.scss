@@ -26,6 +26,9 @@
       .filter-item {
         display: flex;
         align-items: center;
+        min-width: 200px;
+        flex: 1;
+        max-width: 250px;
 
         .search-input {
           padding: 10px 16px;

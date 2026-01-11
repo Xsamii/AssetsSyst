@@ -185,7 +185,7 @@ export class OfficesComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.values = data.data?.items || [];
-          this.totalPageCount = data.data?.totalCount || 0;
+          this.totalPageCount = data.data?.totalCount;
 
           this.showBreadcrumb = this.isSearchingResult || this.values.length > 0;
           this.isLoading = false;

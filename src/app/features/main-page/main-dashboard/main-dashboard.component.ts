@@ -1183,12 +1183,10 @@ loadAssetsByEquipmentData(): void {
   // TODO: Replace with actual API endpoint when ready
   // For now using mock data
   this.assetsByEquipmentData = [
-    { name: 'Structural', percentage: 26.7, totalCount: 50 },
+    { name: 'Architectural', percentage: 26.7, totalCount: 50 },
     { name: 'ELECTRICAL', percentage: 26.7, totalCount: 50 },
     { name: 'Mechanical', percentage: 23.6, totalCount: 45 },
-    { name: 'ELECTRICAL', percentage: 16.6, totalCount: 31 },
-    { name: 'Structural', percentage: 4.7, totalCount: 9 },
-    { name: 'Architectural', percentage: 1.7, totalCount: 3 }
+    { name: 'Structural', percentage: 16.6, totalCount: 31 }
   ];
 
   setTimeout(() => {
@@ -1205,7 +1203,6 @@ loadAssetsByManufacturerData(): void {
     { name: 'Windows', percentage: 8.2, totalCount: 24 },
     { name: 'Doors', percentage: 7.2, totalCount: 21 },
     { name: 'LIGHTING SYSTEM', percentage: 6.5, totalCount: 19 },
-    { name: 'LV', percentage: 5.8, totalCount: 17 },
     { name: 'MV', percentage: 2.2, totalCount: 6 }
   ];
 

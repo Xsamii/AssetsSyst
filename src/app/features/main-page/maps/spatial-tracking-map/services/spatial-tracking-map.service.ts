@@ -999,14 +999,21 @@ export class SpatialTrackingMapService {
       layer.definitionExpression = '';
       console.log(`Cleared filter for layer ${layerId}`);
     }
-    
+
     // Also clear buildings layer filter
     const buildingsLayer = this.layers.get('buildings-layer') as FeatureLayer;
     if (buildingsLayer) {
       buildingsLayer.definitionExpression = '';
       console.log(`Cleared filter for buildings layer`);
     }
-    
+
+    // Also clear rooms layer filter
+    const roomsLayer = this.layers.get('rooms-polygon-layer') as FeatureLayer;
+    if (roomsLayer) {
+      roomsLayer.definitionExpression = '';
+      console.log(`Cleared filter for rooms layer`);
+    }
+
     // Clear highlight graphics
     this.clearHighlightGraphics();
   }
@@ -1125,5 +1132,144 @@ export class SpatialTrackingMapService {
   async clearLayerFilterAndResetView(layerId: string): Promise<void> {
     this.clearLayerFilter(layerId);
     await this.goHome();
+  }
+
+  /**
+   * Filter assets and rooms layers by multiple criteria
+   * @param filters Object containing filter values { slaughterhouseName, buildName, levelAsset, roomName }
+   */
+  async filterAssetLayer(filters: {
+    slaughterhouseName?: string;
+    buildName?: string;
+    levelAsset?: string;
+    roomName?: string;
+  }): Promise<void> {
+    const assetsLayerId = 'assets-point-layer';
+    const roomsLayerId = 'rooms-polygon-layer';
+
+    const assetsLayer = this.layers.get(assetsLayerId) as FeatureLayer;
+    const roomsLayer = this.layers.get(roomsLayerId) as FeatureLayer;
+
+    if (!this.mapView) {
+      console.error('Map view not initialized');
+      return;
+    }
+
+    try {
+      // Build definition expression for assets layer
+      const assetsWhereConditions: string[] = [];
+
+      if (filters.slaughterhouseName) {
+        const escaped = filters.slaughterhouseName.replace(/'/g, "''");
+        assetsWhereConditions.push(`slaughterhouseName = '${escaped}'`);
+      }
+
+      if (filters.buildName) {
+        const escaped = filters.buildName.replace(/'/g, "''");
+        assetsWhereConditions.push(`BuildName = '${escaped}'`);
+      }
+
+      if (filters.levelAsset) {
+        const escaped = filters.levelAsset.replace(/'/g, "''");
+        assetsWhereConditions.push(`LevelAsset = '${escaped}'`);
+      }
+
+      if (filters.roomName) {
+        const escaped = filters.roomName.replace(/'/g, "''");
+        assetsWhereConditions.push(`RoomName = '${escaped}'`);
+      }
+
+      // Combine conditions with AND for assets
+      const assetsWhereClause = assetsWhereConditions.length > 0
+        ? assetsWhereConditions.join(' AND ')
+        : '1=1'; // Show all if no filters
+
+      console.log('Applying assets filter:', assetsWhereClause);
+
+      // Apply filter to assets layer
+      if (assetsLayer) {
+        assetsLayer.definitionExpression = assetsWhereClause;
+      }
+
+      // Build definition expression for rooms layer (using different field names)
+      const roomsWhereConditions: string[] = [];
+
+      if (filters.slaughterhouseName) {
+        const escaped = filters.slaughterhouseName.replace(/'/g, "''");
+        roomsWhereConditions.push(`SlaughterhouseName = '${escaped}'`);
+      }
+
+      if (filters.buildName) {
+        const escaped = filters.buildName.replace(/'/g, "''");
+        roomsWhereConditions.push(`Build_Name = '${escaped}'`);
+      }
+
+      if (filters.levelAsset) {
+        const escaped = filters.levelAsset.replace(/'/g, "''");
+        roomsWhereConditions.push(`LevelRoom = '${escaped}'`);
+      }
+
+      if (filters.roomName) {
+        const escaped = filters.roomName.replace(/'/g, "''");
+        roomsWhereConditions.push(`NameRoom = '${escaped}'`);
+      }
+
+      // Combine conditions with AND for rooms
+      const roomsWhereClause = roomsWhereConditions.length > 0
+        ? roomsWhereConditions.join(' AND ')
+        : '1=1'; // Show all if no filters
+
+      console.log('Applying rooms filter:', roomsWhereClause);
+
+      // Apply filter to rooms layer
+      if (roomsLayer) {
+        roomsLayer.definitionExpression = roomsWhereClause;
+      }
+
+      // Only zoom if we have actual filters (not showing all)
+      if (assetsWhereConditions.length > 0) {
+        // Try to get extent from both layers and combine them
+        const extents: __esri.Extent[] = [];
+
+        // Query assets layer extent
+        if (assetsLayer) {
+          const assetsQuery = assetsLayer.createQuery();
+          assetsQuery.where = assetsWhereClause;
+          const assetsResult = await assetsLayer.queryExtent(assetsQuery);
+          if (assetsResult && assetsResult.extent) {
+            extents.push(assetsResult.extent);
+          }
+        }
+
+        // Query rooms layer extent
+        if (roomsLayer) {
+          const roomsQuery = roomsLayer.createQuery();
+          roomsQuery.where = roomsWhereClause;
+          const roomsResult = await roomsLayer.queryExtent(roomsQuery);
+          if (roomsResult && roomsResult.extent) {
+            extents.push(roomsResult.extent);
+          }
+        }
+
+        // If we have any extents, zoom to the union
+        if (extents.length > 0) {
+          let combinedExtent = extents[0];
+          for (let i = 1; i < extents.length; i++) {
+            combinedExtent = combinedExtent.union(extents[i]);
+          }
+
+          await this.mapView.goTo({
+            target: combinedExtent.expand(1.5),
+            duration: 1000
+          });
+
+          console.log('Zoomed to filtered features');
+        } else {
+          console.warn('No features found matching the filter criteria');
+        }
+      }
+    } catch (error) {
+      console.error('Error filtering layers:', error);
+    }
   }
 }

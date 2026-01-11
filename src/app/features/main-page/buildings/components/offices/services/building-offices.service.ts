@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SharedService } from 'src/app/Shared/services/shared.service';
@@ -16,26 +16,52 @@ export class BuildingOfficesService {
   // GET ALL Buildings Offices
   // ------------------------------------
   getAllBuildingOffice(
-    paganations?: any,
+    paganation?: any,
     SearchTerm?: string,
     OfficeIds?: number[],
     FloorIds?: number[],
     BuildingSubUnitIds?: number[],
     buildingIds?: number[]
   ): Observable<any> {
+    let params = new HttpParams();
+
+    // Pagination parameters
+    params = params.set('SkipCount', paganation?.first ? paganation.first : 0);
+    params = params.set('MaxResultCount', paganation?.rows ? paganation.rows : 10);
+
+    // Search term
+    if (SearchTerm) {
+      params = params.set('SearchTerm', SearchTerm);
+    }
+
+    // Array parameters - convert to proper format
+    if (OfficeIds && OfficeIds.length > 0) {
+      OfficeIds.forEach(id => {
+        params = params.append('OfficeIds', id.toString());
+      });
+    }
+
+    if (FloorIds && FloorIds.length > 0) {
+      FloorIds.forEach(id => {
+        params = params.append('FloorIds', id.toString());
+      });
+    }
+
+    if (BuildingSubUnitIds && BuildingSubUnitIds.length > 0) {
+      BuildingSubUnitIds.forEach(id => {
+        params = params.append('BuildingSubUnitIds', id.toString());
+      });
+    }
+
+    if (buildingIds && buildingIds.length > 0) {
+      buildingIds.forEach(id => {
+        params = params.append('BuildingIds', id.toString());
+      });
+    }
+
     return this._http.get<any>(
       `${environment.url}BuildingOffice/GetOfficeResultsByFilter`,
-      {
-        params: {
-          SkipCount: paganations?.first ? paganations?.first : 0,
-          MaxResultCount: paganations?.rows ? paganations?.rows : 10,
-          SearchTerm: SearchTerm ? SearchTerm : '',
-          OfficeIds: OfficeIds ? OfficeIds : [],
-          FloorIds: FloorIds ? FloorIds : [],
-          BuildingSubUnitIds: BuildingSubUnitIds ? BuildingSubUnitIds : [],
-          BuildingIds: buildingIds ? buildingIds : [],
-        },
-      }
+      { params }
     );
   }
 
