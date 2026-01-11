@@ -1167,11 +1167,11 @@ loadAssetsByTypeData(): void {
   // TODO: Replace with actual API endpoint when ready
   // For now using mock data
   this.assetsByTypeData = [
-    { name: 'غير محدد', percentage: 49.3, totalCount: 100 },
-    { name: 'كهربائية', percentage: 38.8, totalCount: 80 },
-    { name: 'تكييف', percentage: 3.5, totalCount: 7 },
-    { name: 'توجيه', percentage: 2.0, totalCount: 4 },
-    { name: 'كهربائية', percentage: 1.2, totalCount: 2 }
+    { name: 'AC SYSTEM', percentage: 49.3, totalCount: 100 },
+    { name: 'PANELBOARDS SYSTEM', percentage: 38.8, totalCount: 80 },
+    { name: 'SMALLPOWER SYSTEM', percentage: 3.5, totalCount: 7 },
+    { name: 'FIREFIGHTINGSYSTEM', percentage: 2.0, totalCount: 4 },
+    { name: 'REF SYSTEM', percentage: 1.2, totalCount: 2 }
   ];
 
   setTimeout(() => {
@@ -1183,12 +1183,12 @@ loadAssetsByEquipmentData(): void {
   // TODO: Replace with actual API endpoint when ready
   // For now using mock data
   this.assetsByEquipmentData = [
-    { name: 'ميكانيكي', percentage: 26.7, totalCount: 50 },
-    { name: 'كهربائي', percentage: 26.7, totalCount: 50 },
-    { name: 'كهربائية', percentage: 23.6, totalCount: 45 },
-    { name: 'لا يستعمل عقبه', percentage: 16.6, totalCount: 31 },
-    { name: 'محطة كهربائية', percentage: 4.7, totalCount: 9 },
-    { name: 'كليف', percentage: 1.7, totalCount: 3 }
+    { name: 'Structural', percentage: 26.7, totalCount: 50 },
+    { name: 'ELECTRICAL', percentage: 26.7, totalCount: 50 },
+    { name: 'Mechanical', percentage: 23.6, totalCount: 45 },
+    { name: 'ELECTRICAL', percentage: 16.6, totalCount: 31 },
+    { name: 'Structural', percentage: 4.7, totalCount: 9 },
+    { name: 'Architectural', percentage: 1.7, totalCount: 3 }
   ];
 
   setTimeout(() => {
@@ -1200,13 +1200,13 @@ loadAssetsByManufacturerData(): void {
   // TODO: Replace with actual API endpoint when ready
   // For now using mock data
   this.assetsByManufacturerData = [
-    { name: 'غير محدد', percentage: 50.7, totalCount: 150 },
-    { name: 'Schneider Electric', percentage: 12.7, totalCount: 38 },
-    { name: 'لا يستعمل عقبه', percentage: 8.2, totalCount: 24 },
-    { name: 'Helpman', percentage: 7.2, totalCount: 21 },
-    { name: 'italey / stm', percentage: 6.5, totalCount: 19 },
-    { name: 'صناعة محلية', percentage: 5.8, totalCount: 17 },
-    { name: 'Goedhart', percentage: 2.2, totalCount: 6 }
+    { name: 'LV', percentage: 50.7, totalCount: 150 },
+    { name: 'Plumbing', percentage: 12.7, totalCount: 38 },
+    { name: 'Windows', percentage: 8.2, totalCount: 24 },
+    { name: 'Doors', percentage: 7.2, totalCount: 21 },
+    { name: 'LIGHTING SYSTEM', percentage: 6.5, totalCount: 19 },
+    { name: 'LV', percentage: 5.8, totalCount: 17 },
+    { name: 'MV', percentage: 2.2, totalCount: 6 }
   ];
 
   setTimeout(() => {
@@ -1218,9 +1218,9 @@ loadRiskLevelData(): void {
   // TODO: Replace with actual API endpoint when ready
   // For now using mock data
   this.riskLevelData = [
-    { name: 'الطابق الأرضي', percentage: 45.2, totalCount: 120 },
-    { name: 'الطابق الثاني', percentage: 38.2, totalCount: 101 },
-    { name: 'الطابق الأول', percentage: 16.7, totalCount: 44 }
+    { name: 'مباني خزانات المياة', percentage: 45.2, totalCount: 120 },
+    { name: 'مبني خزان الدم', percentage: 38.2, totalCount: 101 },
+    { name: 'مباني ذبح و سلخ', percentage: 16.7, totalCount: 44 }
   ];
 
   setTimeout(() => {

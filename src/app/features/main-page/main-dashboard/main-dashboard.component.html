@@ -9,7 +9,37 @@
 
   <div class="p-6">
 
-    <!-- Top Statistics Cards Layout -->
+
+
+    <!-- New 4 Charts Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <!-- Chart 1: توزيع الأصول حسب النظام -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">توزيع الأصول حسب النظام</h4>
+        <div id="assets-by-type-chart" class="h-80"></div>
+      </div>
+
+      <!-- Chart 2: توزيع الأصول حسب  التصنيف -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">توزيع الأصول حسب التصنيف</h4>
+        <div id="assets-by-equipment-chart" class="h-80"></div>
+      </div>
+
+      <!-- Chart 3: توزيع الأصول حسب  التصنيف الفرعي -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">توزيع الأصول حسب  التصنيف الفرعي</h4>
+        <div id="assets-by-manufacturer-chart" class="h-80"></div>
+      </div>
+
+      <!-- Chart 4: مستوى الخطورة -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">عدد الأصول حسب المباني </h4>
+        <div id="risk-level-chart" class="h-80"></div>
+      </div>
+    </div>
+
+
+     <!-- Top Statistics Cards Layout -->
     <div class="grid grid-cols-6 gap-4 mb-8">
 
       <!-- Large Card - spans 3 rows -->
@@ -127,33 +157,6 @@
           <div class="text-base font-semibold text-gray-600 mb-1">عدد المستخدمين</div>
           <div class="text-xl font-bold text-secondary-color">{{ topMetrics.totalUsers}}</div>
         </div>
-      </div>
-    </div>
-
-    <!-- New 4 Charts Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <!-- Chart 1: توزيع الأصول حسب النوع -->
-      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">توزيع الأصول حسب النوع</h4>
-        <div id="assets-by-type-chart" class="h-80"></div>
-      </div>
-
-      <!-- Chart 2: توزيع الأصول حسب فئة المعدات -->
-      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">توزيع الأصول حسب فئة المعدات</h4>
-        <div id="assets-by-equipment-chart" class="h-80"></div>
-      </div>
-
-      <!-- Chart 3: توزيع الأصول حسب الشركة المصنعة -->
-      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">توزيع الأصول حسب الشركة المصنعة</h4>
-        <div id="assets-by-manufacturer-chart" class="h-80"></div>
-      </div>
-
-      <!-- Chart 4: مستوى الخطورة -->
-      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <h4 class="text-lg font-semibold text-gray-700 text-center mb-4">مستوى الخطورة</h4>
-        <div id="risk-level-chart" class="h-80"></div>
       </div>
     </div>
 
