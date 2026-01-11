@@ -124,7 +124,12 @@ export class AssetsComponent {
   viewMap(event) {
     console.log(event);
 
-    this.router.navigate(['/map'], { queryParams: { data: JSON.stringify(event) } });
+    const selectedAsset = this.values.find((item) => item.id === event);
+    const assetIdentificationNumber = selectedAsset?.name || event;
+
+    this.router.navigate(['/map'], {
+      queryParams: { assetId: assetIdentificationNumber },
+    });
   }
   getData(paganations?: any) {
     this._assetService.getAllList(paganations, this.filterDataParams).subscribe(

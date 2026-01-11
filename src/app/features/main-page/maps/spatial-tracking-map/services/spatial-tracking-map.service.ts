@@ -26,7 +26,7 @@ import { LayerConfig, DEFAULT_MAP_CONFIG } from '../spatial-tracking-map.config'
 type LayerMap = Map<string, any>;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SpatialTrackingMapService {
   private map: ArcGISMap | null = null;
@@ -39,7 +39,7 @@ export class SpatialTrackingMapService {
   private homeExtent: __esri.Extent | null = null;
   private highlightGraphicsLayer: GraphicsLayer | null = null;
   private highlightHandle: any = null;
-  
+
   private mapViewReady$ = new Subject<MapView>();
   private layerAdded$ = new Subject<{ layerId: string; layer: any }>();
   private layerRemoved$ = new Subject<string>();
@@ -81,20 +81,23 @@ export class SpatialTrackingMapService {
         id: 'satellite',
       });
       this.map = new ArcGISMap({
-        basemap: satelliteBasemap
+        basemap: satelliteBasemap,
       });
     } else if (basemap instanceof Basemap) {
       this.map = new ArcGISMap({
-        basemap: basemap
+        basemap: basemap,
       });
     } else {
       // Try to use the basemap ID, fallback to satellite if it fails
       try {
         this.map = new ArcGISMap({
-          basemap: basemap
+          basemap: basemap,
         });
       } catch (error) {
-        console.warn(`Failed to load basemap "${basemap}", falling back to satellite`, error);
+        console.warn(
+          `Failed to load basemap "${basemap}", falling back to satellite`,
+          error
+        );
         const satelliteBasemap = new Basemap({
           baseLayers: [
             new TileLayer({
@@ -105,7 +108,7 @@ export class SpatialTrackingMapService {
           id: 'satellite',
         });
         this.map = new ArcGISMap({
-          basemap: satelliteBasemap
+          basemap: satelliteBasemap,
         });
       }
     }
@@ -114,7 +117,10 @@ export class SpatialTrackingMapService {
   /**
    * Initialize the map view
    */
-  initMapView(container: string | HTMLDivElement, config?: Partial<typeof DEFAULT_MAP_CONFIG>): MapView {
+  initMapView(
+    container: string | HTMLDivElement,
+    config?: Partial<typeof DEFAULT_MAP_CONFIG>
+  ): MapView {
     if (!this.map) {
       throw new Error('Map is not initialized. Call initializeMap() first.');
     }
@@ -127,38 +133,46 @@ export class SpatialTrackingMapService {
       center: mapConfig.center,
       zoom: mapConfig.zoom,
       ui: {
-        components: []
-      }
+        components: [],
+      },
     });
 
     // Enable popup
     this.mapView.popupEnabled = true;
-    
+
     // Remove attribution
     this.mapView.ui.remove('attribution');
 
     // Add Fullscreen widget
     this.mapView.ui.add(
       new Fullscreen({
-        view: this.mapView
+        view: this.mapView,
       }),
       'top-left'
     );
 
     // Log basemap info for debugging
-    this.map.basemap.when(() => {
-      console.log('Basemap loaded:', this.map?.basemap?.title || this.map?.basemap?.id);
-    }).catch((error) => {
-      console.error('Error loading basemap:', error);
-    });
+    this.map.basemap
+      .when(() => {
+        console.log(
+          'Basemap loaded:',
+          this.map?.basemap?.title || this.map?.basemap?.id
+        );
+      })
+      .catch((error) => {
+        console.error('Error loading basemap:', error);
+      });
 
     // Save initial extent as home
-    this.mapView.when().then(() => {
-      this.homeExtent = this.mapView!.extent.clone();
-      console.log('Map view initialized successfully');
-    }).catch((error) => {
-      console.error('Error initializing map view:', error);
-    });
+    this.mapView
+      .when()
+      .then(() => {
+        this.homeExtent = this.mapView!.extent.clone();
+        console.log('Map view initialized successfully');
+      })
+      .catch((error) => {
+        console.error('Error initializing map view:', error);
+      });
 
     // Track extent changes for navigation
     this.mapView.watch('stationary', (stationary) => {
@@ -181,7 +195,10 @@ export class SpatialTrackingMapService {
   private saveExtent(extent: __esri.Extent): void {
     // Remove any extents after current index (when user navigates back then moves)
     if (this.currentExtentIndex < this.extentHistory.length - 1) {
-      this.extentHistory = this.extentHistory.slice(0, this.currentExtentIndex + 1);
+      this.extentHistory = this.extentHistory.slice(
+        0,
+        this.currentExtentIndex + 1
+      );
     }
 
     // Add new extent
@@ -224,10 +241,12 @@ export class SpatialTrackingMapService {
         await this.mapView.goTo(this.homeExtent);
       } else {
         // Use default center and zoom from config
-        const { DEFAULT_MAP_CONFIG } = await import('../spatial-tracking-map.config');
+        const { DEFAULT_MAP_CONFIG } = await import(
+          '../spatial-tracking-map.config'
+        );
         await this.mapView.goTo({
           center: DEFAULT_MAP_CONFIG.center,
-          zoom: DEFAULT_MAP_CONFIG.zoom
+          zoom: DEFAULT_MAP_CONFIG.zoom,
         });
       }
     }
@@ -247,7 +266,10 @@ export class SpatialTrackingMapService {
    * Go forward to next extent
    */
   async goForwardExtent(): Promise<void> {
-    if (this.mapView && this.currentExtentIndex < this.extentHistory.length - 1) {
+    if (
+      this.mapView &&
+      this.currentExtentIndex < this.extentHistory.length - 1
+    ) {
       this.currentExtentIndex++;
       await this.mapView.goTo(this.extentHistory[this.currentExtentIndex]);
     }
@@ -278,7 +300,7 @@ export class SpatialTrackingMapService {
     this.layerList = new LayerList({
       id: 'layerList',
       container: container,
-      view: this.mapView
+      view: this.mapView,
     });
   }
 
@@ -300,7 +322,7 @@ export class SpatialTrackingMapService {
     this.legend = new Legend({
       id: 'legend',
       view: this.mapView,
-      container: container
+      container: container,
     });
   }
 
@@ -314,7 +336,10 @@ export class SpatialTrackingMapService {
   /**
    * Add BasemapGallery widget
    */
-  addBasemapGallery(container: string | HTMLElement, customBasemaps?: Basemap[]): void {
+  addBasemapGallery(
+    container: string | HTMLElement,
+    customBasemaps?: Basemap[]
+  ): void {
     if (!this.mapView) {
       throw new Error('MapView is not initialized. Call initMapView() first.');
     }
@@ -368,7 +393,7 @@ export class SpatialTrackingMapService {
 
     // Try to use built-in basemaps, fallback to custom if they fail
     const defaultBasemaps: Basemap[] = [];
-    
+
     try {
       defaultBasemaps.push(Basemap.fromId('satellite') || customSatellite);
     } catch {
@@ -391,15 +416,17 @@ export class SpatialTrackingMapService {
         defaultBasemaps.push(Basemap.fromId('streets'));
       } catch {
         // Use custom streets if both fail
-        defaultBasemaps.push(new Basemap({
-          baseLayers: [
-            new TileLayer({
-              url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer',
-            }),
-          ],
-          title: 'شوارع',
-          id: 'custom-streets',
-        }));
+        defaultBasemaps.push(
+          new Basemap({
+            baseLayers: [
+              new TileLayer({
+                url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer',
+              }),
+            ],
+            title: 'شوارع',
+            id: 'custom-streets',
+          })
+        );
       }
     }
 
@@ -415,36 +442,42 @@ export class SpatialTrackingMapService {
       defaultBasemaps.push(Basemap.fromId('dark-gray-vector'));
     } catch {
       // Use custom dark gray if built-in doesn't work
-      defaultBasemaps.push(new Basemap({
-        baseLayers: [
-          new TileLayer({
-            url: 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer',
-          }),
-        ],
-        title: 'رمادي داكن',
-        id: 'custom-dark-gray',
-      }));
+      defaultBasemaps.push(
+        new Basemap({
+          baseLayers: [
+            new TileLayer({
+              url: 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer',
+            }),
+          ],
+          title: 'رمادي داكن',
+          id: 'custom-dark-gray',
+        })
+      );
     }
 
     try {
       defaultBasemaps.push(Basemap.fromId('navigation'));
     } catch {
       // Use custom navigation if built-in doesn't work
-      defaultBasemaps.push(new Basemap({
-        baseLayers: [
-          new TileLayer({
-            url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Navigation_Charts/MapServer',
-          }),
-        ],
-        title: 'ملاحة',
-        id: 'custom-navigation',
-      }));
+      defaultBasemaps.push(
+        new Basemap({
+          baseLayers: [
+            new TileLayer({
+              url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Navigation_Charts/MapServer',
+            }),
+          ],
+          title: 'ملاحة',
+          id: 'custom-navigation',
+        })
+      );
     }
 
     const basemapGallery = new BasemapGallery({
       view: this.mapView,
       container: container,
-      source: customBasemaps ? [...customBasemaps, ...defaultBasemaps] : defaultBasemaps
+      source: customBasemaps
+        ? [...customBasemaps, ...defaultBasemaps]
+        : defaultBasemaps,
     });
   }
 
@@ -471,7 +504,7 @@ export class SpatialTrackingMapService {
     const layerOptions: __esri.FeatureLayerProperties = {
       url,
       title,
-      visible: layerVisible
+      visible: layerVisible,
     };
 
     if (template) {
@@ -490,11 +523,14 @@ export class SpatialTrackingMapService {
     this.layers.set(title, featureLayer);
 
     // Wait for layer to load
-    featureLayer.when().then(() => {
-      this.layerAdded$.next({ layerId: title, layer: featureLayer });
-    }).catch(error => {
-      console.error(`Error loading layer ${title}:`, error);
-    });
+    featureLayer
+      .when()
+      .then(() => {
+        this.layerAdded$.next({ layerId: title, layer: featureLayer });
+      })
+      .catch((error) => {
+        console.error(`Error loading layer ${title}:`, error);
+      });
 
     return featureLayer;
   }
@@ -507,8 +543,14 @@ export class SpatialTrackingMapService {
       throw new Error('Map is not initialized. Call initializeMap() first.');
     }
 
-    if (!layerConfig.url || layerConfig.url.trim() === '' || layerConfig.url.startsWith('/')) {
-      console.warn(`Invalid URL for layer "${layerConfig.name}": ${layerConfig.url}`);
+    if (
+      !layerConfig.url ||
+      layerConfig.url.trim() === '' ||
+      layerConfig.url.startsWith('/')
+    ) {
+      console.warn(
+        `Invalid URL for layer "${layerConfig.name}": ${layerConfig.url}`
+      );
       return null;
     }
 
@@ -526,21 +568,21 @@ export class SpatialTrackingMapService {
           maxScale: layerConfig.maxScale,
           outFields: layerConfig.outFields ?? ['*'],
           labelingInfo: layerConfig.labelingInfo,
-          definitionExpression: layerConfig.definitionExpression
+          definitionExpression: layerConfig.definitionExpression,
         };
-        
+
         // Only add popupTemplate if popup is enabled
         if (layerConfig.popupEnabled && layerConfig.popupTemplate) {
           featureLayerOptions.popupTemplate = layerConfig.popupTemplate;
         } else {
           featureLayerOptions.popupEnabled = false;
         }
-        
+
         layer = new FeatureLayer(featureLayerOptions);
-        
+
         // Don't apply any renderer - use original symbology from the service
         // The layer will use its default renderer from the ArcGIS service
-        
+
         break;
 
       case 'tile':
@@ -551,7 +593,7 @@ export class SpatialTrackingMapService {
           opacity: layerConfig.opacity ?? 1,
           visible: layerConfig.visible,
           minScale: layerConfig.minScale,
-          maxScale: layerConfig.maxScale
+          maxScale: layerConfig.maxScale,
         });
         break;
 
@@ -563,7 +605,7 @@ export class SpatialTrackingMapService {
           opacity: layerConfig.opacity ?? 1,
           visible: layerConfig.visible,
           minScale: layerConfig.minScale,
-          maxScale: layerConfig.maxScale
+          maxScale: layerConfig.maxScale,
         });
         break;
 
@@ -575,7 +617,7 @@ export class SpatialTrackingMapService {
           opacity: layerConfig.opacity ?? 1,
           visible: layerConfig.visible,
           minScale: layerConfig.minScale,
-          maxScale: layerConfig.maxScale
+          maxScale: layerConfig.maxScale,
         });
         break;
 
@@ -587,7 +629,7 @@ export class SpatialTrackingMapService {
           opacity: layerConfig.opacity ?? 1,
           visible: layerConfig.visible,
           minScale: layerConfig.minScale,
-          maxScale: layerConfig.maxScale
+          maxScale: layerConfig.maxScale,
         });
         break;
 
@@ -596,7 +638,7 @@ export class SpatialTrackingMapService {
           id: layerConfig.id,
           title: layerConfig.name,
           opacity: layerConfig.opacity ?? 1,
-          visible: layerConfig.visible
+          visible: layerConfig.visible,
         });
         break;
 
@@ -614,9 +656,12 @@ export class SpatialTrackingMapService {
     try {
       await Promise.race([
         layer.when(),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error(`Layer ${layerConfig.id} load timeout`)), 15000)
-        )
+        new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error(`Layer ${layerConfig.id} load timeout`)),
+            15000
+          )
+        ),
       ]);
     } catch (error) {
       console.error(`Error loading layer ${layerConfig.id}:`, error);
@@ -632,12 +677,15 @@ export class SpatialTrackingMapService {
   /**
    * Check if symbol type is compatible with geometry type
    */
-  private isSymbolTypeCompatible(symbolType: string, geometryType: string): boolean {
+  private isSymbolTypeCompatible(
+    symbolType: string,
+    geometryType: string
+  ): boolean {
     const compatibility: { [key: string]: string[] } = {
-      'point': ['simple-marker', 'picture-marker', 'text'],
-      'multipoint': ['simple-marker', 'picture-marker', 'text'],
-      'polyline': ['simple-line', 'cartographic-line', 'picture-line', 'text'],
-      'polygon': ['simple-fill', 'picture-fill', 'text']
+      point: ['simple-marker', 'picture-marker', 'text'],
+      multipoint: ['simple-marker', 'picture-marker', 'text'],
+      polyline: ['simple-line', 'cartographic-line', 'picture-line', 'text'],
+      polygon: ['simple-fill', 'picture-fill', 'text'],
     };
 
     const compatibleSymbols = compatibility[geometryType?.toLowerCase()] || [];
@@ -647,7 +695,10 @@ export class SpatialTrackingMapService {
   /**
    * Create appropriate renderer based on geometry type
    */
-  private createRendererForGeometryType(geometryType: string, fallbackRenderer?: any): any {
+  private createRendererForGeometryType(
+    geometryType: string,
+    fallbackRenderer?: any
+  ): any {
     // Extract color from fallback renderer if provided
     let color = [0, 112, 255, 1]; // Default blue
     let outlineColor = [255, 255, 255, 1];
@@ -677,9 +728,9 @@ export class SpatialTrackingMapService {
             color: color,
             outline: {
               color: outlineColor,
-              width: outlineWidth
-            }
-          })
+              width: outlineWidth,
+            },
+          }),
         });
 
       case 'polyline':
@@ -687,8 +738,8 @@ export class SpatialTrackingMapService {
           symbol: new SimpleLineSymbol({
             style: 'solid',
             color: color,
-            width: fallbackRenderer?.symbol?.width || 2
-          })
+            width: fallbackRenderer?.symbol?.width || 2,
+          }),
         });
 
       case 'polygon':
@@ -698,9 +749,9 @@ export class SpatialTrackingMapService {
             color: color,
             outline: {
               color: outlineColor,
-              width: outlineWidth
-            }
-          })
+              width: outlineWidth,
+            },
+          }),
         });
 
       default:
@@ -712,9 +763,9 @@ export class SpatialTrackingMapService {
             color: color,
             outline: {
               color: outlineColor,
-              width: outlineWidth
-            }
-          })
+              width: outlineWidth,
+            },
+          }),
         });
     }
   }
@@ -724,15 +775,27 @@ export class SpatialTrackingMapService {
    */
   async addConfiguredLayers(layerConfigs: LayerConfig[]): Promise<void> {
     for (const layerConfig of layerConfigs) {
-      if (layerConfig.visible && layerConfig.url && layerConfig.url.trim() !== '' && !layerConfig.url.startsWith('/')) {
+      if (
+        layerConfig.visible &&
+        layerConfig.url &&
+        layerConfig.url.trim() !== '' &&
+        !layerConfig.url.startsWith('/')
+      ) {
         try {
           await this.addLayer(layerConfig);
         } catch (error) {
           console.error(`Error adding layer ${layerConfig.id}:`, error);
           // Continue with other layers even if one fails
         }
-      } else if (layerConfig.visible && (!layerConfig.url || layerConfig.url.trim() === '' || layerConfig.url.startsWith('/'))) {
-        console.warn(`Layer ${layerConfig.id} has invalid or empty URL. Skipping.`);
+      } else if (
+        layerConfig.visible &&
+        (!layerConfig.url ||
+          layerConfig.url.trim() === '' ||
+          layerConfig.url.startsWith('/'))
+      ) {
+        console.warn(
+          `Layer ${layerConfig.id} has invalid or empty URL. Skipping.`
+        );
       }
     }
   }
@@ -801,7 +864,7 @@ export class SpatialTrackingMapService {
     if (this.mapView) {
       await this.mapView.goTo({
         center: center,
-        zoom: zoom ?? this.mapView.zoom
+        zoom: zoom ?? this.mapView.zoom,
       });
     }
   }
@@ -864,7 +927,10 @@ export class SpatialTrackingMapService {
   /**
    * Filter layer by BuildName and zoom to filtered features
    */
-  async filterLayerByBuildName(layerId: string, buildName: string): Promise<void> {
+  async filterLayerByBuildName(
+    layerId: string,
+    buildName: string
+  ): Promise<void> {
     const layer = this.layers.get(layerId) as FeatureLayer;
     if (!layer || !this.mapView) {
       console.error(`Layer ${layerId} not found or map view not initialized`);
@@ -877,7 +943,7 @@ export class SpatialTrackingMapService {
       const escapedBuildName = buildName.replace(/'/g, "''");
       const definitionExpression = `BuildName = '${escapedBuildName}'`;
       layer.definitionExpression = definitionExpression;
-      
+
       console.log(`Filtering layer ${layerId} by BuildName: ${buildName}`);
 
       // Also filter the buildings layer
@@ -885,7 +951,7 @@ export class SpatialTrackingMapService {
       if (buildingsLayer) {
         buildingsLayer.definitionExpression = definitionExpression;
         console.log(`Filtering buildings layer by BuildName: ${buildName}`);
-        
+
         // Flash/highlight filtered buildings
         await this.flashFilteredBuildings(buildingsLayer, definitionExpression);
       }
@@ -898,7 +964,7 @@ export class SpatialTrackingMapService {
       const extentQuery = layer.createQuery();
       extentQuery.where = definitionExpression;
       extentQuery.returnGeometry = false;
-      
+
       const extentResult = await layer.queryExtent(extentQuery);
 
       if (extentResult && extentResult.extent) {
@@ -906,13 +972,15 @@ export class SpatialTrackingMapService {
         const extent = extentResult.extent;
         const width = extent.xmax - extent.xmin;
         const height = extent.ymax - extent.ymin;
-        
+
         if (width > 0 && height > 0) {
           // Zoom to the extent with padding
           await this.mapView.goTo(extent.expand(1.2), {
-            duration: 1000
+            duration: 1000,
           });
-          console.log(`Zoomed to filtered features extent (count: ${extentResult.count})`);
+          console.log(
+            `Zoomed to filtered features extent (count: ${extentResult.count})`
+          );
         } else {
           // Fallback: Query a few features and calculate extent manually
           const query = layer.createQuery();
@@ -920,21 +988,23 @@ export class SpatialTrackingMapService {
           query.returnGeometry = true;
           query.outFields = ['*'];
           query.num = 100; // Limit to avoid performance issues
-          
+
           const result = await layer.queryFeatures(query);
 
           if (result.features && result.features.length > 0) {
-            console.log(`Found ${result.features.length} features, calculating extent manually`);
-            
+            console.log(
+              `Found ${result.features.length} features, calculating extent manually`
+            );
+
             // Get extent of all filtered features
             let calculatedExtent: __esri.Extent | null = null;
-            
+
             for (let i = 0; i < result.features.length; i++) {
               const feature = result.features[i];
               if (feature.geometry) {
                 // Try to get extent from geometry
                 let featureExtent: __esri.Extent | null = null;
-                
+
                 if (feature.geometry.extent) {
                   featureExtent = feature.geometry.extent;
                 } else if (feature.geometry.type === 'point') {
@@ -946,12 +1016,12 @@ export class SpatialTrackingMapService {
                     ymin: point.latitude - buffer,
                     xmax: point.longitude + buffer,
                     ymax: point.latitude + buffer,
-                    spatialReference: point.spatialReference
+                    spatialReference: point.spatialReference,
                   } as __esri.Extent;
                 } else if ('extent' in feature.geometry) {
                   featureExtent = (feature.geometry as any).extent;
                 }
-                
+
                 if (featureExtent) {
                   if (calculatedExtent === null) {
                     calculatedExtent = featureExtent.clone();
@@ -966,14 +1036,18 @@ export class SpatialTrackingMapService {
             if (calculatedExtent) {
               const calcWidth = calculatedExtent.xmax - calculatedExtent.xmin;
               const calcHeight = calculatedExtent.ymax - calculatedExtent.ymin;
-              
+
               if (calcWidth > 0 && calcHeight > 0) {
                 await this.mapView.goTo(calculatedExtent.expand(1.2), {
-                  duration: 1000
+                  duration: 1000,
                 });
-                console.log(`Zoomed to ${result.features.length} filtered features`);
+                console.log(
+                  `Zoomed to ${result.features.length} filtered features`
+                );
               } else {
-                console.warn(`Calculated extent is invalid (width: ${calcWidth}, height: ${calcHeight})`);
+                console.warn(
+                  `Calculated extent is invalid (width: ${calcWidth}, height: ${calcHeight})`
+                );
               }
             } else {
               console.warn(`No valid extent found for filtered features`);
@@ -991,28 +1065,24 @@ export class SpatialTrackingMapService {
   }
 
   /**
-   * Clear layer filter
+   * Clear layer filter for all layers
    */
-  clearLayerFilter(layerId: string): void {
-    const layer = this.layers.get(layerId);
-    if (layer) {
-      layer.definitionExpression = '';
-      console.log(`Cleared filter for layer ${layerId}`);
-    }
+  clearLayerFilter(layerId?: string): void {
+    // Clear all layers
+    const layersToClear = [
+      'assets-point-layer',
+      'rooms-layer',
+      'buildings-layer',
+      'slaughterhouse-layer',
+    ];
 
-    // Also clear buildings layer filter
-    const buildingsLayer = this.layers.get('buildings-layer') as FeatureLayer;
-    if (buildingsLayer) {
-      buildingsLayer.definitionExpression = '';
-      console.log(`Cleared filter for buildings layer`);
-    }
-
-    // Also clear rooms layer filter
-    const roomsLayer = this.layers.get('rooms-polygon-layer') as FeatureLayer;
-    if (roomsLayer) {
-      roomsLayer.definitionExpression = '';
-      console.log(`Cleared filter for rooms layer`);
-    }
+    layersToClear.forEach((layerIdToClear) => {
+      const layer = this.layers.get(layerIdToClear);
+      if (layer) {
+        layer.definitionExpression = '';
+        console.log(`Cleared filter for layer ${layerIdToClear}`);
+      }
+    });
 
     // Clear highlight graphics
     this.clearHighlightGraphics();
@@ -1021,7 +1091,10 @@ export class SpatialTrackingMapService {
   /**
    * Flash/highlight filtered buildings
    */
-  private async flashFilteredBuildings(buildingsLayer: FeatureLayer, definitionExpression: string): Promise<void> {
+  private async flashFilteredBuildings(
+    buildingsLayer: FeatureLayer,
+    definitionExpression: string
+  ): Promise<void> {
     if (!this.map || !this.mapView) {
       return;
     }
@@ -1043,7 +1116,7 @@ export class SpatialTrackingMapService {
         if (!this.highlightGraphicsLayer) {
           this.highlightGraphicsLayer = new GraphicsLayer({
             id: 'highlight-graphics-layer',
-            title: 'Highlighted Buildings'
+            title: 'Highlighted Buildings',
           });
           this.map.add(this.highlightGraphicsLayer);
         }
@@ -1058,9 +1131,9 @@ export class SpatialTrackingMapService {
                 color: [255, 255, 0, 0.5], // Yellow with transparency
                 outline: {
                   color: [255, 0, 0, 1], // Red outline
-                  width: 3
-                }
-              })
+                  width: 3,
+                },
+              }),
             });
             this.highlightGraphicsLayer!.add(graphic);
           }
@@ -1068,7 +1141,7 @@ export class SpatialTrackingMapService {
 
         // Create flashing animation
         this.startFlashingAnimation();
-        
+
         console.log(`Highlighted ${result.features.length} filtered buildings`);
       }
     } catch (error) {
@@ -1127,28 +1200,90 @@ export class SpatialTrackingMapService {
   }
 
   /**
-   * Clear layer filter and reset map view to default
+   * Highlight a point feature on the map
    */
-  async clearLayerFilterAndResetView(layerId: string): Promise<void> {
+  private async highlightPointFeature(
+    feature: __esri.Graphic,
+    point: __esri.Point
+  ): Promise<void> {
+    if (!this.map || !this.mapView) {
+      return;
+    }
+
+    try {
+      // Create or get highlight graphics layer
+      if (!this.highlightGraphicsLayer) {
+        this.highlightGraphicsLayer = new GraphicsLayer({
+          id: 'highlight-graphics-layer',
+          title: 'Highlighted Features',
+        });
+        this.map.add(this.highlightGraphicsLayer);
+      }
+
+      // Clear previous highlights
+      this.highlightGraphicsLayer.removeAll();
+
+      // Create a highlighted graphic for the point
+      const highlightGraphic = new Graphic({
+        geometry: point,
+        symbol: new SimpleMarkerSymbol({
+          style: 'circle',
+          size: 20,
+          color: [255, 0, 0, 1], // Red color
+          outline: {
+            color: [255, 255, 255, 1], // White outline
+            width: 3,
+          },
+        }),
+      });
+
+      this.highlightGraphicsLayer.add(highlightGraphic);
+      this.highlightGraphicsLayer.visible = true;
+
+      console.log('Point feature highlighted');
+    } catch (error) {
+      console.error('Error highlighting point feature:', error);
+    }
+  }
+
+  /**
+   * Clear all layer filters and reset map view to default
+   */
+  async clearLayerFilterAndResetView(layerId?: string): Promise<void> {
     this.clearLayerFilter(layerId);
     await this.goHome();
   }
 
   /**
-   * Filter assets and rooms layers by multiple criteria
-   * @param filters Object containing filter values { slaughterhouseName, buildName, levelAsset, roomName }
+   * Filter layers by code values with cascading logic
+   * @param filters Object containing filter code values { slaughterhouseCode, buildingCode, floorName, roomCode, roomName }
+   * Note: floorName is the English floor name (e.g., 'Ground Floor', 'First Floor', 'Second Floor')
+   * Note: roomCode is used for rooms layer filtering, roomName is used for assets layer filtering
+   *
+   * Cascading logic:
+   * - When site selected → filter ALL layers by site code
+   * - When building selected → filter all EXCEPT slaughterhouse by building code
+   * - When floor selected → filter all EXCEPT slaughterhouse and building by floor name
+   * - When room selected → filter all EXCEPT slaughterhouse, building, and floor by room code (rooms layer) and room name (assets layer)
    */
   async filterAssetLayer(filters: {
-    slaughterhouseName?: string;
-    buildName?: string;
-    levelAsset?: string;
-    roomName?: string;
+    slaughterhouseCode?: string;
+    buildingCode?: string;
+    floorName?: string; // English floor name, not code
+    roomCode?: string; // For rooms layer filtering
+    roomName?: string; // For assets layer filtering
   }): Promise<void> {
     const assetsLayerId = 'assets-point-layer';
-    const roomsLayerId = 'rooms-polygon-layer';
+    const roomsLayerId = 'rooms-layer';
+    const buildingsLayerId = 'buildings-layer';
+    const slaughterhouseLayerId = 'slaughterhouse-layer';
 
     const assetsLayer = this.layers.get(assetsLayerId) as FeatureLayer;
     const roomsLayer = this.layers.get(roomsLayerId) as FeatureLayer;
+    const buildingsLayer = this.layers.get(buildingsLayerId) as FeatureLayer;
+    const slaughterhouseLayer = this.layers.get(
+      slaughterhouseLayerId
+    ) as FeatureLayer;
 
     if (!this.mapView) {
       console.error('Map view not initialized');
@@ -1156,85 +1291,152 @@ export class SpatialTrackingMapService {
     }
 
     try {
-      // Build definition expression for assets layer
-      const assetsWhereConditions: string[] = [];
+      // Helper function to escape single quotes for SQL
+      const escapeValue = (value: string): string => {
+        return value.replace(/'/g, "''");
+      };
 
-      if (filters.slaughterhouseName) {
-        const escaped = filters.slaughterhouseName.replace(/'/g, "''");
-        assetsWhereConditions.push(`slaughterhouseName = '${escaped}'`);
+      // ============================================
+      // FILTER SLAUGHTERHOUSE LAYER
+      // Only filtered when site (slaughterhouse) is selected
+      // ============================================
+      if (slaughterhouseLayer) {
+        if (filters.slaughterhouseCode) {
+          const escaped = escapeValue(filters.slaughterhouseCode);
+          slaughterhouseLayer.definitionExpression = `Code = '${escaped}'`;
+          console.log(
+            'Filtering slaughterhouse layer by Code:',
+            filters.slaughterhouseCode
+          );
+        } else {
+          slaughterhouseLayer.definitionExpression = '';
+          console.log('Clearing slaughterhouse layer filter');
+        }
       }
 
-      if (filters.buildName) {
-        const escaped = filters.buildName.replace(/'/g, "''");
-        assetsWhereConditions.push(`BuildName = '${escaped}'`);
+      // ============================================
+      // FILTER BUILDINGS LAYER
+      // Filtered by site code (if selected) and building code (if selected)
+      // ============================================
+      if (buildingsLayer) {
+        const buildingsWhereConditions: string[] = [];
+
+        if (filters.slaughterhouseCode) {
+          const escaped = escapeValue(filters.slaughterhouseCode);
+          buildingsWhereConditions.push(`SlaughterhouseCode = '${escaped}'`);
+        }
+
+        if (filters.buildingCode) {
+          const escaped = escapeValue(filters.buildingCode);
+          buildingsWhereConditions.push(`code = '${escaped}'`);
+        }
+
+        const buildingsWhereClause =
+          buildingsWhereConditions.length > 0
+            ? buildingsWhereConditions.join(' AND ')
+            : '1=1';
+
+        buildingsLayer.definitionExpression = buildingsWhereClause;
+        console.log('Applying buildings filter:', buildingsWhereClause);
       }
 
-      if (filters.levelAsset) {
-        const escaped = filters.levelAsset.replace(/'/g, "''");
-        assetsWhereConditions.push(`LevelAsset = '${escaped}'`);
-      }
-
-      if (filters.roomName) {
-        const escaped = filters.roomName.replace(/'/g, "''");
-        assetsWhereConditions.push(`RoomName = '${escaped}'`);
-      }
-
-      // Combine conditions with AND for assets
-      const assetsWhereClause = assetsWhereConditions.length > 0
-        ? assetsWhereConditions.join(' AND ')
-        : '1=1'; // Show all if no filters
-
-      console.log('Applying assets filter:', assetsWhereClause);
-
-      // Apply filter to assets layer
-      if (assetsLayer) {
-        assetsLayer.definitionExpression = assetsWhereClause;
-      }
-
-      // Build definition expression for rooms layer (using different field names)
-      const roomsWhereConditions: string[] = [];
-
-      if (filters.slaughterhouseName) {
-        const escaped = filters.slaughterhouseName.replace(/'/g, "''");
-        roomsWhereConditions.push(`SlaughterhouseName = '${escaped}'`);
-      }
-
-      if (filters.buildName) {
-        const escaped = filters.buildName.replace(/'/g, "''");
-        roomsWhereConditions.push(`Build_Name = '${escaped}'`);
-      }
-
-      if (filters.levelAsset) {
-        const escaped = filters.levelAsset.replace(/'/g, "''");
-        roomsWhereConditions.push(`LevelRoom = '${escaped}'`);
-      }
-
-      if (filters.roomName) {
-        const escaped = filters.roomName.replace(/'/g, "''");
-        roomsWhereConditions.push(`NameRoom = '${escaped}'`);
-      }
-
-      // Combine conditions with AND for rooms
-      const roomsWhereClause = roomsWhereConditions.length > 0
-        ? roomsWhereConditions.join(' AND ')
-        : '1=1'; // Show all if no filters
-
-      console.log('Applying rooms filter:', roomsWhereClause);
-
-      // Apply filter to rooms layer
+      // ============================================
+      // FILTER ROOMS LAYER
+      // Filtered by site code (if selected), building code (if selected), floor code (if selected), room code (if selected)
+      // ============================================
       if (roomsLayer) {
+        const roomsWhereConditions: string[] = [];
+
+        if (filters.slaughterhouseCode) {
+          const escaped = escapeValue(filters.slaughterhouseCode);
+          roomsWhereConditions.push(`SlaughterhouseCode = '${escaped}'`);
+        }
+
+        if (filters.buildingCode) {
+          const escaped = escapeValue(filters.buildingCode);
+          roomsWhereConditions.push(`BuildCode = '${escaped}'`);
+        }
+
+        if (filters.floorName) {
+          const escaped = escapeValue(filters.floorName);
+          // Use LevelRoom field for floor filtering (English name: 'Ground Floor', 'First Floor', 'Second Floor')
+          roomsWhereConditions.push(`LevelRoom = '${escaped}'`);
+        }
+
+        if (filters.roomCode) {
+          const escaped = escapeValue(filters.roomCode);
+          // Use CodeRoom1 field for filtering
+          roomsWhereConditions.push(`CodeRoom1 = '${escaped}'`);
+        }
+
+        const roomsWhereClause =
+          roomsWhereConditions.length > 0
+            ? roomsWhereConditions.join(' AND ')
+            : '1=1';
+
         roomsLayer.definitionExpression = roomsWhereClause;
+        console.log('Applying rooms filter:', roomsWhereClause);
       }
 
-      // Only zoom if we have actual filters (not showing all)
-      if (assetsWhereConditions.length > 0) {
-        // Try to get extent from both layers and combine them
+      // ============================================
+      // FILTER ASSETS (POINTS) LAYER
+      // Filtered by site code (if selected), building code (if selected), floor code (if selected), room code (if selected)
+      // ============================================
+      if (assetsLayer) {
+        const assetsWhereConditions: string[] = [];
+
+        if (filters.slaughterhouseCode) {
+          const escaped = escapeValue(filters.slaughterhouseCode);
+          assetsWhereConditions.push(`SlaughterhouseCode = '${escaped}'`);
+        }
+
+        if (filters.buildingCode) {
+          const escaped = escapeValue(filters.buildingCode);
+          assetsWhereConditions.push(`BuildCode = '${escaped}'`);
+        }
+
+        if (filters.floorName) {
+          const escaped = escapeValue(filters.floorName);
+          // Use LevelAsset field for floor filtering (English name: 'Ground Floor', 'First Floor', 'Second Floor')
+          assetsWhereConditions.push(`LevelAsset = '${escaped}'`);
+        }
+
+        if (filters.roomName) {
+          const escaped = escapeValue(filters.roomName);
+          // Use RoomName field for room filtering in assets layer
+          assetsWhereConditions.push(`RoomName = '${escaped}'`);
+        }
+
+        const assetsWhereClause =
+          assetsWhereConditions.length > 0
+            ? assetsWhereConditions.join(' AND ')
+            : '1=1';
+
+        assetsLayer.definitionExpression = assetsWhereClause;
+        console.log('Applying assets filter:', assetsWhereClause);
+      }
+
+      // ============================================
+      // ZOOM TO FILTERED FEATURES
+      // ============================================
+      const hasAnyFilter =
+        filters.slaughterhouseCode ||
+        filters.buildingCode ||
+        filters.floorName ||
+        filters.roomCode ||
+        filters.roomName;
+
+      if (hasAnyFilter) {
         const extents: __esri.Extent[] = [];
 
         // Query assets layer extent
-        if (assetsLayer) {
+        if (
+          assetsLayer &&
+          assetsLayer.definitionExpression &&
+          assetsLayer.definitionExpression !== '1=1'
+        ) {
           const assetsQuery = assetsLayer.createQuery();
-          assetsQuery.where = assetsWhereClause;
+          assetsQuery.where = assetsLayer.definitionExpression;
           const assetsResult = await assetsLayer.queryExtent(assetsQuery);
           if (assetsResult && assetsResult.extent) {
             extents.push(assetsResult.extent);
@@ -1242,12 +1444,48 @@ export class SpatialTrackingMapService {
         }
 
         // Query rooms layer extent
-        if (roomsLayer) {
+        if (
+          roomsLayer &&
+          roomsLayer.definitionExpression &&
+          roomsLayer.definitionExpression !== '1=1'
+        ) {
           const roomsQuery = roomsLayer.createQuery();
-          roomsQuery.where = roomsWhereClause;
+          roomsQuery.where = roomsLayer.definitionExpression;
           const roomsResult = await roomsLayer.queryExtent(roomsQuery);
           if (roomsResult && roomsResult.extent) {
             extents.push(roomsResult.extent);
+          }
+        }
+
+        // Query buildings layer extent
+        if (
+          buildingsLayer &&
+          buildingsLayer.definitionExpression &&
+          buildingsLayer.definitionExpression !== '1=1'
+        ) {
+          const buildingsQuery = buildingsLayer.createQuery();
+          buildingsQuery.where = buildingsLayer.definitionExpression;
+          const buildingsResult = await buildingsLayer.queryExtent(
+            buildingsQuery
+          );
+          if (buildingsResult && buildingsResult.extent) {
+            extents.push(buildingsResult.extent);
+          }
+        }
+
+        // Query slaughterhouse layer extent
+        if (
+          slaughterhouseLayer &&
+          slaughterhouseLayer.definitionExpression &&
+          slaughterhouseLayer.definitionExpression !== '1=1'
+        ) {
+          const slaughterhouseQuery = slaughterhouseLayer.createQuery();
+          slaughterhouseQuery.where = slaughterhouseLayer.definitionExpression;
+          const slaughterhouseResult = await slaughterhouseLayer.queryExtent(
+            slaughterhouseQuery
+          );
+          if (slaughterhouseResult && slaughterhouseResult.extent) {
+            extents.push(slaughterhouseResult.extent);
           }
         }
 
@@ -1260,7 +1498,7 @@ export class SpatialTrackingMapService {
 
           await this.mapView.goTo({
             target: combinedExtent.expand(1.5),
-            duration: 1000
+            duration: 1000,
           });
 
           console.log('Zoomed to filtered features');
@@ -1270,6 +1508,165 @@ export class SpatialTrackingMapService {
       }
     } catch (error) {
       console.error('Error filtering layers:', error);
+    }
+  }
+
+  /**
+   * Filter and zoom to a specific asset by ID and show popup
+   * @param assetId The asset ID (AssetCode field in the layer)
+   */
+  async filterAndZoomToAsset(assetId: string | number): Promise<void> {
+    const assetsLayerId = 'assets-point-layer';
+    const assetsLayer = this.layers.get(assetsLayerId) as FeatureLayer;
+
+    if (!assetsLayer || !this.mapView) {
+      console.error('Assets layer or map view not initialized');
+      return;
+    }
+
+    try {
+      // Escape single quotes in assetId for SQL injection protection
+      const escapedAssetId = String(assetId).replace(/'/g, "''");
+
+      // Create query to find the asset by AssetCode
+      const query = assetsLayer.createQuery();
+      query.where = `AssetCode = '0${escapedAssetId}'`;
+      query.returnGeometry = true;
+      query.outFields = ['*'];
+
+      const result = await assetsLayer.queryFeatures(query);
+      console.log('Query result:', result);
+
+      if (result.features && result.features.length > 0) {
+        const feature = result.features[0];
+        console.log('Feature found:', feature);
+        console.log('Feature geometry:', feature.geometry);
+        console.log('Feature geometry type:', feature.geometry?.type);
+
+        if (feature.geometry) {
+          const geometry = feature.geometry;
+
+          // For point features, zoom directly to the point
+          if (geometry.type === 'point') {
+            const point = geometry as __esri.Point;
+            console.log('Point coordinates - x:', point.x, 'y:', point.y);
+            console.log(
+              'Point longitude:',
+              point.longitude,
+              'latitude:',
+              point.latitude
+            );
+
+            // Clear any previous highlights
+            this.clearHighlightGraphics();
+
+            // Use the point geometry directly - ArcGIS will handle coordinate system conversion
+            // This works for both geographic (lon/lat) and projected (x/y) coordinates
+            await this.mapView.goTo({
+              target: point,
+              zoom: 18,
+              duration: 1000,
+            });
+
+            console.log('Zoomed to point');
+
+            // Wait for zoom to complete, then highlight and show popup
+            setTimeout(async () => {
+              // Highlight the point feature
+              await this.highlightPointFeature(feature, point);
+
+              // Ensure the feature has a reference to its source layer for popup
+              if (!feature.layer) {
+                feature.layer = assetsLayer;
+              }
+
+              // Show popup for the feature
+              try {
+                // Ensure popup is enabled
+                this.mapView.popupEnabled = true;
+
+                // Open popup with the feature
+                this.mapView.popup.open({
+                  features: [feature],
+                  location: point,
+                  updateLocationEnabled: true,
+                });
+
+                console.log('Popup opened for point feature');
+                console.log('Popup features:', this.mapView.popup.features);
+                console.log('Popup visible:', this.mapView.popup.visible);
+                console.log('Popup location:', this.mapView.popup.location);
+              } catch (popupError) {
+                console.error('Error opening popup:', popupError);
+                // Try alternative: manually set popup properties
+                try {
+                  this.mapView.popup.features = [feature];
+                  this.mapView.popup.location = point;
+                  this.mapView.popup.visible = true;
+                  console.log('Popup opened using alternative method');
+                } catch (altError) {
+                  console.error(
+                    'Alternative popup method also failed:',
+                    altError
+                  );
+                }
+              }
+            }, 1000);
+          } else {
+            // For other geometry types, use extent
+            let extent: __esri.Extent | null = null;
+
+            if (geometry.extent) {
+              extent = geometry.extent;
+            } else if ('extent' in geometry) {
+              extent = (geometry as any).extent;
+            }
+
+            if (extent) {
+              // Zoom to the extent
+              await this.mapView.goTo({
+                target: extent.expand(1.5),
+                duration: 1000,
+              });
+
+              // Show popup for the feature
+              setTimeout(() => {
+                this.mapView.popup.open({
+                  features: [feature],
+                  location: geometry as any,
+                });
+                console.log('Popup opened for non-point feature');
+              }, 500);
+            } else {
+              // Fallback: try to zoom to geometry directly
+              await this.mapView.goTo({
+                target: geometry as any,
+                zoom: 18,
+                duration: 1000,
+              });
+
+              setTimeout(() => {
+                this.mapView.popup.open({
+                  features: [feature],
+                  location: geometry as any,
+                });
+                console.log('Popup opened (fallback)');
+              }, 500);
+            }
+          }
+
+          console.log(
+            'Successfully zoomed to and showed popup for asset:',
+            assetId
+          );
+        } else {
+          console.warn('Feature has no geometry');
+        }
+      } else {
+        console.warn(`No asset found with AssetCode: ${assetId}`);
+      }
+    } catch (error) {
+      console.error('Error filtering and zooming to asset:', error);
     }
   }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DropdownModule } from 'primeng/dropdown';
 import { BreadCrumbComponent } from 'src/app/Shared/components/bread-crumb/bread-crumb.component';
 import { MapControlsComponent } from './components/map-controls/map-controls.component';
@@ -13,7 +14,7 @@ import {
   getLayerConfigById,
   updateLayerVisibility,
   FEATURE_SERVICE_URL,
-  DEFAULT_MAP_CONFIG
+  DEFAULT_MAP_CONFIG,
 } from './spatial-tracking-map.config';
 import MapView from '@arcgis/core/views/MapView';
 import { Subscription } from 'rxjs';
@@ -26,13 +27,16 @@ import { Subscription } from 'rxjs';
     ReactiveFormsModule,
     DropdownModule,
     BreadCrumbComponent,
-    MapControlsComponent
+    MapControlsComponent,
   ],
   templateUrl: './spatial-tracking-map.component.html',
-  styleUrls: ['./spatial-tracking-map.component.scss']
+  styleUrls: ['./spatial-tracking-map.component.scss'],
 })
-export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('mapViewNode', { static: true }) mapViewNode!: ElementRef<HTMLDivElement>;
+export class SpatialTrackingMapComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
+  @ViewChild('mapViewNode', { static: true })
+  mapViewNode!: ElementRef<HTMLDivElement>;
 
   // Forms
   filterForm: FormGroup;
@@ -40,7 +44,7 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
 
   // Map
   mapView: MapView | null = null;
-  isLoading = false;  
+  isLoading = false;
 
   // Panel visibility
   showLayerList = false;
@@ -59,11 +63,41 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
   floorOptions: any[] = [];
   roomOptions: any[] = [];
 
-  // Selected filter names (for map filtering)
-  private selectedSlaughterhouseName: string = '';
-  private selectedBuildingName: string = '';
-  private selectedFloorName: string = '';
-  private selectedRoomName: string = '';
+  // Selected filter codes (for map filtering)
+  private selectedSlaughterhouseCode: string = '';
+  private selectedBuildingCode: string = '';
+  private selectedFloorName: string = ''; // Store English floor name for filtering (not code)
+  private selectedRoomCode: string = ''; // For rooms layer filtering
+  private selectedRoomName: string = ''; // For assets layer filtering
+
+  /**
+   * Map Arabic floor code to English floor name for filtering
+   */
+  private mapFloorCodeToEnglishName(arabicCode: string): string {
+    const floorMapping: { [key: string]: string } = {
+      'الطابق الأرضي': 'Ground Floor',
+      'الطابق الأول': 'First Floor',
+      'الطابق الثاني': 'Second Floor',
+    };
+    return floorMapping[arabicCode] || arabicCode;
+  }
+
+  /**
+   * Normalize room code: if it's a 7-digit number, pad with leading zero to make it 8 digits
+   */
+  private normalizeRoomCode(roomCode: string): string {
+    if (!roomCode) return roomCode;
+
+    // Check if the code is numeric and has 7 digits
+    const numericCode = roomCode.trim();
+    if (/^\d{7}$/.test(numericCode)) {
+      // Pad with leading zero to make it 8 digits
+      return '0' + numericCode;
+    }
+
+    // Return as-is if not a 7-digit number
+    return roomCode;
+  }
 
   // Subscriptions
   private subscriptions: Subscription[] = [];
@@ -71,30 +105,43 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
   constructor(
     private fb: FormBuilder,
     private spatialTrackingMapService: SpatialTrackingMapService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.initializeForms();
   }
 
   ngOnInit(): void {
+    // Check for asset ID in query params FIRST, before anything else
+    this.checkQueryParamsForAssetId();
+
     // Load initial lookup data
     this.loadSlaughterhouseLookup();
   }
 
   ngAfterViewInit(): void {
     // Check if service URL is configured
-    if (!FEATURE_SERVICE_URL || (typeof FEATURE_SERVICE_URL === 'string' && FEATURE_SERVICE_URL.trim() === '')) {
-      console.warn('⚠️ FEATURE_SERVICE_URL is not configured. Please add your service URL in spatial-tracking-map.config.ts');
-      console.warn('⚠️ The map will load but layers will not be displayed until the service URL is configured.');
+    if (
+      !FEATURE_SERVICE_URL ||
+      (typeof FEATURE_SERVICE_URL === 'string' &&
+        FEATURE_SERVICE_URL.trim() === '')
+    ) {
+      console.warn(
+        '⚠️ FEATURE_SERVICE_URL is not configured. Please add your service URL in spatial-tracking-map.config.ts'
+      );
+      console.warn(
+        '⚠️ The map will load but layers will not be displayed until the service URL is configured.'
+      );
     }
-    
+
     this.initializeMap();
   }
 
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-    
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+
     // Destroy map view
     this.spatialTrackingMapService.destroy();
   }
@@ -108,12 +155,12 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
       slaughterhouse: [''],
       building: [''],
       floor: [''],
-      room: ['']
+      room: [''],
     });
 
     // Layer control form for toggling layers
     const layerControls: any = {};
-    this.availableLayers.forEach(layer => {
+    this.availableLayers.forEach((layer) => {
       layerControls[layer.id] = [layer.visible];
     });
     this.layerControlForm = this.fb.group(layerControls);
@@ -136,38 +183,74 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
           center: DEFAULT_MAP_CONFIG.center,
           zoom: DEFAULT_MAP_CONFIG.zoom,
           basemap: DEFAULT_MAP_CONFIG.basemap,
-          layers: this.availableLayers
+          layers: this.availableLayers,
         }
       );
 
       // Step 3: Add configured layers
-      await this.spatialTrackingMapService.addConfiguredLayers(this.availableLayers);
+      await this.spatialTrackingMapService.addConfiguredLayers(
+        this.availableLayers
+      );
+
+      // Mark layers as loaded
+      this.layersLoaded = true;
+      console.log('All layers loaded');
+
+      // Check if we can process pending asset ID
+      this.checkIfReadyToProcessAssetId();
 
       // Step 4: Initialize widgets after map is ready
       this.mapView.when().then(() => {
+        // Mark map view as initialized
+        this.mapViewInitialized = true;
+        console.log('Map view initialized (from when())');
+
+        // Hide loading immediately when map is ready
+        this.isLoading = false;
+
         // Add LayerList widget
         this.spatialTrackingMapService.addLayerList('layerListDiv');
-        
+
         // Add BasemapGallery widget
         this.spatialTrackingMapService.addBasemapGallery('baseMapDiv');
-        
+
         // Add Legend widget
         this.spatialTrackingMapService.addLegend('legendContainer');
+
+        // Check if we can process pending asset ID
+        this.checkIfReadyToProcessAssetId();
       });
 
-      // Subscribe to map view ready
-      const mapViewReadySub = this.spatialTrackingMapService.mapViewReady.subscribe(
-        (view) => {
-          console.log('Map view is ready', view);
+      // Subscribe to map view ready (backup/alternative path)
+      const mapViewReadySub =
+        this.spatialTrackingMapService.mapViewReady.subscribe((view) => {
+          console.log('Map view is ready (from observable)', view);
           // Hide loading immediately when map is ready
           this.isLoading = false;
-        }
-      );
+
+          // Mark map view as initialized (if not already set)
+          if (!this.mapViewInitialized) {
+            this.mapViewInitialized = true;
+            console.log('Map view initialized (from observable)');
+          }
+
+          // Check if we can process pending asset ID
+          this.checkIfReadyToProcessAssetId();
+        });
 
       // Subscribe to layer events
       const layerAddedSub = this.spatialTrackingMapService.layerAdded.subscribe(
         ({ layerId, layer }) => {
           console.log('Layer added:', layerId, layer);
+
+          // If assets layer is added, check if we can process pending asset ID
+          if (layerId === 'assets-point-layer') {
+            console.log('Assets layer added');
+            // Wait a bit for layer to be fully ready, then check if we can process
+            setTimeout(() => {
+              this.checkIfReadyToProcessAssetId();
+            }, 1000);
+          }
         }
       );
 
@@ -180,7 +263,6 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
           this.isLoading = false;
         }
       }, 15000);
-
     } catch (error) {
       console.error('Error initializing map:', error);
       this.isLoading = false;
@@ -192,10 +274,10 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
    */
   onLayerVisibilityChange(layerId: string, event: any): void {
     const visible = event.target.checked;
-    
+
     // Update layer config
     updateLayerVisibility(layerId, visible);
-    
+
     // Update map layer
     this.spatialTrackingMapService.updateLayerVisibility(layerId, visible);
   }
@@ -223,15 +305,16 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
     this.sharedService.GetSites().subscribe({
       next: (res) => {
         if (res.isSuccess && res.data) {
-          this.slaughterhouseOptions = res.data.map(item => ({
+          this.slaughterhouseOptions = res.data.map((item) => ({
             label: item.name,
-            value: item.id
+            value: item.id,
+            code: item.code || '',
           }));
         }
       },
       error: (err) => {
         console.error('Error loading slaughterhouse lookup:', err);
-      }
+      },
     });
   }
 
@@ -242,15 +325,16 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
     this.sharedService.getAllBuilding().subscribe({
       next: (res) => {
         if (res.isSuccess && res.data) {
-          this.buildingOptions = res.data.map(item => ({
+          this.buildingOptions = res.data.map((item) => ({
             label: item.name,
-            value: item.id
+            value: item.id,
+            code: item.code || '',
           }));
         }
       },
       error: (err) => {
         console.error('Error loading buildings lookup:', err);
-      }
+      },
     });
   }
 
@@ -263,16 +347,17 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
     this.sharedService.GetBuildingFloors(buildingId).subscribe({
       next: (res) => {
         if (res.isSuccess && res.data) {
-          this.floorOptions = res.data.map(item => ({
+          this.floorOptions = res.data.map((item) => ({
             label: item.name,
-            value: item.id
+            value: item.id,
+            code: item.code || '',
           }));
         }
       },
       error: (err) => {
         console.error('Error loading floors lookup:', err);
         this.floorOptions = [];
-      }
+      },
     });
   }
 
@@ -285,16 +370,17 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
     this.sharedService.getOfficesInFloor(floorId).subscribe({
       next: (res) => {
         if (res.isSuccess && res.data) {
-          this.roomOptions = res.data.map(item => ({
+          this.roomOptions = res.data.map((item) => ({
             label: item.name,
-            value: item.id
+            value: item.id,
+            code: item.code || '',
           }));
         }
       },
       error: (err) => {
         console.error('Error loading rooms lookup:', err);
         this.roomOptions = [];
-      }
+      },
     });
   }
 
@@ -310,24 +396,27 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
     this.filterForm.patchValue({
       building: '',
       floor: '',
-      room: ''
+      room: '',
     });
 
-    // Reset dependent filter names
-    this.selectedBuildingName = '';
+    // Reset dependent filter codes
+    this.selectedBuildingCode = '';
     this.selectedFloorName = '';
+    this.selectedRoomCode = '';
     this.selectedRoomName = '';
 
     const slaughterhouseId = this.filterForm.get('slaughterhouse')?.value;
     if (slaughterhouseId) {
-      // Find and store the selected slaughterhouse name
-      const selected = this.slaughterhouseOptions.find(opt => opt.value === slaughterhouseId);
-      this.selectedSlaughterhouseName = selected?.label || '';
+      // Find and store the selected slaughterhouse code
+      const selected = this.slaughterhouseOptions.find(
+        (opt) => opt.value === slaughterhouseId
+      );
+      this.selectedSlaughterhouseCode = selected?.code || '';
 
       // Load buildings for all slaughterhouses (not filtered by slaughterhouse)
       this.loadBuildingsLookup();
     } else {
-      this.selectedSlaughterhouseName = '';
+      this.selectedSlaughterhouseCode = '';
     }
 
     // Apply filter to map
@@ -344,22 +433,25 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
 
     this.filterForm.patchValue({
       floor: '',
-      room: ''
+      room: '',
     });
 
-    // Reset dependent filter names
+    // Reset dependent filter codes
     this.selectedFloorName = '';
+    this.selectedRoomCode = '';
     this.selectedRoomName = '';
 
     const buildingId = this.filterForm.get('building')?.value;
     if (buildingId) {
-      // Find and store the selected building name
-      const selected = this.buildingOptions.find(opt => opt.value === buildingId);
-      this.selectedBuildingName = selected?.label || '';
+      // Find and store the selected building code
+      const selected = this.buildingOptions.find(
+        (opt) => opt.value === buildingId
+      );
+      this.selectedBuildingCode = selected?.code || '';
 
       this.loadFloorsLookup(buildingId);
     } else {
-      this.selectedBuildingName = '';
+      this.selectedBuildingCode = '';
     }
 
     // Apply filter to map
@@ -374,17 +466,19 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
     this.roomOptions = [];
 
     this.filterForm.patchValue({
-      room: ''
+      room: '',
     });
 
-    // Reset dependent filter names
+    // Reset dependent filter codes
+    this.selectedRoomCode = '';
     this.selectedRoomName = '';
 
     const floorId = this.filterForm.get('floor')?.value;
     if (floorId) {
-      // Find and store the selected floor name
-      const selected = this.floorOptions.find(opt => opt.value === floorId);
-      this.selectedFloorName = selected?.label || '';
+      // Find and store the selected floor code, then map to English name
+      const selected = this.floorOptions.find((opt) => opt.value === floorId);
+      const arabicCode = selected?.code || '';
+      this.selectedFloorName = this.mapFloorCodeToEnglishName(arabicCode);
 
       this.loadRoomsLookup(floorId);
     } else {
@@ -401,10 +495,13 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
   onRoomChange(): void {
     const roomId = this.filterForm.get('room')?.value;
     if (roomId) {
-      // Find and store the selected room name
-      const selected = this.roomOptions.find(opt => opt.value === roomId);
-      this.selectedRoomName = selected?.label || '';
+      // Find and store the selected room code and name
+      const selected = this.roomOptions.find((opt) => opt.value === roomId);
+      const rawCode = selected?.code || '';
+      this.selectedRoomCode = this.normalizeRoomCode(rawCode); // For rooms layer
+      this.selectedRoomName = selected?.label || ''; // For assets layer (RoomName field)
     } else {
+      this.selectedRoomCode = '';
       this.selectedRoomName = '';
     }
 
@@ -417,10 +514,11 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
    */
   private applyMapFilters(): void {
     this.spatialTrackingMapService.filterAssetLayer({
-      slaughterhouseName: this.selectedSlaughterhouseName,
-      buildName: this.selectedBuildingName,
-      levelAsset: this.selectedFloorName,
-      roomName: this.selectedRoomName
+      slaughterhouseCode: this.selectedSlaughterhouseCode,
+      buildingCode: this.selectedBuildingCode,
+      floorName: this.selectedFloorName, // Use English floor name instead of code
+      roomCode: this.selectedRoomCode, // For rooms layer filtering
+      roomName: this.selectedRoomName, // For assets layer filtering
     });
   }
 
@@ -433,13 +531,14 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
       slaughterhouse: '',
       building: '',
       floor: '',
-      room: ''
+      room: '',
     });
 
-    // Clear selected filter names
-    this.selectedSlaughterhouseName = '';
-    this.selectedBuildingName = '';
+    // Clear selected filter codes
+    this.selectedSlaughterhouseCode = '';
+    this.selectedBuildingCode = '';
     this.selectedFloorName = '';
+    this.selectedRoomCode = '';
     this.selectedRoomName = '';
 
     // Clear dependent dropdown options (but keep slaughterhouse options)
@@ -450,8 +549,8 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
     // Reload slaughterhouse options
     this.loadSlaughterhouseLookup();
 
-    // Clear layer filter and reset map view to default
-    await this.spatialTrackingMapService.clearLayerFilterAndResetView('assets-point-layer');
+    // Clear all layer filters and reset map view to default
+    await this.spatialTrackingMapService.clearLayerFilterAndResetView();
   }
 
   /**
@@ -503,6 +602,90 @@ export class SpatialTrackingMapComponent implements OnInit, AfterViewInit, OnDes
       this.showLayerList = false;
       this.showBaseMap = false;
     }
+  }
+
+  // Store asset ID from query params
+  private pendingAssetId: string | null = null;
+  private layersLoaded = false;
+  private mapViewInitialized = false;
+
+  /**
+   * Check query params for asset ID and store it for later processing
+   */
+  private checkQueryParamsForAssetId(): void {
+    // Check snapshot first (synchronous)
+    const assetId = this.route.snapshot.queryParams['assetId'];
+    if (assetId) {
+      console.log('Found asset ID in query params:', assetId);
+      this.pendingAssetId = assetId;
+    }
+
+    // Also subscribe to catch navigation changes
+    this.route.queryParams.subscribe((params) => {
+      if (params['assetId'] && params['assetId'] !== this.pendingAssetId) {
+        console.log('Asset ID changed in query params:', params['assetId']);
+        this.pendingAssetId = params['assetId'];
+        // Check if we can process it now
+        this.checkIfReadyToProcessAssetId();
+      }
+    });
+  }
+
+  /**
+   * Check if map view and layers are ready, then process asset ID
+   */
+  private checkIfReadyToProcessAssetId(): void {
+    console.log('checkIfReadyToProcessAssetId called', {
+      pendingAssetId: this.pendingAssetId,
+      mapViewInitialized: this.mapViewInitialized,
+      layersLoaded: this.layersLoaded,
+      mapView: !!this.mapView,
+    });
+
+    if (
+      this.pendingAssetId &&
+      this.mapViewInitialized &&
+      this.layersLoaded &&
+      this.mapView
+    ) {
+      console.log('All conditions met, processing asset ID');
+      this.processAssetIdFromQueryParams();
+    } else {
+      console.log('Not ready yet, waiting...');
+    }
+  }
+
+  /**
+   * Process the pending asset ID - filter and zoom to it
+   */
+  private async processAssetIdFromQueryParams(): Promise<void> {
+    if (!this.pendingAssetId) {
+      console.log('No pending asset ID, returning early');
+      return;
+    }
+
+    const assetId = this.pendingAssetId;
+    console.log('Processing asset ID:', assetId);
+
+    // Wait a bit more to ensure layers are fully queryable
+    setTimeout(async () => {
+      try {
+        await this.spatialTrackingMapService.filterAndZoomToAsset(assetId);
+        console.log('Successfully filtered and zoomed to asset:', assetId);
+
+        // Clear query params after processing
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {},
+          replaceUrl: true,
+        });
+
+        // Clear pending asset ID
+        this.pendingAssetId = null;
+      } catch (error) {
+        console.error('Error filtering and zooming to asset:', error);
+      }
+    }, 1500); // Wait for layers to be fully queryable
   }
 }
 
