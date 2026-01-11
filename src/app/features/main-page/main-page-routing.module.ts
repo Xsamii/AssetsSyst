@@ -11,6 +11,7 @@ import { MainDashboardComponent } from './main-dashboard/main-dashboard.componen
 import { BuildingsDashboardComponent } from './buildings/components/buildings-dashboard/buildings-dashboard.component';
 import { BuildingsmodelsComponent } from './maps/buildingsmodels/buildingsmodels.component';
 import { MaintenanceMapComponent } from './maintenance/components/maintenance-map/maintenance-map.component';
+import { SpatialTrackingMapComponent } from './maps/spatial-tracking-map/spatial-tracking-map.component';
 const Roles = UserTypesEnum;
 const routes: Routes = [
   {
@@ -41,7 +42,7 @@ const routes: Routes = [
       },
        {
         path: 'map',
-        title: 'لوحة تحكم المباني',
+        title: 'المتابعة المكانية',
         data: {
           role: [Roles.Admin,
           Roles.SystemOfficer,
@@ -52,7 +53,22 @@ const routes: Routes = [
           Roles.MaintenanceSupervisor,],
         },
         canActivate: [AuthGuard],
-        component: BuildingsDashboardComponent,
+        component: SpatialTrackingMapComponent,
+      },
+      {
+        path: 'spatial-tracking-map',
+        title: 'المتابعة المكانية - Esri',
+        data: {
+          role: [Roles.Admin,
+          Roles.SystemOfficer,
+          Roles.OfficeManager,
+          Roles.ProjectManager,
+          Roles.OfficeEmployee,
+          Roles.ServiceRequester,
+          Roles.MaintenanceSupervisor,],
+        },
+        canActivate: [AuthGuard],
+        component: SpatialTrackingMapComponent,
       },
       {
       path: 'buildings-models',

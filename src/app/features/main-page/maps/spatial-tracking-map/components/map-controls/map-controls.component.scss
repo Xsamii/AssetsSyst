@@ -1,0 +1,75 @@
+.map-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #46948c1a;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  direction: rtl;
+
+  .control-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e0e0e0;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+
+    &:hover {
+      background: #f5f5f5;
+      border-color: #16968c;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .control-icon {
+      width: 20px;
+      height: 20px;
+      stroke: #495057;
+    }
+
+    &:hover .control-icon {
+      stroke: #16968c;
+    }
+
+    &.hidden {
+      display: none;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .map-controls {
+    top: 10px;
+    right: 10px;
+    padding: 6px;
+    gap: 6px;
+
+    .control-btn {
+      width: 36px;
+      height: 36px;
+
+      .control-icon {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+}
+

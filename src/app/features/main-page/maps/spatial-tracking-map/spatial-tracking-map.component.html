@@ -1,0 +1,105 @@
+<!-- Spatial Tracking Map Dashboard -->
+<div class="spatial-tracking-map-dashboard">
+  <!-- Breadcrumb -->
+  <app-bread-crumb 
+    class="bg-white" 
+    [title]="'المتابعة المكانية'"
+    [imageTitle]="'./assets/icons/mainBuildingsActive.svg'" 
+    [subTitles]="[
+      { name: 'الرئيسية', routerLink: '/' },
+      { name: 'المتابعة المكانية', routerLink: '/map' }
+    ]">
+  </app-bread-crumb>
+
+  <!-- Filter Controls Section -->
+  <div class="controls-section">
+    <div class="filter-controls" [formGroup]="filterForm">
+      <div class="filter-item">
+        <p-dropdown 
+          class="w-full min-w-96" 
+          [styleClass]="'w-full bg-filterBtnBg p-3 min-w-96'"
+          [style]="{
+            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="label" 
+          optionValue="value" 
+          placeholder="اختار اسم المبنى" 
+          formControlName="buildName"
+          [options]="buildNameOptions" 
+          [filter]="true" 
+          [showClear]="true"
+          (onChange)="onBuildNameFilterChange()">
+        </p-dropdown>
+      </div>
+
+      <button class="reset-btn" (click)="resetFilters()" type="button" title="إعادة ضبط التصفية">
+        <i class="fas fa-redo"></i>
+        إعادة ضبط
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="loading-indicator" *ngIf="isLoading">
+    <i class="fas fa-spinner fa-spin"></i>
+    <span>جاري تحميل الخريطة...</span>
+  </div>
+
+  <!-- Map Container -->
+  <div id="mapContainer" class="w-full bg-gray-200 rounded-lg relative" style="height: calc(100vh - 140px);">
+    <!-- Map View -->
+    <div #mapViewNode class="map-view w-full h-full"></div>
+    
+    <!-- Map Controls -->
+    <app-map-controls
+      (layerListToggle)="toggleLayerList()"
+      (baseMapToggle)="toggleBaseMap()"
+      (legendToggle)="toggleLegend()">
+    </app-map-controls>
+
+    <!-- Layer List Panel -->
+    <div
+      [class.hidden]="!showLayerList"
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-4 z-50 max-h-[70vh] overflow-auto"
+      style="min-width: 400px; max-width: 600px;">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-lg font-bold text-gray-800">الطبقات</h3>
+        <button
+          (click)="toggleLayerList()"
+          class="text-gray-600 hover:text-gray-800 text-xl">&times;</button>
+      </div>
+      <div id="layerListDiv"></div>
+    </div>
+
+    <!-- BaseMap Panel -->
+    <div
+      [class.hidden]="!showBaseMap"
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-4 z-50 max-h-[70vh] overflow-auto"
+      style="min-width: 400px; max-width: 600px;">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-lg font-bold text-gray-800">خرائط الأساس</h3>
+        <button
+          (click)="toggleBaseMap()"
+          class="text-gray-600 hover:text-gray-800 text-xl">&times;</button>
+      </div>
+      <div id="baseMapDiv"></div>
+    </div>
+
+    <!-- Legend Panel -->
+    <div
+      [class.hidden]="!showLegend"
+      class="absolute bottom-4 left-4 bg-white rounded-lg shadow-xl p-4 z-50 max-h-[60%] overflow-auto"
+      style="min-width: 250px; max-width: 400px;">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-lg font-bold text-gray-800">وسيلة الإيضاح</h3>
+        <button
+          (click)="toggleLegend()"
+          class="text-gray-600 hover:text-gray-800 text-xl">&times;</button>
+      </div>
+      <div id="legendContainer"></div>
+    </div>
+  </div>
+</div>
+
