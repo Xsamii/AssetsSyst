@@ -774,7 +774,12 @@ export class SpatialTrackingMapService {
    * Add configured layers to the map
    */
   async addConfiguredLayers(layerConfigs: LayerConfig[]): Promise<void> {
-    for (const layerConfig of layerConfigs) {
+    // ArcGIS JS draws the last added layer on top.
+    // To make sure the desired top layers (like assets) are above others,
+    // add layers in reverse order of the provided configs.
+    const layersToAdd = [...layerConfigs].reverse();
+
+    for (const layerConfig of layersToAdd) {
       if (
         layerConfig.visible &&
         layerConfig.url &&
