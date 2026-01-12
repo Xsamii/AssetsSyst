@@ -636,7 +636,7 @@ export class ListComponent implements OnInit {
         {
           label: 'عرض في المتابعة المكانية',
           visible: true,
-          icon: 'fa-solid fa-file',
+          icon: 'fa-solid fa-map-location-dot',
           command: () =>
             this.viewOnMap.emit(this.selectedId),
         },

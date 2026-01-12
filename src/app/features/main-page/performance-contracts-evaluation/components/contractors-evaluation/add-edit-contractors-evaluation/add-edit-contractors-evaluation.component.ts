@@ -283,7 +283,7 @@ export class AddEditContractorsEvaluationComponent implements OnInit {
       // CREATE - Build the create object
       const createObj = {
         buildingId: this.contractorsEvaluationForm.value.buildingId,
-        contractorId: 2112,
+        contractorId: this.contractorsEvaluationForm.value.contractorId,
         evaluationContractorId: this.contractorsEvaluationForm.value.evaluationContractorId,
         evaluationContractorTermAnswerRateDto: evaluations.map((term: any) => ({
           rate: term.rating,
