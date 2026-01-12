@@ -81,11 +81,11 @@ export const SPATIAL_TRACKING_LAYERS: LayerConfig[] = [
             { fieldName: 'RoomName', label: 'اسم الغرفة' },
             { fieldName: 'slaughterhouseName', label: 'اسم المذبح' },
             { fieldName: 'main_catogry', label: 'الفئة الرئيسية' },
-            { fieldName: 'sub_catogry', label: 'الفئة الفرعية' }
-          ]
-        }
-      ]
-    }
+            { fieldName: 'sub_catogry', label: 'الفئة الفرعية' },
+          ],
+        },
+      ],
+    },
     // No renderer - will use original symbology from the service
   },
   {
@@ -95,10 +95,26 @@ export const SPATIAL_TRACKING_LAYERS: LayerConfig[] = [
     type: 'feature',
     visible: true,
     // opacity: 1,
-    popupEnabled: false, // No popup for this layer
+    popupEnabled: true,
     order: 1,
     legendEnabled: true,
-    outFields: ['*']
+    outFields: ['*'],
+    popupTemplate: {
+      title: 'تفاصيل الغرفة',
+      content: [
+        {
+          type: 'fields',
+          fieldInfos: [
+            { fieldName: 'Build_Name', label: 'اسم المبنى' },
+            { fieldName: 'LevelRoom', label: 'الدور' },
+            { fieldName: 'CodeRoom1', label: 'رمز الغرفة' },
+            { fieldName: 'NameRoom', label: 'اسم الغرفة' },
+            { fieldName: 'TypeRoom', label: 'نوع الغرفة' },
+            { fieldName: 'SlaughterhouseName', label: 'اسم المذبح' },
+          ],
+        },
+      ],
+    },
     // No renderer - will use original symbology from the service
   },
   {
@@ -111,7 +127,7 @@ export const SPATIAL_TRACKING_LAYERS: LayerConfig[] = [
     popupEnabled: false, // No popup for this layer
     order: 2,
     legendEnabled: true,
-    outFields: ['*']
+    outFields: ['*'],
     // No renderer - will use original symbology from the service
   },
   {
@@ -124,9 +140,9 @@ export const SPATIAL_TRACKING_LAYERS: LayerConfig[] = [
     popupEnabled: false, // No popup for this layer
     order: 3,
     legendEnabled: true,
-    outFields: ['*']
+    outFields: ['*'],
     // No renderer - will use original symbology from the service
-  }
+  },
 ];
 
 /**
