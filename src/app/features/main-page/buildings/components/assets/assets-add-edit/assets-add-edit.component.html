@@ -118,12 +118,22 @@
         </small>
       </div>
 
-      <div class="input-field col-span-6">
+      <!-- <div class="input-field col-span-6">
         <label for="name">الرقم التعريفي</label>
         <div class="field-icon">
           <span>{{ getAssetDisplayName() }}</span>
         </div>
+      </div> -->
+
+<div class="input-field col-span-6">
+        <label for="name"> اسم الأصل </label>
+        <div class="field-icon">
+          <input type="text" class="form-control" formControlName="notes" placeholder="اسم الأصل" />
+        </div>
+
       </div>
+
+
     </div>
   </div>
 
@@ -260,16 +270,7 @@
             [currentId]="editeId" [routeName]="'/assets'"></app-uploadFile>
         </div>
       </div>
-      <div class="input-field col-span-12">
-        <label for="name"> الملاحظات </label>
 
-        <textarea class="form-control" formControlName="notes" placeholder=" ادخل ملاحظاتك" style="
-            resize: none;
-            width: 100%;
-            background-color: #f6f6f6;
-            padding: 10px;
-          " rows="4"></textarea>
-      </div>
     </div>
     <div class="buttons-content mt-5">
       <button class="buttons" type="submit" (click)="createUpdateAsset()" [disabled]="!assetForm.valid">

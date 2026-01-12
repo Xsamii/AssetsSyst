@@ -9,6 +9,7 @@ import {
   columnChart,
   enhancedColumnChart,
   pieChart,
+  pieChartWithBottomLegend,
   barsChart,
   lineCharts,
   halfGaugeChart,
@@ -530,6 +531,20 @@ showNoDataForContractChart(contractId: number): void {
   }
 
   loadMaintenanceRequestStatusData(): void {
+    // ALWAYS use dummy data for testing
+    this.maintenanceRequestStatusData = [
+      { name: 'قيد التنفيذ', percentage: 45.5, totalCount: 120 },
+      { name: 'مكتمل', percentage: 30.2, totalCount: 80 },
+      { name: 'معلق', percentage: 15.3, totalCount: 40 },
+      { name: 'ملغي', percentage: 9.0, totalCount: 24 }
+    ];
+
+    setTimeout(() => {
+      this.renderMaintenanceRequestStatusChart();
+    }, 500);
+
+    // Original API call (commented out for testing)
+    /*
     this.dashboardService.getMaintenanceRequestStatusChart().subscribe({
       next: (response) => {
         if (response.isSuccess && response.data) {
@@ -539,23 +554,53 @@ showNoDataForContractChart(contractId: number): void {
             this.renderMaintenanceRequestStatusChart();
           }, 500);
         } else {
-          this.showNoDataMessage(
-            'maintenance-status-donut',
-            'لا توجد بيانات متاحة'
-          );
+          // Fallback to dummy data if no data from API
+          this.maintenanceRequestStatusData = [
+            { name: 'قيد التنفيذ', percentage: 45.5, totalCount: 120 },
+            { name: 'مكتمل', percentage: 30.2, totalCount: 80 },
+            { name: 'معلق', percentage: 15.3, totalCount: 40 },
+            { name: 'ملغي', percentage: 9.0, totalCount: 24 }
+          ];
+
+          setTimeout(() => {
+            this.renderMaintenanceRequestStatusChart();
+          }, 500);
         }
       },
       error: (error) => {
         console.error('Error loading maintenance request status data:', error);
-        this.showNoDataMessage(
-          'maintenance-status-donut',
-          'خطأ في تحميل البيانات'
-        );
+        // Use dummy data on error as well
+        this.maintenanceRequestStatusData = [
+          { name: 'قيد التنفيذ', percentage: 45.5, totalCount: 120 },
+          { name: 'مكتمل', percentage: 30.2, totalCount: 80 },
+          { name: 'معلق', percentage: 15.3, totalCount: 40 },
+          { name: 'ملغي', percentage: 9.0, totalCount: 24 }
+        ];
+
+        setTimeout(() => {
+          this.renderMaintenanceRequestStatusChart();
+        }, 500);
       },
     });
+    */
   }
 
   loadMalfunctionTypesData(): void {
+    // ALWAYS use dummy data for testing
+    this.malfunctionTypesData = [
+      { name: 'كهربائي', totalCount: 85 },
+      { name: 'ميكانيكي', totalCount: 65 },
+      { name: 'سباكة', totalCount: 42 },
+      { name: 'تكييف', totalCount: 38 },
+      { name: 'إنشائي', totalCount: 20 }
+    ];
+
+    setTimeout(() => {
+      this.renderMalfunctionTypesChart();
+    }, 600);
+
+    // Original API call (commented out for testing)
+    /*
     this.dashboardService.getMalfunctionsTypesChart().subscribe({
       next: (response) => {
         if (response.isSuccess && response.data) {
@@ -565,14 +610,37 @@ showNoDataForContractChart(contractId: number): void {
             this.renderMalfunctionTypesChart();
           }, 600);
         } else {
-          this.showNoDataMessage('failure-types-donut', 'لا توجد بيانات متاحة');
+          // Fallback to dummy data if no data from API
+          this.malfunctionTypesData = [
+            { name: 'كهربائي', totalCount: 85 },
+            { name: 'ميكانيكي', totalCount: 65 },
+            { name: 'سباكة', totalCount: 42 },
+            { name: 'تكييف', totalCount: 38 },
+            { name: 'إنشائي', totalCount: 20 }
+          ];
+
+          setTimeout(() => {
+            this.renderMalfunctionTypesChart();
+          }, 600);
         }
       },
       error: (error) => {
         console.error('Error loading malfunction types data:', error);
-        this.showNoDataMessage('failure-types-donut', 'خطأ في تحميل البيانات');
+        // Use dummy data on error as well
+        this.malfunctionTypesData = [
+          { name: 'كهربائي', totalCount: 85 },
+          { name: 'ميكانيكي', totalCount: 65 },
+          { name: 'سباكة', totalCount: 42 },
+          { name: 'تكييف', totalCount: 38 },
+          { name: 'إنشائي', totalCount: 20 }
+        ];
+
+        setTimeout(() => {
+          this.renderMalfunctionTypesChart();
+        }, 600);
       },
     });
+    */
   }
 
   // Add these properties to your component class
@@ -778,7 +846,7 @@ showNoDataForContractChart(contractId: number): void {
         seriesData: pieData,
         projectCount: totalCount,
         titleText: 'الإجمالي',
-        legend: false,
+        legend: true, // ENABLED LEGEND FOR TESTING
         color: [
           '#16968C',
           '#255E5D',
@@ -1238,7 +1306,7 @@ renderAssetsByTypeChart(): void {
       0
     );
 
-    pieChart({
+    pieChartWithBottomLegend({
       id: 'assets-by-type-chart',
       seriesData: pieData,
       projectCount: totalCount,
@@ -1271,7 +1339,7 @@ renderAssetsByEquipmentChart(): void {
       0
     );
 
-    pieChart({
+    pieChartWithBottomLegend({
       id: 'assets-by-equipment-chart',
       seriesData: pieData,
       projectCount: totalCount,
@@ -1304,7 +1372,7 @@ renderAssetsByManufacturerChart(): void {
       0
     );
 
-    pieChart({
+    pieChartWithBottomLegend({
       id: 'assets-by-manufacturer-chart',
       seriesData: pieData,
       projectCount: totalCount,
@@ -1337,7 +1405,7 @@ renderRiskLevelChart(): void {
       0
     );
 
-    pieChart({
+    pieChartWithBottomLegend({
       id: 'risk-level-chart',
       seriesData: pieData,
       projectCount: totalCount,

@@ -155,8 +155,13 @@ export function gaugeChart({ ...data }) {
   return halfGaugeChart(data);
 }
 
-// Updated pieChart function - Tooltip enabled and formatted
-export function pieChart({ ...data }) {
+// NEW: Special pie chart for top 4 dashboard charts with legend at bottom
+export function pieChartWithBottomLegend({ ...data }) {
+  const hasLegend = data['legend'] !== false;
+  const spacingBottom = hasLegend ? 100 : 10;
+  const marginBottom = hasLegend ? 110 : 10;
+  const titleYOffset = hasLegend ? -45 : 0;
+
   const chart = Highcharts.chart(data['id'], {
     chart: {
       plotBackgroundColor: null,
@@ -164,6 +169,9 @@ export function pieChart({ ...data }) {
       plotShadow: false,
       type: 'pie',
       useHTML: true,
+      spacingBottom: spacingBottom,
+      marginBottom: marginBottom,
+      height: null
     },
     credits: {
       enabled: false,
@@ -176,6 +184,111 @@ export function pieChart({ ...data }) {
       rtl: true,
       useHTML: true,
       y: 10,
+      itemMarginBottom: 5,
+      itemMarginTop: 5,
+      itemDistance: 15,
+      symbolPadding: 5,
+      symbolWidth: 10,
+      symbolHeight: 10,
+      itemStyle: {
+        color: '#707070',
+        cursor: 'pointer',
+        fontSize: '11px',
+        fontWeight: 'normal',
+        fontFamily: 'Rubik',
+      },
+      enabled: hasLegend
+    },
+    title: {
+      text: data['titleText']
+        ? `<span id="dynamic-count-${data['id']}" style="font-size: 28px; font-weight: bold; color: #333;">${data['projectCount']}</span>`
+        : '',
+      align: 'center',
+      verticalAlign: 'middle',
+      useHTML: true,
+      y: titleYOffset,
+      x: 0,
+      style: {
+        textAlign: 'center'
+      }
+    },
+    tooltip: {
+      enabled: true,
+      useHTML: true,
+      backgroundColor: 'rgba(0,0,0,0.8)',
+      borderWidth: 0,
+      borderRadius: 6,
+      style: {
+        color: 'white',
+        fontSize: '12px',
+        padding: '8px'
+      },
+      pointFormat: ' <br/>النسبة: {point.y:.1f}%'
+    },
+    accessibility: {
+      point: {
+        valueSuffix: '',
+      },
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: false,
+        cursor: 'pointer',
+        dataLabels: {
+          enabled: false,
+        },
+        showInLegend: hasLegend,
+        point: {
+          events: {
+            mouseOver: function() {
+              const countElement = document.getElementById(`dynamic-count-${data['id']}`);
+              if (countElement) {
+                countElement.innerHTML = this.y;
+              }
+            },
+            mouseOut: function() {
+              const countElement = document.getElementById(`dynamic-count-${data['id']}`);
+              if (countElement) {
+                countElement.innerHTML = data['projectCount'];
+              }
+            }
+          }
+        }
+      },
+    },
+    colors: data['color'] ? data['color'] : piechartColors,
+    series: [
+      {
+        name: '',
+        colorByPoint: true,
+        innerSize: '80%',
+        data: data['seriesData'],
+      },
+    ],
+  } as any);
+}
+
+// ORIGINAL pieChart function - legend on right side (OLD STYLE)
+export function pieChart({ ...data }) {
+  const hasLegend = data['legend'] !== false;
+
+  const chart = Highcharts.chart(data['id'], {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie',
+      useHTML: true,
+    },
+    credits: {
+      enabled: false,
+    },
+    legend: {
+      align: 'right',
+      verticalAlign: 'middle',
+      layout: 'vertical',
+      rtl: true,
+      useHTML: true,
       itemStyle: {
         color: '#707070',
         cursor: 'pointer',
@@ -183,15 +296,20 @@ export function pieChart({ ...data }) {
         fontWeight: 'medium',
         fontFamily: 'Rubik',
       },
-      enabled: data['legend'] !== false
+      enabled: hasLegend
     },
     title: {
       text: data['titleText']
-        ? `<div style="text-align: center;"><span id="dynamic-count-${data['id']}">${data['projectCount']}</span></div>`
+        ? `<span id="dynamic-count-${data['id']}" style="font-size: 28px; font-weight: bold; color: #333;">${data['projectCount']}</span>`
         : '',
       align: 'center',
       verticalAlign: 'middle',
       useHTML: true,
+      y: 0,
+      x: 0,
+      style: {
+        textAlign: 'center'
+      }
     },
     tooltip: {
       enabled: true,
