@@ -69,7 +69,8 @@ export class AssetsComponent {
     this.getBulldingLookUp();
     this.cols = [
       new listColumns({ field: 'id', header: '#' }),
-      new listColumns({ field: 'name', header: ' الرقم التعريفي' }),
+      new listColumns({ field: 'name', header: 'رقم الأصل' }),
+      new listColumns({ field: 'notes', header: 'اسم الأصل' }),
 
       new listColumns({
         field: 'buildingName',
