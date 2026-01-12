@@ -158,9 +158,9 @@ export function gaugeChart({ ...data }) {
 // NEW: Special pie chart for top 4 dashboard charts with legend at bottom
 export function pieChartWithBottomLegend({ ...data }) {
   const hasLegend = data['legend'] !== false;
-  const spacingBottom = hasLegend ? 100 : 10;
+  const spacingBottom = hasLegend ? 10 : 10;
   const marginBottom = hasLegend ? 110 : 10;
-  const titleYOffset = hasLegend ? -45 : 0;
+  const titleYOffset = hasLegend ? -25 : 0;
 
   const chart = Highcharts.chart(data['id'], {
     chart: {
@@ -269,9 +269,99 @@ export function pieChartWithBottomLegend({ ...data }) {
 }
 
 // ORIGINAL pieChart function - legend on right side (OLD STYLE)
-export function pieChart({ ...data }) {
-  const hasLegend = data['legend'] !== false;
+// export function pieChart({ ...data }) {
+//   const hasLegend = data['legend'] !== false;
 
+//   const chart = Highcharts.chart(data['id'], {
+//     chart: {
+//       plotBackgroundColor: null,
+//       plotBorderWidth: null,
+//       plotShadow: false,
+//       type: 'pie',
+//       useHTML: true,
+//     },
+//     credits: {
+//       enabled: false,
+//     },
+//     legend: {
+//       align: 'right',
+//       verticalAlign: 'middle',
+//       layout: 'vertical',
+//       rtl: true,
+//       useHTML: true,
+//       itemStyle: {
+//         color: '#707070',
+//         cursor: 'pointer',
+//         fontSize: '12px',
+//         fontWeight: 'medium',
+//         fontFamily: 'Rubik',
+//       },
+//       enabled: hasLegend
+//     },
+//      title: {
+//       text: data['titleText']
+//         ? `<div style="text-align: center;"><span id="dynamic-count-${data['id']}">${data['projectCount']}</span></div>`
+//         : '',
+//       align: 'center',
+//       verticalAlign: 'middle',
+//       useHTML: true,
+//     },
+//     tooltip: {
+//       enabled: true,
+//       useHTML: true,
+//       backgroundColor: 'rgba(0,0,0,0.8)',
+//       borderWidth: 0,
+//       borderRadius: 6,
+//       style: {
+//         color: 'white',
+//         fontSize: '12px',
+//         padding: '8px'
+//       },
+//       pointFormat: ' <br/>النسبة: {point.y:.1f}%'
+//     },
+//     accessibility: {
+//       point: {
+//         valueSuffix: '',
+//       },
+//     },
+//     plotOptions: {
+//       pie: {
+//         allowPointSelect: false,
+//         cursor: 'pointer',
+//         dataLabels: {
+//           enabled: false,
+//         },
+//         showInLegend: data['legend'] !== false,
+//         point: {
+//           events: {
+//             mouseOver: function() {
+//               const countElement = document.getElementById(`dynamic-count-${data['id']}`);
+//               if (countElement) {
+//                 countElement.innerHTML = this.y;
+//               }
+//             },
+//             mouseOut: function() {
+//               const countElement = document.getElementById(`dynamic-count-${data['id']}`);
+//               if (countElement) {
+//                 countElement.innerHTML = data['projectCount'];
+//               }
+//             }
+//           }
+//         }
+//       },
+//     },
+//     colors: data['color'] ? data['color'] : piechartColors,
+//     series: [
+//       {
+//         name: '',
+//         colorByPoint: true,
+//         innerSize: '80%',
+//         data: data['seriesData'],
+//       },
+//     ],
+//   } as any);
+// }
+export function pieChart({ ...data }) {
   const chart = Highcharts.chart(data['id'], {
     chart: {
       plotBackgroundColor: null,
@@ -285,31 +375,28 @@ export function pieChart({ ...data }) {
     },
     legend: {
       align: 'right',
-      verticalAlign: 'middle',
-      layout: 'vertical',
+      alignColumns: false,
+      layout: 'Vertical',
+      verticalAlign: 'top',
       rtl: true,
       useHTML: true,
+      margin: '20px',
       itemStyle: {
         color: '#707070',
         cursor: 'pointer',
-        fontSize: '12px',
+        fontSize: '16px',
         fontWeight: 'medium',
         fontFamily: 'Rubik',
       },
-      enabled: hasLegend
+      enabled: data['legend'] !== false
     },
     title: {
       text: data['titleText']
-        ? `<span id="dynamic-count-${data['id']}" style="font-size: 28px; font-weight: bold; color: #333;">${data['projectCount']}</span>`
+        ? `<div style="text-align: center;"><span id="dynamic-count-${data['id']}">${data['projectCount']}</span></div>`
         : '',
       align: 'center',
       verticalAlign: 'middle',
       useHTML: true,
-      y: 0,
-      x: 0,
-      style: {
-        textAlign: 'center'
-      }
     },
     tooltip: {
       enabled: true,
@@ -351,7 +438,7 @@ export function pieChart({ ...data }) {
                 countElement.innerHTML = data['projectCount'];
               }
             }
-          }
+          } 
         }
       },
     },
@@ -366,6 +453,8 @@ export function pieChart({ ...data }) {
     ],
   } as any);
 }
+
+
 
 // Updated regular columnChart function with y-axis labels and scrollbar support
 export function columnChart({ ...data }) {
