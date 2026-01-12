@@ -1418,6 +1418,7 @@ export class SpatialTrackingMapService {
 
       // ============================================
       // ZOOM TO FILTERED FEATURES
+      // Priority: Zoom to rooms layer extent if filtered, otherwise use combined extent
       // ============================================
       const hasAnyFilter =
         filters.slaughterhouseCode ||
@@ -1427,6 +1428,32 @@ export class SpatialTrackingMapService {
         filters.roomName;
 
       if (hasAnyFilter) {
+        // Priority 1: Zoom to rooms layer extent if it has a filter
+        if (
+          roomsLayer &&
+          roomsLayer.definitionExpression &&
+          roomsLayer.definitionExpression !== '1=1'
+        ) {
+          try {
+            const roomsQuery = roomsLayer.createQuery();
+            roomsQuery.where = roomsLayer.definitionExpression;
+            const roomsResult = await roomsLayer.queryExtent(roomsQuery);
+
+            if (roomsResult && roomsResult.extent) {
+              await this.mapView.goTo({
+                target: roomsResult.extent.expand(1.5),
+                duration: 1000,
+              });
+              console.log('Zoomed to rooms layer extent');
+              return; // Exit early since we've zoomed to rooms layer
+            }
+          } catch (error) {
+            console.warn('Error querying rooms layer extent:', error);
+            // Fall through to combined extent logic
+          }
+        }
+
+        // Priority 2: Fallback to combined extent of all filtered layers
         const extents: __esri.Extent[] = [];
 
         // Query assets layer extent
@@ -1435,25 +1462,15 @@ export class SpatialTrackingMapService {
           assetsLayer.definitionExpression &&
           assetsLayer.definitionExpression !== '1=1'
         ) {
-          const assetsQuery = assetsLayer.createQuery();
-          assetsQuery.where = assetsLayer.definitionExpression;
-          const assetsResult = await assetsLayer.queryExtent(assetsQuery);
-          if (assetsResult && assetsResult.extent) {
-            extents.push(assetsResult.extent);
-          }
-        }
-
-        // Query rooms layer extent
-        if (
-          roomsLayer &&
-          roomsLayer.definitionExpression &&
-          roomsLayer.definitionExpression !== '1=1'
-        ) {
-          const roomsQuery = roomsLayer.createQuery();
-          roomsQuery.where = roomsLayer.definitionExpression;
-          const roomsResult = await roomsLayer.queryExtent(roomsQuery);
-          if (roomsResult && roomsResult.extent) {
-            extents.push(roomsResult.extent);
+          try {
+            const assetsQuery = assetsLayer.createQuery();
+            assetsQuery.where = assetsLayer.definitionExpression;
+            const assetsResult = await assetsLayer.queryExtent(assetsQuery);
+            if (assetsResult && assetsResult.extent) {
+              extents.push(assetsResult.extent);
+            }
+          } catch (error) {
+            console.warn('Error querying assets layer extent:', error);
           }
         }
 
@@ -1463,13 +1480,17 @@ export class SpatialTrackingMapService {
           buildingsLayer.definitionExpression &&
           buildingsLayer.definitionExpression !== '1=1'
         ) {
-          const buildingsQuery = buildingsLayer.createQuery();
-          buildingsQuery.where = buildingsLayer.definitionExpression;
-          const buildingsResult = await buildingsLayer.queryExtent(
-            buildingsQuery
-          );
-          if (buildingsResult && buildingsResult.extent) {
-            extents.push(buildingsResult.extent);
+          try {
+            const buildingsQuery = buildingsLayer.createQuery();
+            buildingsQuery.where = buildingsLayer.definitionExpression;
+            const buildingsResult = await buildingsLayer.queryExtent(
+              buildingsQuery
+            );
+            if (buildingsResult && buildingsResult.extent) {
+              extents.push(buildingsResult.extent);
+            }
+          } catch (error) {
+            console.warn('Error querying buildings layer extent:', error);
           }
         }
 
@@ -1479,13 +1500,18 @@ export class SpatialTrackingMapService {
           slaughterhouseLayer.definitionExpression &&
           slaughterhouseLayer.definitionExpression !== '1=1'
         ) {
-          const slaughterhouseQuery = slaughterhouseLayer.createQuery();
-          slaughterhouseQuery.where = slaughterhouseLayer.definitionExpression;
-          const slaughterhouseResult = await slaughterhouseLayer.queryExtent(
-            slaughterhouseQuery
-          );
-          if (slaughterhouseResult && slaughterhouseResult.extent) {
-            extents.push(slaughterhouseResult.extent);
+          try {
+            const slaughterhouseQuery = slaughterhouseLayer.createQuery();
+            slaughterhouseQuery.where =
+              slaughterhouseLayer.definitionExpression;
+            const slaughterhouseResult = await slaughterhouseLayer.queryExtent(
+              slaughterhouseQuery
+            );
+            if (slaughterhouseResult && slaughterhouseResult.extent) {
+              extents.push(slaughterhouseResult.extent);
+            }
+          } catch (error) {
+            console.warn('Error querying slaughterhouse layer extent:', error);
           }
         }
 
@@ -1501,7 +1527,7 @@ export class SpatialTrackingMapService {
             duration: 1000,
           });
 
-          console.log('Zoomed to filtered features');
+          console.log('Zoomed to combined filtered features extent');
         } else {
           console.warn('No features found matching the filter criteria');
         }
