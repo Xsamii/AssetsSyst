@@ -1234,12 +1234,15 @@ renderAssetsByTypeChart(): void {
       titleText: 'الإجمالي',
       legend: true,
       color: [
-        '#16968C',
-        '#255E5D',
-        '#126560',
-        '#0C588B',
-        '#158980',
-        '#146F69',
+        '#33B1FA',
+        '#5554BD',
+        '#00EA79',
+        '#F47338',
+        '#748CBD',
+        '#BF72EA',
+        '#58CAE8',
+        '#FF9C5E',
+        '#FFE7A3',
       ],
     });
   } else {
@@ -1266,13 +1269,16 @@ renderAssetsByEquipmentChart(): void {
       projectCount: totalCount,
       titleText: 'الإجمالي',
       legend: true,
-      color: [
-        '#16968C',
-        '#255E5D',
-        '#126560',
-        '#0C588B',
-        '#158980',
-        '#146F69',
+     color: [
+        '#33B1FA',
+        '#5554BD',
+        '#00EA79',
+        '#F47338',
+        '#748CBD',
+        '#BF72EA',
+        '#58CAE8',
+        '#FF9C5E',
+        '#FFE7A3',
       ],
     });
   } else {
@@ -1300,12 +1306,15 @@ renderAssetsByManufacturerChart(): void {
       titleText: 'الإجمالي',
       legend: true,
       color: [
-        '#16968C',
-        '#255E5D',
-        '#126560',
-        '#0C588B',
-        '#158980',
-        '#146F69',
+        '#33B1FA',
+        '#5554BD',
+        '#00EA79',
+        '#F47338',
+        '#748CBD',
+        '#BF72EA',
+        '#58CAE8',
+        '#FF9C5E',
+        '#FFE7A3',
       ],
     });
   } else {
@@ -1332,13 +1341,16 @@ renderRiskLevelChart(): void {
       projectCount: totalCount,
       titleText: 'الإجمالي',
       legend: true,
-      color: [
-        '#16968C',
-        '#255E5D',
-        '#126560',
-        '#0C588B',
-        '#158980',
-        '#146F69',
+     color: [
+        '#33B1FA',
+        '#5554BD',
+        '#00EA79',
+        '#F47338',
+        '#748CBD',
+        '#BF72EA',
+        '#58CAE8',
+        '#FF9C5E',
+        '#FFE7A3',
       ],
     });
   } else {
