@@ -438,7 +438,7 @@ export function pieChart({ ...data }) {
                 countElement.innerHTML = data['projectCount'];
               }
             }
-          } 
+          }
         }
       },
     },
@@ -515,7 +515,7 @@ export function columnChart({ ...data }) {
      labels: {
        rotation: -90,
        y: 50,
-       x: -20,
+       x: 0,
        align: 'center',
        useHTML: true,
        style: {
