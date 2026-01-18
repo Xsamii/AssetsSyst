@@ -12,6 +12,7 @@ import { BuildingsDashboardComponent } from './buildings/components/buildings-da
 import { BuildingsmodelsComponent } from './maps/buildingsmodels/buildingsmodels.component';
 import { MaintenanceMapComponent } from './maintenance/components/maintenance-map/maintenance-map.component';
 import { SpatialTrackingMapComponent } from './maps/spatial-tracking-map/spatial-tracking-map.component';
+import { SpatialTrackingSceneComponent } from './maps/spatial-tracking-scene/spatial-tracking-scene.component';
 const Roles = UserTypesEnum;
 const routes: Routes = [
   {
@@ -75,6 +76,23 @@ const routes: Routes = [
       title: 'التوزيع المكاني  3D',
       canActivate: [AuthGuard],
       component: BuildingsmodelsComponent,
+      },
+      {
+        path: 'scene',
+        title: 'المشهد ثلاثي الأبعاد',
+        data: {
+          role: [
+            Roles.Admin,
+            Roles.SystemOfficer,
+            Roles.OfficeManager,
+            Roles.ProjectManager,
+            Roles.OfficeEmployee,
+            Roles.ServiceRequester,
+            Roles.MaintenanceSupervisor,
+          ],
+        },
+        canActivate: [AuthGuard],
+        component: SpatialTrackingSceneComponent,
       },
       {
         path: 'maintenance-map',

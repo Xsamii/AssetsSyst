@@ -1,0 +1,59 @@
+// Override parent content class styles
+:host {
+  display: block;
+  height: 100% !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+// Spatial Tracking Scene Dashboard Styles
+.spatial-tracking-scene-dashboard {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #46948c1a;
+  overflow: hidden;
+
+  // Loading Indicator
+  .loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    color: #333;
+
+    i {
+      font-size: 20px;
+      color: #007bff;
+    }
+  }
+
+  // Scene Container
+  #sceneContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+
+    .scene-view {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  // Hidden class
+  .hidden {
+    display: none !important;
+  }
+}
+

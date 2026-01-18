@@ -17,6 +17,7 @@ import {
   DEFAULT_MAP_CONFIG,
 } from './spatial-tracking-map.config';
 import MapView from '@arcgis/core/views/MapView';
+import * as reactiveUtils from '@arcgis/core/core/reactiveUtils';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -138,6 +139,46 @@ export class SpatialTrackingMapComponent
     this.initializeMap();
   }
 
+  /**
+   * Setup popup action handler for 3D navigation
+   */
+  private setupPopupActionHandler(): void {
+    if (!this.mapView) {
+      console.warn('MapView not available for popup action handler');
+      return;
+    }
+
+    console.log('Setting up popup action handler');
+
+    // Use reactiveUtils to listen for popup action trigger
+    reactiveUtils.on(
+      () => this.mapView?.popup,
+      'trigger-action',
+      (event: any) => {
+        console.log('Popup action triggered:', event.action.id);
+
+        if (event.action.id === 'view-in-3d') {
+          console.log('Navigating to 3D scene route');
+          this.router.navigate(['/scene']);
+        }
+      }
+    );
+
+    // Also try to get feature from popup.features if selectedFeature is not available
+    this.mapView.popup.watch('visible', (visible: boolean) => {
+      if (
+        visible &&
+        this.mapView?.popup.features &&
+        this.mapView.popup.features.length > 0
+      ) {
+        console.log(
+          'Popup visible with features:',
+          this.mapView.popup.features.length
+        );
+      }
+    });
+  }
+
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this.subscriptions.forEach((sub) => sub.unsubscribe());
@@ -196,6 +237,12 @@ export class SpatialTrackingMapComponent
       this.layersLoaded = true;
       console.log('All layers loaded');
 
+      // Step 3.5: Ensure only slaughterhouse layer is visible initially
+      this.spatialTrackingMapService.setInitialLayerVisibility();
+
+      // Step 3.6: Zoom to slaughterhouse layer extent on initial load
+      await this.spatialTrackingMapService.zoomToSlaughterhouseLayer();
+
       // Check if we can process pending asset ID
       this.checkIfReadyToProcessAssetId();
 
@@ -217,6 +264,9 @@ export class SpatialTrackingMapComponent
         // Add Legend widget
         this.spatialTrackingMapService.addLegend('legendContainer');
 
+        // Setup popup action handler for 3D navigation
+        this.setupPopupActionHandler();
+
         // Check if we can process pending asset ID
         this.checkIfReadyToProcessAssetId();
       });
@@ -234,6 +284,9 @@ export class SpatialTrackingMapComponent
             console.log('Map view initialized (from observable)');
           }
 
+          // Setup popup action handler for 3D navigation
+          this.setupPopupActionHandler();
+
           // Check if we can process pending asset ID
           this.checkIfReadyToProcessAssetId();
         });
@@ -250,6 +303,9 @@ export class SpatialTrackingMapComponent
             setTimeout(() => {
               this.checkIfReadyToProcessAssetId();
             }, 1000);
+
+            // Add popup action handler for 3D navigation
+            this.setupPopupActionHandler();
           }
         }
       );

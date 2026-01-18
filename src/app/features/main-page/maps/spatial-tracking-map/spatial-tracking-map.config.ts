@@ -65,7 +65,7 @@ export const SPATIAL_TRACKING_LAYERS: LayerConfig[] = [
     name: 'نقاط الأصول (AssetsPoint)',
     url: `${FEATURE_SERVICE_URL}/0`, // Layer 0: DBO.AssetsPoint
     type: 'feature',
-    visible: true,
+    visible: false, // Hidden initially, shown when filters are applied
     opacity: 1,
     popupEnabled: true,
     order: 0,
@@ -128,6 +128,13 @@ export const SPATIAL_TRACKING_LAYERS: LayerConfig[] = [
           ],
         },
       ],
+      actions: [
+        {
+          title: 'عرض في 3D',
+          id: 'view-in-3d',
+          className: 'esri-icon-3d',
+        },
+      ],
     },
     // No renderer - will use original symbology from the service
   },
@@ -136,7 +143,7 @@ export const SPATIAL_TRACKING_LAYERS: LayerConfig[] = [
     name: 'الغرف (ROOMS)',
     url: `${FEATURE_SERVICE_URL}/1`, // Layer 1: DBO.ROOMS
     type: 'feature',
-    visible: true,
+    visible: false, // Hidden initially, shown when filters are applied
     // opacity: 1,
     popupEnabled: true,
     order: 1,
@@ -165,7 +172,7 @@ export const SPATIAL_TRACKING_LAYERS: LayerConfig[] = [
     name: 'المباني (Building2)',
     url: `${FEATURE_SERVICE_URL}/2`, // Layer 2: DBO.Building2
     type: 'feature',
-    visible: true,
+    visible: false, // Hidden initially, shown when filters are applied
     // opacity: 1,
     popupEnabled: false, // No popup for this layer
     order: 2,

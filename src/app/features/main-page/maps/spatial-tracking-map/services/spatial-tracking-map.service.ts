@@ -1256,6 +1256,10 @@ export class SpatialTrackingMapService {
    */
   async clearLayerFilterAndResetView(layerId?: string): Promise<void> {
     this.clearLayerFilter(layerId);
+
+    // Reset layer visibility to initial state (only slaughterhouse visible)
+    this.setInitialLayerVisibility();
+
     await this.goHome();
   }
 
@@ -1300,6 +1304,31 @@ export class SpatialTrackingMapService {
       const escapeValue = (value: string): string => {
         return value.replace(/'/g, "''");
       };
+
+      // ============================================
+      // SHOW/HIDE LAYERS BASED ON FILTERS (CASCADING)
+      // - Slaughterhouse: always visible
+      // - Buildings: visible when slaughterhouse is filtered
+      // - Rooms: visible when building is filtered
+      // - Assets: visible when room is filtered
+      // ============================================
+
+      // Buildings layer: show when slaughterhouse is filtered
+      if (buildingsLayer) {
+        buildingsLayer.visible = !!filters.slaughterhouseCode;
+      }
+
+      // Rooms layer: show when building is filtered
+      if (roomsLayer) {
+        roomsLayer.visible = !!filters.buildingCode;
+      }
+
+      // Assets layer: show when room is filtered
+      if (assetsLayer) {
+        assetsLayer.visible = !!(filters.roomCode || filters.roomName);
+      }
+
+      // Slaughterhouse layer is always visible
 
       // ============================================
       // FILTER SLAUGHTERHOUSE LAYER
@@ -1445,9 +1474,9 @@ export class SpatialTrackingMapService {
             const roomsResult = await roomsLayer.queryExtent(roomsQuery);
 
             if (roomsResult && roomsResult.extent) {
-              await this.mapView.goTo({
+              this.mapView.goTo({
                 target: roomsResult.extent.expand(1.5),
-                duration: 1000,
+                duration: 300, // Reduced duration for faster response
               });
               console.log('Zoomed to rooms layer extent');
               return; // Exit early since we've zoomed to rooms layer
@@ -1459,7 +1488,8 @@ export class SpatialTrackingMapService {
         }
 
         // Priority 2: Fallback to combined extent of all filtered layers
-        const extents: __esri.Extent[] = [];
+        // Query all extents in parallel for better performance
+        const extentPromises: Promise<__esri.Extent | null>[] = [];
 
         // Query assets layer extent
         if (
@@ -1467,16 +1497,17 @@ export class SpatialTrackingMapService {
           assetsLayer.definitionExpression &&
           assetsLayer.definitionExpression !== '1=1'
         ) {
-          try {
-            const assetsQuery = assetsLayer.createQuery();
-            assetsQuery.where = assetsLayer.definitionExpression;
-            const assetsResult = await assetsLayer.queryExtent(assetsQuery);
-            if (assetsResult && assetsResult.extent) {
-              extents.push(assetsResult.extent);
-            }
-          } catch (error) {
-            console.warn('Error querying assets layer extent:', error);
-          }
+          extentPromises.push(
+            assetsLayer
+              .queryExtent({
+                where: assetsLayer.definitionExpression,
+              } as any)
+              .then((result) => result?.extent || null)
+              .catch((error) => {
+                console.warn('Error querying assets layer extent:', error);
+                return null;
+              })
+          );
         }
 
         // Query buildings layer extent
@@ -1485,18 +1516,17 @@ export class SpatialTrackingMapService {
           buildingsLayer.definitionExpression &&
           buildingsLayer.definitionExpression !== '1=1'
         ) {
-          try {
-            const buildingsQuery = buildingsLayer.createQuery();
-            buildingsQuery.where = buildingsLayer.definitionExpression;
-            const buildingsResult = await buildingsLayer.queryExtent(
-              buildingsQuery
-            );
-            if (buildingsResult && buildingsResult.extent) {
-              extents.push(buildingsResult.extent);
-            }
-          } catch (error) {
-            console.warn('Error querying buildings layer extent:', error);
-          }
+          extentPromises.push(
+            buildingsLayer
+              .queryExtent({
+                where: buildingsLayer.definitionExpression,
+              } as any)
+              .then((result) => result?.extent || null)
+              .catch((error) => {
+                console.warn('Error querying buildings layer extent:', error);
+                return null;
+              })
+          );
         }
 
         // Query slaughterhouse layer extent
@@ -1505,20 +1535,26 @@ export class SpatialTrackingMapService {
           slaughterhouseLayer.definitionExpression &&
           slaughterhouseLayer.definitionExpression !== '1=1'
         ) {
-          try {
-            const slaughterhouseQuery = slaughterhouseLayer.createQuery();
-            slaughterhouseQuery.where =
-              slaughterhouseLayer.definitionExpression;
-            const slaughterhouseResult = await slaughterhouseLayer.queryExtent(
-              slaughterhouseQuery
-            );
-            if (slaughterhouseResult && slaughterhouseResult.extent) {
-              extents.push(slaughterhouseResult.extent);
-            }
-          } catch (error) {
-            console.warn('Error querying slaughterhouse layer extent:', error);
-          }
+          extentPromises.push(
+            slaughterhouseLayer
+              .queryExtent({
+                where: slaughterhouseLayer.definitionExpression,
+              } as any)
+              .then((result) => result?.extent || null)
+              .catch((error) => {
+                console.warn(
+                  'Error querying slaughterhouse layer extent:',
+                  error
+                );
+                return null;
+              })
+          );
         }
+
+        // Wait for all extent queries to complete in parallel
+        const extents = (await Promise.all(extentPromises)).filter(
+          (extent): extent is __esri.Extent => extent !== null
+        );
 
         // If we have any extents, zoom to the union
         if (extents.length > 0) {
@@ -1527,9 +1563,9 @@ export class SpatialTrackingMapService {
             combinedExtent = combinedExtent.union(extents[i]);
           }
 
-          await this.mapView.goTo({
+          this.mapView.goTo({
             target: combinedExtent.expand(1.5),
-            duration: 1000,
+            duration: 300, // Reduced duration for faster response
           });
 
           console.log('Zoomed to combined filtered features extent');
@@ -1559,145 +1595,157 @@ export class SpatialTrackingMapService {
       // Escape single quotes in assetId for SQL injection protection
       const escapedAssetId = String(assetId).replace(/'/g, "''");
 
+      // Add zero at the beginning
+      const assetCodeWithZero = `0${escapedAssetId}`;
+
+      // Set definition expression to filter the layer
+      assetsLayer.definitionExpression = `AssetCode = N'${assetCodeWithZero}'`;
+
       // Create query to find the asset by AssetCode
-      const query = assetsLayer.createQuery();
-      query.where = `AssetCode = '0${escapedAssetId}'`;
-      query.returnGeometry = true;
-      query.outFields = ['*'];
+      const query = new Query({
+        where: `AssetCode = '${assetCodeWithZero}'`,
+        returnGeometry: true,
+        outFields: ['*'],
+      });
 
       const result = await assetsLayer.queryFeatures(query);
       console.log('Query result:', result);
 
       if (result.features && result.features.length > 0) {
-        const feature = result.features[0];
-        console.log('Feature found:', feature);
-        console.log('Feature geometry:', feature.geometry);
-        console.log('Feature geometry type:', feature.geometry?.type);
+        // Check if layer is a point layer
+        const isPointLayer = assetsLayer.geometryType === 'point';
 
-        if (feature.geometry) {
-          const geometry = feature.geometry;
+        if (isPointLayer) {
+          // Go to first point directly
+          const firstFeature = result.features[0];
+          const point = firstFeature.geometry as __esri.Point;
 
-          // For point features, zoom directly to the point
-          if (geometry.type === 'point') {
-            const point = geometry as __esri.Point;
-            console.log('Point coordinates - x:', point.x, 'y:', point.y);
-            console.log(
-              'Point longitude:',
-              point.longitude,
-              'latitude:',
-              point.latitude
-            );
-
-            // Clear any previous highlights
-            this.clearHighlightGraphics();
-
-            // Use the point geometry directly - ArcGIS will handle coordinate system conversion
-            // This works for both geographic (lon/lat) and projected (x/y) coordinates
+          if (point && this.mapView) {
             await this.mapView.goTo({
               target: point,
-              zoom: 18,
-              duration: 1000,
+              zoom: 17, // adjust zoom level as needed
             });
 
-            console.log('Zoomed to point');
-
-            // Wait for zoom to complete, then highlight and show popup
-            setTimeout(async () => {
-              // Highlight the point feature
-              await this.highlightPointFeature(feature, point);
-
-              // Ensure the feature has a reference to its source layer for popup
-              if (!feature.layer) {
-                feature.layer = assetsLayer;
-              }
-
-              // Show popup for the feature
-              try {
-                // Ensure popup is enabled
-                this.mapView.popupEnabled = true;
-
-                // Open popup with the feature
-                this.mapView.popup.open({
-                  features: [feature],
-                  location: point,
-                  updateLocationEnabled: true,
-                });
-
-                console.log('Popup opened for point feature');
-                console.log('Popup features:', this.mapView.popup.features);
-                console.log('Popup visible:', this.mapView.popup.visible);
-                console.log('Popup location:', this.mapView.popup.location);
-              } catch (popupError) {
-                console.error('Error opening popup:', popupError);
-                // Try alternative: manually set popup properties
-                try {
-                  this.mapView.popup.features = [feature];
-                  this.mapView.popup.location = point;
-                  this.mapView.popup.visible = true;
-                  console.log('Popup opened using alternative method');
-                } catch (altError) {
-                  console.error(
-                    'Alternative popup method also failed:',
-                    altError
-                  );
-                }
-              }
-            }, 1000);
-          } else {
-            // For other geometry types, use extent
-            let extent: __esri.Extent | null = null;
-
-            if (geometry.extent) {
-              extent = geometry.extent;
-            } else if ('extent' in geometry) {
-              extent = (geometry as any).extent;
+            // Ensure the feature has a reference to its source layer for popup
+            if (!firstFeature.layer) {
+              firstFeature.layer = assetsLayer;
             }
 
-            if (extent) {
-              // Zoom to the extent
-              await this.mapView.goTo({
-                target: extent.expand(1.5),
-                duration: 1000,
-              });
+            // Open popup with the feature
+            this.mapView.popup.open({
+              features: [firstFeature],
+            });
+          }
+        } else {
+          // Handle polygon or polyline layers
+          let featuresExtent = result.features[0].geometry.extent.clone();
 
-              // Show popup for the feature
-              setTimeout(() => {
-                this.mapView.popup.open({
-                  features: [feature],
-                  location: geometry as any,
-                });
-                console.log('Popup opened for non-point feature');
-              }, 500);
-            } else {
-              // Fallback: try to zoom to geometry directly
-              await this.mapView.goTo({
-                target: geometry as any,
-                zoom: 18,
-                duration: 1000,
-              });
-
-              setTimeout(() => {
-                this.mapView.popup.open({
-                  features: [feature],
-                  location: geometry as any,
-                });
-                console.log('Popup opened (fallback)');
-              }, 500);
+          // Combine all feature extents
+          result.features.forEach((feature) => {
+            if (feature.geometry && feature.geometry.extent) {
+              featuresExtent = featuresExtent.union(feature.geometry.extent);
             }
+          });
+
+          await this.mapView.goTo(featuresExtent.expand(1));
+
+          // Open popup after zooming
+          const firstFeature = result.features[0];
+
+          // Ensure the feature has a reference to its source layer for popup
+          if (!firstFeature.layer) {
+            firstFeature.layer = assetsLayer;
           }
 
-          console.log(
-            'Successfully zoomed to and showed popup for asset:',
-            assetId
-          );
-        } else {
-          console.warn('Feature has no geometry');
+          this.mapView.popup.open({
+            features: [firstFeature],
+          });
         }
       } else {
-        console.warn(`No asset found with AssetCode: ${assetId}`);
+        console.log('No features found.');
+        // Clear filter if no features found
+        assetsLayer.definitionExpression = '';
       }
     } catch (error) {
-      console.error('Error filtering and zooming to asset:', error);
+      console.error('Error querying features: ', error);
+      // Clear filter on error
+      if (assetsLayer) {
+        assetsLayer.definitionExpression = '';
+      }
+    }
+  }
+
+  /**
+   * Set initial layer visibility (only slaughterhouse visible)
+   */
+  setInitialLayerVisibility(): void {
+    const assetsLayerId = 'assets-point-layer';
+    const roomsLayerId = 'rooms-layer';
+    const buildingsLayerId = 'buildings-layer';
+    const slaughterhouseLayerId = 'slaughterhouse-layer';
+
+    const assetsLayer = this.layers.get(assetsLayerId) as FeatureLayer;
+    const roomsLayer = this.layers.get(roomsLayerId) as FeatureLayer;
+    const buildingsLayer = this.layers.get(buildingsLayerId) as FeatureLayer;
+    const slaughterhouseLayer = this.layers.get(slaughterhouseLayerId) as FeatureLayer;
+
+    // Hide all layers except slaughterhouse
+    if (assetsLayer) {
+      assetsLayer.visible = false;
+    }
+    if (roomsLayer) {
+      roomsLayer.visible = false;
+    }
+    if (buildingsLayer) {
+      buildingsLayer.visible = false;
+    }
+    // Slaughterhouse is already visible from config
+    if (slaughterhouseLayer) {
+      slaughterhouseLayer.visible = true;
+    }
+
+    console.log('Set initial layer visibility - only slaughterhouse visible');
+  }
+
+  /**
+   * Zoom to slaughterhouse layer extent on initial load
+   */
+  async zoomToSlaughterhouseLayer(): Promise<void> {
+    const slaughterhouseLayerId = 'slaughterhouse-layer';
+    const slaughterhouseLayer = this.layers.get(
+      slaughterhouseLayerId
+    ) as FeatureLayer;
+
+    if (!slaughterhouseLayer || !this.mapView) {
+      console.warn('Slaughterhouse layer or map view not initialized');
+      return;
+    }
+
+    try {
+      await slaughterhouseLayer.when();
+
+      if (slaughterhouseLayer.fullExtent) {
+        this.mapView.goTo({
+          target: slaughterhouseLayer.fullExtent.expand(1.2),
+          duration: 500,
+        });
+        console.log('Zoomed to slaughterhouse layer extent');
+      } else {
+        // If fullExtent is not available, query the layer to get extent
+        const query = slaughterhouseLayer.createQuery();
+        query.returnGeometry = true;
+        const result = await slaughterhouseLayer.queryExtent(query);
+
+        if (result && result.extent) {
+          this.mapView.goTo({
+            target: result.extent.expand(1.2),
+            duration: 500,
+          });
+          console.log('Zoomed to slaughterhouse layer extent (from query)');
+        }
+      }
+    } catch (error) {
+      console.error('Error zooming to slaughterhouse layer:', error);
     }
   }
 }
