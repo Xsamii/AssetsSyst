@@ -164,19 +164,22 @@ export class SpatialTrackingMapComponent
       }
     );
 
-    // Also try to get feature from popup.features if selectedFeature is not available
-    this.mapView.popup.watch('visible', (visible: boolean) => {
-      if (
-        visible &&
-        this.mapView?.popup.features &&
-        this.mapView.popup.features.length > 0
-      ) {
-        console.log(
-          'Popup visible with features:',
-          this.mapView.popup.features.length
-        );
+    // Use reactiveUtils.watch instead of popup.watch for ArcGIS API compatibility
+    reactiveUtils.watch(
+      () => this.mapView?.popup?.visible,
+      (visible: boolean) => {
+        if (
+          visible &&
+          this.mapView?.popup.features &&
+          this.mapView.popup.features.length > 0
+        ) {
+          console.log(
+            'Popup visible with features:',
+            this.mapView.popup.features.length
+          );
+        }
       }
-    });
+    );
   }
 
   ngOnDestroy(): void {

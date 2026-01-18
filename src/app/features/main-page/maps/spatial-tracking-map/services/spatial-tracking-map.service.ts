@@ -20,7 +20,7 @@ import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import SimpleLineSymbol from '@arcgis/core/symbols/SimpleLineSymbol';
 import Query from '@arcgis/core/rest/support/Query';
-import { LayerConfig, DEFAULT_MAP_CONFIG } from '../spatial-tracking-map.config';
+import { LayerConfig, DEFAULT_MAP_CONFIG, SPATIAL_TRACKING_LAYERS } from '../spatial-tracking-map.config';
 
 // Type alias for JavaScript Map to avoid conflict with Esri Map
 type LayerMap = Map<string, any>;
@@ -780,8 +780,8 @@ export class SpatialTrackingMapService {
     const layersToAdd = [...layerConfigs].reverse();
 
     for (const layerConfig of layersToAdd) {
+      // Add ALL layers regardless of visibility - visibility will be controlled dynamically
       if (
-        layerConfig.visible &&
         layerConfig.url &&
         layerConfig.url.trim() !== '' &&
         !layerConfig.url.startsWith('/')
@@ -793,10 +793,9 @@ export class SpatialTrackingMapService {
           // Continue with other layers even if one fails
         }
       } else if (
-        layerConfig.visible &&
-        (!layerConfig.url ||
-          layerConfig.url.trim() === '' ||
-          layerConfig.url.startsWith('/'))
+        !layerConfig.url ||
+        layerConfig.url.trim() === '' ||
+        layerConfig.url.startsWith('/')
       ) {
         console.warn(
           `Layer ${layerConfig.id} has invalid or empty URL. Skipping.`
@@ -1462,8 +1461,25 @@ export class SpatialTrackingMapService {
         filters.roomName;
 
       if (hasAnyFilter) {
-        // Priority 1: Zoom to rooms layer extent if it has a filter
+        // Determine zoom level based on filter specificity
+        // More specific filters (room) = closer zoom
+        const isRoomFiltered = !!(filters.roomCode || filters.roomName);
+        const isFloorFiltered = !!filters.floorName;
+        const isBuildingFiltered = !!filters.buildingCode;
+
+        // Expand factor: smaller = closer zoom
+        let expandFactor = 1.5; // Default for slaughterhouse
+        if (isRoomFiltered) {
+          expandFactor = 1.1; // Zoom very close for room
+        } else if (isFloorFiltered) {
+          expandFactor = 1.2; // Zoom closer for floor
+        } else if (isBuildingFiltered) {
+          expandFactor = 1.3; // Zoom close for building
+        }
+
+        // Priority 1: Zoom to rooms layer extent if room is filtered
         if (
+          isRoomFiltered &&
           roomsLayer &&
           roomsLayer.definitionExpression &&
           roomsLayer.definitionExpression !== '1=1'
@@ -1474,11 +1490,22 @@ export class SpatialTrackingMapService {
             const roomsResult = await roomsLayer.queryExtent(roomsQuery);
 
             if (roomsResult && roomsResult.extent) {
-              this.mapView.goTo({
-                target: roomsResult.extent.expand(1.5),
-                duration: 300, // Reduced duration for faster response
+              // For room filtering, use a minimum zoom level to ensure close view
+              await this.mapView.goTo({
+                target: roomsResult.extent.expand(expandFactor),
+                duration: 300,
               });
-              console.log('Zoomed to rooms layer extent');
+
+              // Ensure minimum zoom level of 19 for room filtering
+              if (this.mapView.zoom < 19) {
+                await this.mapView.goTo({
+                  center: roomsResult.extent.center,
+                  zoom: 19,
+                  duration: 200,
+                });
+              }
+
+              console.log('Zoomed to room extent with zoom level:', this.mapView.zoom);
               return; // Exit early since we've zoomed to rooms layer
             }
           } catch (error) {
@@ -1487,7 +1514,33 @@ export class SpatialTrackingMapService {
           }
         }
 
-        // Priority 2: Fallback to combined extent of all filtered layers
+        // Priority 2: Zoom to rooms layer extent if floor is filtered (but not room)
+        if (
+          isFloorFiltered &&
+          !isRoomFiltered &&
+          roomsLayer &&
+          roomsLayer.definitionExpression &&
+          roomsLayer.definitionExpression !== '1=1'
+        ) {
+          try {
+            const roomsQuery = roomsLayer.createQuery();
+            roomsQuery.where = roomsLayer.definitionExpression;
+            const roomsResult = await roomsLayer.queryExtent(roomsQuery);
+
+            if (roomsResult && roomsResult.extent) {
+              await this.mapView.goTo({
+                target: roomsResult.extent.expand(expandFactor),
+                duration: 300,
+              });
+              console.log('Zoomed to floor rooms extent');
+              return;
+            }
+          } catch (error) {
+            console.warn('Error querying rooms layer extent:', error);
+          }
+        }
+
+        // Priority 3: Fallback to combined extent of all filtered layers
         // Query all extents in parallel for better performance
         const extentPromises: Promise<__esri.Extent | null>[] = [];
 
@@ -1563,9 +1616,9 @@ export class SpatialTrackingMapService {
             combinedExtent = combinedExtent.union(extents[i]);
           }
 
-          this.mapView.goTo({
-            target: combinedExtent.expand(1.5),
-            duration: 300, // Reduced duration for faster response
+          await this.mapView.goTo({
+            target: combinedExtent.expand(expandFactor),
+            duration: 300,
           });
 
           console.log('Zoomed to combined filtered features extent');
@@ -1592,6 +1645,9 @@ export class SpatialTrackingMapService {
     }
 
     try {
+      // Make assets layer visible
+      assetsLayer.visible = true;
+
       // Escape single quotes in assetId for SQL injection protection
       const escapedAssetId = String(assetId).replace(/'/g, "''");
 
@@ -1614,52 +1670,104 @@ export class SpatialTrackingMapService {
       if (result.features && result.features.length > 0) {
         // Check if layer is a point layer
         const isPointLayer = assetsLayer.geometryType === 'point';
+        const firstFeature = result.features[0];
 
         if (isPointLayer) {
-          // Go to first point directly
-          const firstFeature = result.features[0];
+          // Go to first point directly with closer zoom
           const point = firstFeature.geometry as __esri.Point;
 
           if (point && this.mapView) {
+            // Zoom to the asset with a closer zoom level (20)
             await this.mapView.goTo({
               target: point,
-              zoom: 17, // adjust zoom level as needed
+              zoom: 20,
             });
+
+            // Create a highlight graphic for the asset
+            this.highlightPointFeature(firstFeature, point);
 
             // Ensure the feature has a reference to its source layer for popup
-            if (!firstFeature.layer) {
-              firstFeature.layer = assetsLayer;
+            firstFeature.layer = assetsLayer;
+
+            // Set the popup template on the feature from the layer config
+            const layerConfig = SPATIAL_TRACKING_LAYERS.find(l => l.id === assetsLayerId);
+            if (layerConfig?.popupTemplate) {
+              firstFeature.popupTemplate = new PopupTemplate({
+                title: layerConfig.popupTemplate.title,
+                content: layerConfig.popupTemplate.content,
+                actions: layerConfig.popupTemplate.actions
+              });
             }
 
-            // Open popup with the feature
-            this.mapView.popup.open({
-              features: [firstFeature],
-            });
+            // Open popup after map navigation is complete
+            setTimeout(() => {
+              if (this.mapView && this.mapView.popup) {
+                // Close any existing popup first
+                this.mapView.popup.visible = false;
+
+                // Configure popup
+                this.mapView.popup.dockEnabled = false;
+
+                // Set the feature and location
+                this.mapView.popup.features = [firstFeature];
+                this.mapView.popup.location = point;
+
+                // Force the popup to be visible
+                this.mapView.popup.visible = true;
+
+                console.log('Popup opened for asset:', assetCodeWithZero);
+              }
+            }, 500);
           }
         } else {
           // Handle polygon or polyline layers
-          let featuresExtent = result.features[0].geometry.extent.clone();
+          let featuresExtent = firstFeature.geometry.extent?.clone();
 
-          // Combine all feature extents
-          result.features.forEach((feature) => {
-            if (feature.geometry && feature.geometry.extent) {
-              featuresExtent = featuresExtent.union(feature.geometry.extent);
-            }
-          });
+          if (featuresExtent) {
+            // Combine all feature extents
+            result.features.forEach((feature) => {
+              if (feature.geometry && feature.geometry.extent) {
+                featuresExtent = featuresExtent!.union(feature.geometry.extent);
+              }
+            });
 
-          await this.mapView.goTo(featuresExtent.expand(1));
-
-          // Open popup after zooming
-          const firstFeature = result.features[0];
-
-          // Ensure the feature has a reference to its source layer for popup
-          if (!firstFeature.layer) {
-            firstFeature.layer = assetsLayer;
+            await this.mapView.goTo({
+              target: featuresExtent.expand(1.1),
+              zoom: 20,
+            });
           }
 
-          this.mapView.popup.open({
-            features: [firstFeature],
-          });
+          // Ensure the feature has a reference to its source layer for popup
+          firstFeature.layer = assetsLayer;
+
+          // Set the popup template from the layer if available
+          if (assetsLayer.popupTemplate && !firstFeature.popupTemplate) {
+            firstFeature.popupTemplate = assetsLayer.popupTemplate;
+          }
+
+          // Open popup after a small delay
+          setTimeout(() => {
+            if (this.mapView && this.mapView.popup && firstFeature.geometry) {
+              // For non-point geometries, use the centroid or extent center
+              const location = (firstFeature.geometry as any).centroid ||
+                             (firstFeature.geometry as any).extent?.center;
+
+              if (location) {
+                // Set popup properties directly
+                this.mapView.popup.visible = false; // Close any existing popup
+                this.mapView.popup.dockEnabled = false;
+
+                // Set the features and location
+                this.mapView.popup.features = [firstFeature];
+                this.mapView.popup.location = location;
+
+                // Show the popup
+                this.mapView.popup.visible = true;
+
+                console.log('Popup opened for asset');
+              }
+            }
+          }, 500);
         }
       } else {
         console.log('No features found.');
