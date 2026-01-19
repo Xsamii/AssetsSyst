@@ -10,11 +10,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-spatial-tracking-scene',
   standalone: true,
-  imports: [
-    CommonModule,
-    BreadCrumbComponent,
-    MapControlsComponent,
-  ],
+  imports: [CommonModule, BreadCrumbComponent, MapControlsComponent],
   templateUrl: './spatial-tracking-scene.component.html',
   styleUrls: ['./spatial-tracking-scene.component.scss'],
 })
@@ -34,7 +30,8 @@ export class SpatialTrackingSceneComponent
   showLegend = false;
 
   // Scene layer URL
-  private readonly SCENE_LAYER_URL = 'https://tiles.arcgis.com/tiles/Qo5uglfIn4qL6z91/arcgis/rest/services/Zone1_Layer22/SceneServer';
+  private readonly SCENE_LAYER_URL =
+    'https://tiles.arcgis.com/tiles/FO8QSNbg7KTn0Nki/arcgis/rest/services/Zone1_Layer/SceneServer';
 
   // Pending element ID from query params
   private pendingElementId: string | null = null;
@@ -67,9 +64,15 @@ export class SpatialTrackingSceneComponent
 
     // Subscribe to query param changes
     this.route.queryParams.subscribe((params) => {
-      if (params['elementId'] && params['elementId'] !== this.pendingElementId) {
+      if (
+        params['elementId'] &&
+        params['elementId'] !== this.pendingElementId
+      ) {
         this.pendingElementId = params['elementId'];
-        console.log('Element ID updated from query params:', params['elementId']);
+        console.log(
+          'Element ID updated from query params:',
+          params['elementId']
+        );
         this.checkIfReadyToProcessElementId();
       }
     });
@@ -146,18 +149,20 @@ export class SpatialTrackingSceneComponent
       this.spatialTrackingSceneService.initializeMap('satellite');
 
       // Step 2: Initialize the scene view
+      // Using LOCAL scene mode for better building visualization
+      // Higher zoom (19) and tilt (75°) for viewing from all angles
       this.sceneView = this.spatialTrackingSceneService.initSceneView(
         this.sceneViewNode.nativeElement,
         [39.9089722, 21.4189526], // Center coordinates
-        16, // Zoom level
-        0, // Tilt
+        15, // Higher zoom level for closer initial view
+        75, // Tilt angle (75 degrees) for better 3D perspective and viewing from all angles
         0 // Heading
       );
 
       // Step 3: Add scene layer
       await this.spatialTrackingSceneService.addSceneLayer(
         this.SCENE_LAYER_URL,
-        '9dea858bc707489db79925b20e500f68'
+        'f5f758a2a24d4d81bd2b791920b3499d'
       );
 
       // Step 4: Initialize widgets after scene is ready

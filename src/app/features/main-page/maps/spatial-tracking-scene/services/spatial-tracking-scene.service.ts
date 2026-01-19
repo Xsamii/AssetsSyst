@@ -91,12 +91,13 @@ export class SpatialTrackingSceneService {
 
   /**
    * Initialize the scene view
+   * Uses LOCAL scene for better building visualization and viewing from all angles
    */
   initSceneView(
     container: string | HTMLDivElement,
     center: [number, number] = [39.9089722, 21.4189526],
-    zoom: number = 16,
-    tilt: number = 0,
+    zoom: number = 19, // Increased zoom for closer initial view
+    tilt: number = 75, // Increased tilt (75 degrees) for better 3D viewing from all angles
     heading: number = 0
   ): SceneView {
     if (!this.map) {
@@ -109,6 +110,7 @@ export class SpatialTrackingSceneService {
     this.sceneView = new SceneView({
       container: container,
       map: this.map,
+      viewingMode: 'local', // Use LOCAL scene for better building visualization
       center: center,
       zoom: zoom,
       camera: {
@@ -117,7 +119,7 @@ export class SpatialTrackingSceneService {
           latitude: center[1],
           z: height,
         },
-        tilt: tilt,
+        tilt: tilt, // 75 degrees for better 3D perspective
         heading: heading,
       },
       ui: {
@@ -163,7 +165,10 @@ export class SpatialTrackingSceneService {
    * Add scene layer to the map
    * Automatically detects if it's a BuildingSceneLayer or regular SceneLayer
    */
-  async addSceneLayer(url: string, layerId: string = 'scene-layer'): Promise<void> {
+  async addSceneLayer(
+    url: string,
+    layerId: string = 'scene-layer'
+  ): Promise<void> {
     if (!this.map) {
       throw new Error('Map is not initialized. Call initializeMap() first.');
     }
@@ -179,23 +184,38 @@ export class SpatialTrackingSceneService {
       const response = await fetch(serviceUrl);
       const serviceInfo = await response.json();
       console.log('serviceInfo', serviceInfo);
+
+      // Determine layer type - check both root level and layers array
+      let layerType: string | null = null;
+
+      // Check root level first
+      if (serviceInfo.layerType) {
+        layerType = serviceInfo.layerType;
+      }
+      // Check layers array (common for BuildingSceneLayer)
+      else if (serviceInfo.layers && serviceInfo.layers.length > 0) {
+        layerType = serviceInfo.layers[0].layerType;
+      }
+
+      console.log('Detected layer type:', layerType);
+
       // Determine layer type and create appropriate layer
-      if (serviceInfo.layerType === 'BuildingSceneLayer' || serviceInfo.layerType === 'Building') {
+      if (layerType === 'BuildingSceneLayer' || layerType === 'Building') {
         // Create BuildingSceneLayer for building layers
         this.sceneLayer = new BuildingSceneLayer({
           url: url,
           id: layerId,
-          title: serviceInfo.name || 'Zone 1 Layer 22',
+          title: serviceInfo.name || serviceInfo.serviceName || 'Zone 1 Layer',
         });
-        console.log('Creating BuildingSceneLayer');
+        console.log('Created BuildingSceneLayer');
       } else {
         // Create regular SceneLayer for other scene layers
         this.sceneLayer = new SceneLayer({
           url: url,
           id: layerId,
-          title: serviceInfo.name || 'Zone 1 Layer 22',
+          title: serviceInfo.name || serviceInfo.serviceName || 'Zone 1 Layer',
         });
-        console.log('Creating SceneLayer');
+        console.log('Created SceneLayer');
       }
 
       // Add to map
@@ -207,7 +227,12 @@ export class SpatialTrackingSceneService {
       // Emit layer added event
       this.layerAdded$.next({ layerId: layerId, layer: this.sceneLayer });
 
-      console.log('Scene layer added successfully:', layerId, 'Type:', serviceInfo.layerType);
+      console.log(
+        'Scene layer added successfully:',
+        layerId,
+        'Type:',
+        serviceInfo.layerType
+      );
     } catch (error) {
       console.error('Error adding scene layer:', error);
       throw error;
@@ -240,7 +265,9 @@ export class SpatialTrackingSceneService {
    */
   addLayerList(container: string | HTMLElement): void {
     if (!this.sceneView) {
-      throw new Error('SceneView is not initialized. Call initSceneView() first.');
+      throw new Error(
+        'SceneView is not initialized. Call initSceneView() first.'
+      );
     }
 
     if (this.layerList) {
@@ -259,7 +286,9 @@ export class SpatialTrackingSceneService {
    */
   addBasemapGallery(container: string | HTMLElement): void {
     if (!this.sceneView) {
-      throw new Error('SceneView is not initialized. Call initSceneView() first.');
+      throw new Error(
+        'SceneView is not initialized. Call initSceneView() first.'
+      );
     }
 
     const basemapGallery = new BasemapGallery({
@@ -273,7 +302,9 @@ export class SpatialTrackingSceneService {
    */
   addLegend(container: string | HTMLElement): void {
     if (!this.sceneView) {
-      throw new Error('SceneView is not initialized. Call initSceneView() first.');
+      throw new Error(
+        'SceneView is not initialized. Call initSceneView() first.'
+      );
     }
 
     if (this.legend) {
@@ -324,7 +355,7 @@ export class SpatialTrackingSceneService {
       // For BuildingSceneLayer, we can query features by attributes
       // The exact field name depends on your data structure
       // This is a generic implementation that can be customized
-      
+
       const query = (this.sceneLayer as any).createQuery?.();
       if (query) {
         // Try common field names for element ID
@@ -333,7 +364,7 @@ export class SpatialTrackingSceneService {
         query.outFields = ['*'];
 
         const result = await (this.sceneLayer as any).queryFeatures?.(query);
-        
+
         if (result && result.features && result.features.length > 0) {
           const feature = result.features[0];
           if (feature.geometry) {
@@ -351,7 +382,9 @@ export class SpatialTrackingSceneService {
         }
       } else {
         // If query is not available, just zoom to layer extent
-        console.warn('Query not available for scene layer, zooming to layer extent');
+        console.warn(
+          'Query not available for scene layer, zooming to layer extent'
+        );
         await this.zoomToLayer();
       }
     } catch (error) {
