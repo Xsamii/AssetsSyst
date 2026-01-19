@@ -57,8 +57,7 @@
 
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               placeholder="اختر الموقع" formControlName="siteId" [options]="sitesLookup"
-              (onChange)="onSiteChange($event.value)" [filter]="true" [filterBy]="'name'"
-              ></p-dropdown>
+              (onChange)="onSiteChange($event.value)" [filter]="true" [filterBy]="'name'"></p-dropdown>
           </div>
         </div>
         <div class="input-field">
@@ -68,8 +67,8 @@
 
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               placeholder="اختر  المبنى" formControlName="buildingId" [options]="builldingLookup"
-              (onChange)="getAllBuildingSubUnit(filterForm.value.buildingId)" [filter]="true" [filterBy]="'name'"
-              ></p-dropdown>
+              (onChange)="getAllBuildingSubUnit(filterForm.value.buildingId)" [filter]="true"
+              [filterBy]="'name'"></p-dropdown>
           </div>
         </div>
       </div>
@@ -86,22 +85,17 @@
           </div>
         </div> -->
 
-   <div class="input-field">
+        <div class="input-field">
           <label for="main-building"> أولوية الطلب </label>
           <div class="field-icon">
             <img src="./assets/icons/info-icon.svg" />
 
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               formControlName="requestPriorety" placeholder="اختر  أولوية الطلب  " [options]="requestPrioretyLookup"
-              [filter]="true" [filterBy]="'name'" ></p-dropdown>
+              [filter]="true" [filterBy]="'name'"></p-dropdown>
           </div>
         </div>
 
-      </div>
-      <!-- ---------------------------------------------------------------- -->
-      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
-      <!-- ---------------------------------------------------------------- -->
-      <div class="two-inputs-fields">
         <div class="input-field">
           <label for="main-building"> نوع العطل الرئيسي </label>
           <div class="field-icon">
@@ -111,38 +105,46 @@
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               formControlName="mainCategoryType" placeholder="اختر  نوع العطل الرئيسي "
               [options]="primaryMaintenanceTypeLookup"
-              (onChange)="getMaintTypesByParent(filterForm.value.mainCategoryType)" [filter]="true" [filterBy]="'name'"
-              ></p-dropdown>
+              (onChange)="getMaintTypesByParent(filterForm.value.mainCategoryType)" [filter]="true"
+              [filterBy]="'name'"></p-dropdown>
             <!-- -------------------------------- -->
             <!-- -------------------------------- -->
           </div>
         </div>
+
+      </div>
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+      <!-- ---------------------------------------------------------------- -->
+      <div class="two-inputs-fields">
+
         <div class="input-field">
           <label for="main-building"> نوع العطل الفرعي </label>
           <div class="field-icon">
             <img src="./assets/icons/types-icon-fill.svg" />
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               formControlName="subCategoryType" placeholder="اختر  نوع العطل الفرعي "
-              [options]="secondaryMaintenanceTypeLookup" [filter]="true" [filterBy]="'name'"
-              ></p-dropdown>
+              [options]="secondaryMaintenanceTypeLookup" [filter]="true" [filterBy]="'name'"></p-dropdown>
           </div>
         </div>
-      </div>
-      <!-- ---------------------------------------------------------------- -->
-      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
-      <!-- ---------------------------------------------------------------- -->
-      <div class="two-inputs-fields">
+
         <div class="input-field">
           <label for="main-building"> حالة الطلب </label>
           <div class="field-icon">
             <img src="./assets/icons/info-icon.svg" />
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               formControlName="maintenanceRequestStatusId" placeholder="اختر  حالة الطلب  "
-              [options]="visitRequestsStatusLookup" [filter]="true" [filterBy]="'name'" ></p-dropdown>
+              [options]="visitRequestsStatusLookup" [filter]="true" [filterBy]="'name'"></p-dropdown>
           </div>
         </div>
 
       </div>
+      <!-- ---------------------------------------------------------------- -->
+      <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+      <!-- ---------------------------------------------------------------- -->
+
+
+
       <!-- =======================BUTTONS================== -->
       <div class="buttons-content">
         <button class="buttons" type="button" (click)="popupFilter()">
