@@ -357,6 +357,11 @@ export class SharedService {
   GetSites() {
     return this.http.get<Lookups>(`${environment.url}LookUp/GetSites`);
   }
+  GetBuildingsBySiteId(siteId: number) {
+   return this.http.get<Lookups>(
+      environment.url + 'LookUp/GetBuildingsBySiteId?Id=' + siteId
+    );
+  }
   // ---------------------------------------
   // GET ALL Request Priorety LOOKUP
   // ---------------------------------------

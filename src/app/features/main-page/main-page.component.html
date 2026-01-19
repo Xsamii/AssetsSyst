@@ -5,27 +5,28 @@
 <router-outlet></router-outlet>
 </div>
 
-<div class="chat_icon" *ngIf="showChat" (click)="op.toggle($event)">
-    <svg (click)="op.toggle($event)"  width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<div class="chat_icon" *ngIf="showChat" [class.chat-open]="isChatOpen" (click)="op.toggle($event)">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M14 14H14.0179M25.9821 14H26" stroke="#006F71" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M35.9821 29H36M28 29H28.0179" stroke="#006F71" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M20 32C20 37.5228 25.3726 42 32 42C33.8144 42 35.5347 41.6645 37.0764 41.0638C37.4533 40.9169 37.8623 40.8641 38.26 40.9377L44 42L42.6966 37.9405C42.5062 37.3477 42.6151 36.7065 42.9151 36.161C43.6117 34.894 44 33.4848 44 32C44 26.4772 38.6274 22 32 22C25.3726 22 20 26.4772 20 32Z" stroke="#006F71" stroke-width="3" stroke-linejoin="round"/>
       <path d="M35.7463 22.497C35.913 21.6867 36 20.8522 36 20C36 12.268 28.8366 6 20 6C11.1634 6 4 12.268 4 20C4 22.2247 4.59306 24.3283 5.6484 26.1962C5.94204 26.7159 6.03942 27.3306 5.86486 27.9015L4 34L11.8283 32.4788C12.2437 32.3981 12.6724 32.4546 13.0624 32.6189C15.2312 33.5324 17.6828 34.0313 20.2397 33.9985" stroke="#006F71" stroke-width="3" stroke-linejoin="round"/>
-      </svg>      
+      </svg>
   </div>
 
   <p-overlayPanel
   #op
   appendTo="body"
   styleClass="chat"
-  (onShow)="positionOverlay(op)"
+  (onShow)="isChatOpen = true; positionOverlay(op)"
+  (onHide)="isChatOpen = false"
 >
   <div class="flex justify-between w-full">
     <div class="flex gap-2">
       <div class="minimize" (click)="op.hide()">
-        <img class="w-full" src="../../../assets/images/minimize_icon.svg" alt="" />
+        <img class="w-6 h-6" src="../../../assets/images/minimize_icon.svg" alt="" />
       </div>
-      <img src="../../../assets/images/chat_haal_logo.svg" alt="" />
+      <img src="../../../assets/images/login-logo.png" alt="" class="w-32" />
     </div>
     <div class="ai">
       <span>تحليل الأداء الذكي (Smart Performance Analyzer)</span
@@ -43,7 +44,7 @@
           </clipPath>
           </defs>
           </svg>
-          
+
         <div class="active"></div>
       </div>
     </div>
@@ -81,7 +82,7 @@
       </p>
 
     </div>
-    
+
     <ng-container *ngIf="questionsAndAnswers.length>0">
       <ng-container *ngFor="let item of questionsAndAnswers">
       <ng-container >
@@ -106,7 +107,7 @@
               </clipPath>
               </defs>
               </svg>
-              
+
           </div>
           <div class="flex justify-end gap-[2px] w-[70%] mt-4" *ngIf="item.loading">
             <div class="loader"></div>
@@ -114,7 +115,7 @@
           <div class="flex justify-end gap-2 w-[70%] items-center" *ngIf="item.error">
             <div class="text-[#e31c1c] text-[15px]">{{item.answer}}</div>
             <i class="fa-solid fa-circle-exclamation" style="color: #e31c1c;"></i>
-  
+
           </div>
           <div class="flex flex-col justify-end gap-[2px] w-[70%]" *ngIf="!item.loading&&!item.error">
             <p [innerHTML]="formatAnswer(item.answer)"></p>
@@ -125,7 +126,7 @@
     </ng-container>
 
 
-  </div> 
+  </div>
   <hr class="my-2 -mx-5" />
 
   <div class="w-full flex gap-2">
@@ -136,7 +137,7 @@
           <path d="M12.75 6L18 11.25" stroke="#006F71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M20.2492 20.2501H8.99916L3.79688 15.0479" stroke="#006F71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          
+
         <input
           type="text"
           class="write"

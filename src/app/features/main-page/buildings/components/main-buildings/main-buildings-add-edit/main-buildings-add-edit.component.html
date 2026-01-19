@@ -55,33 +55,7 @@
     <div class="addForm my-4">
 
 
-      <div class="flex flex-col narrowCols">
-        <label class="header-title font-medium">
-          عقد الصيانة (تنفيذي) </label>
-        <p-dropdown [filter]="true" class="mt-2 outline-none relative" [style]="{
-            background:
-              'url(./assets/icons/penRulerInput.svg) no-repeat right 15px center',
-            'background-color': '#f6f6f6',
-            'padding-right': '35px'
-          }" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id" placeholder=" عقد الصيانة "
-          formControlName="executableProjectId" [options]="executiveList" [showClear]="true"></p-dropdown>
-
-      </div>
-
-      <div class="flex flex-col narrowCols">
-        <label class="header-title font-medium"> عقد الصيانة (استشاري) </label>
-        <p-dropdown [filter]="true" class="mt-2 outline-none" [style]="{
-            background:
-              'url(./assets/icons/pen-icon.svg) no-repeat right 15px center',
-            'background-color': '#f6f6f6',
-            'padding-right': '35px'
-          }" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
-          placeholder=" المشروع الاستشاري" formControlName="supervisorProjectId" [options]="consultingList"
-          [showClear]="true"></p-dropdown>
-
-      </div>
-
-      <div class="flex flex-col narrowCols">
+   <div class="flex flex-col narrowCols">
         <label class="header-title font-medium">
           الموقع </label>
         <p-dropdown [filter]="true" class="mt-2 outline-none" [style]="{
@@ -104,13 +78,34 @@
             background-color: #f6f6f6;
             padding-right: 35px;
           " />
-        <!-- <small
-          class="default-attention"
-          *ngIf="( formData.controls['floorsNumber'].errors?.['required'] && (formData.controls['floorsNumber'].dirty || formData.controls['floorsNumber'].touched))"
-        >
-          عدد طوابق المبنى مطلوب
-        </small> -->
       </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium">
+          عقد الصيانة (تنفيذي) </label>
+        <p-dropdown [filter]="true" class="mt-2 outline-none relative" [style]="{
+            background:
+              'url(./assets/icons/penRulerInput.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id" placeholder=" عقد الصيانة "
+          formControlName="executableProjectId" [options]="executiveList" [showClear]="true"></p-dropdown>
+      </div>
+
+      <div class="flex flex-col narrowCols">
+        <label class="header-title font-medium"> عقد الصيانة (استشاري) </label>
+        <p-dropdown [filter]="true" class="mt-2 outline-none" [style]="{
+            background:
+              'url(./assets/icons/pen-icon.svg) no-repeat right 15px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+          placeholder=" المشروع الاستشاري" formControlName="supervisorProjectId" [options]="consultingList"
+          [showClear]="true"></p-dropdown>
+
+      </div>
+
+
       <div class="flex flex-col narrowCols">
         <label class="header-title font-medium">
           رابط المبنى (3D) </label>

@@ -3,8 +3,7 @@
   }
   .chat_icon {
     @apply flex justify-center items-center p-2;
-    background-color: #ffffff;
-    box-shadow: 1.6px 1.6px 16px 0px #00000066;
+    background-color: transparent;
     border-radius: 50%;
     width: 72px;
     height: 72px;
@@ -14,12 +13,36 @@
     bottom: 5vh;
     cursor: pointer;
     pointer-events: auto;
+    transition: all 0.3s ease;
+
+    svg path {
+      stroke: #9ca3af;
+      transition: stroke 0.3s ease;
+    }
+
+    &:hover {
+      background-color: #ffffff;
+      box-shadow: 1.6px 1.6px 16px 0px #00000033;
+
+      svg path {
+        stroke: #006F71;
+      }
+    }
+
+    &.chat-open {
+      background-color: #ffffff;
+      box-shadow: 1.6px 1.6px 16px 0px #00000066;
+
+      svg path {
+        stroke: #006F71;
+      }
+    }
   }
   .minimize {
     @apply flex justify-center items-center;
    // background-color: #f5f7fa;
-    width: 68px;
-    height: 48px;
+    // width: 68px;
+    // height: 48px;
     cursor: pointer;
   }
   .ai {
@@ -66,7 +89,7 @@ input:focus
   }
   .time {
     @apply w-full flex justify-center;
-  
+
     p {
       @apply py-1 px-2 text-center;
       display: inline-block;
@@ -74,7 +97,7 @@ input:focus
       border-radius: 10px;
     }
   }
-  
+
   .ai_answer {
     @apply w-full flex flex-col justify-end  items-end gap-3 my-3;
     .ai_chat_icon {
@@ -84,7 +107,7 @@ input:focus
         color: #6e7485;
       }
     }
-  
+
     p {
       @apply py-1 px-2;
       color: #1d2026;
@@ -124,14 +147,14 @@ input:focus
     background: white;
     max-height: none;
     overflow: visible;
-  
+
     .write {
       border: none;
       width: 100%;
       background-color: transparent !important;
       color: #000
     }
-  
+
   }
   .send{
     @apply flex justify-center items-center;
@@ -146,7 +169,7 @@ input:focus
     width: 32px;
     aspect-ratio: 2;
     --_g: no-repeat radial-gradient(circle closest-side,#000 90%,#0000);
-    background: 
+    background:
       var(--_g) 0%   50%,
       var(--_g) 50%  50%,
       var(--_g) 100% 50%;

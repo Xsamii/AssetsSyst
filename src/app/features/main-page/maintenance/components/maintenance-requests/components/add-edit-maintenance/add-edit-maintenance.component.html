@@ -86,30 +86,25 @@
 
 
     <!-- ---------------------------------------------------------------- -->
-    <!-- ------------------FULL WIDTH FIELD: GEOGRAPHICAL LOCATION------- -->
+    <!-- ------------------TWO INPUTS FIELDS: SITE AND BUILDING---------- -->
     <!-- ---------------------------------------------------------------- -->
-    <div class="input-field">
-      <label for="name"> الموقع الجغرافي <span>*</span> </label>
-      <div class="field-icon" (click)="statusId == 1 ? openGeoLocationDialog() : null"
-        [style.cursor]="statusId == 1 ? 'pointer' : 'default'">
-        <img src="./assets/icons/locationIcon.svg" />
-        <input class="bg-gray-100 rounded-lg outline-none" type="text" placeholder="انقر لتحديد الموقع على الخريطة"
-          [value]="selectedLatitude && selectedLongitude ? selectedLatitude + ', ' + selectedLongitude : ''"
-          [readonly]="true" style="cursor: pointer;" />
-      </div>
-      <!-- VALIDATIONS -->
-      <small *ngIf="(!selectedLatitude || !selectedLongitude) && maintenanceForm.touched" class="error-text">
-        يجب تحديد الموقع الجغرافي على الخريطة
-      </small>
-    </div>
-
-
-
-
-
-
-
     <div class="two-inputs-fields">
+      <div class="input-field">
+        <label for="name"> الموقع <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/select-main-building-icon.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر الموقع" formControlName="siteId"
+            [options]="sitesLookup" (onChange)="onSiteChange(+maintenanceForm.value.siteId)" [filter]="true"
+            filterBy="name">
+          </p-dropdown>
+        </div>
+        <!-- VALIDATIONS -->
+        <small *ngIf="formControls.siteId.invalid && formControls.siteId.touched" class="error-text">
+          يجب إختيار الموقع
+        </small>
+      </div>
+
       <div class="input-field">
         <label for="name"> المبنى <span>*</span> </label>
         <div class="field-icon">
@@ -125,6 +120,9 @@
           يجب إختيار المبني الرئيسي
         </small>
       </div>
+    </div>
+
+    <div class="two-inputs-fields">
       <!-- <div class="input-field">
         <label for="name"> المبنى الفرعي <span>*</span> </label>
         <div class="field-icon">
@@ -149,16 +147,7 @@
         </div>
       </div>
 
-
-    </div>
-
-    <!-- ---------------------------------------------------------------- -->
-    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
-    <!-- ---------------------------------------------------------------- -->
-    <div class="two-inputs-fields">
-
-
-      <div class="input-field">
+       <div class="input-field">
         <label for="name"> الغرفة <span>*</span> </label>
         <div class="field-icon">
           <img src="./assets/icons/select-main-building-icon.svg" />
@@ -169,6 +158,17 @@
           </p-dropdown>
         </div>
       </div>
+
+
+    </div>
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="two-inputs-fields">
+
+
+
 
       <div class="input-field">
         <label for="name"> أولوية الطلب <span>*</span> </label>
@@ -187,15 +187,7 @@
       </div>
 
 
-    </div>
-    <!-- ---------------------------------------------------------------- -->
-    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
-    <!-- ---------------------------------------------------------------- -->
-
-    <div class="two-inputs-fields">
-
-
-      <div class="input-field">
+         <div class="input-field">
         <label for="name"> نوع العطل الرئيسي <span>*</span> </label>
         <div class="field-icon">
           <img src="./assets/icons/types-icon-fill.svg" />
@@ -213,6 +205,16 @@
         </small>
       </div>
 
+    </div>
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+
+    <div class="two-inputs-fields">
+
+
+
+
       <div class="input-field">
         <label for="name"> نوع العطل الفرعي <span>*</span> </label>
         <div class="field-icon">
@@ -227,12 +229,7 @@
             formControls.subCategoryType.touched
           " class="error-text">يجب إختيار نوع العطل الرئيسي ثم العطل الفرعي التابة له</small>
       </div>
-    </div>
 
-    <!-- ---------------------------------------------------------------- -->
-    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
-    <!-- ---------------------------------------------------------------- -->
-    <div class="two-inputs-fields">
       <div class="input-field">
         <label for="name"> وصف مكان العطل </label>
         <div class="field-icon">
@@ -240,7 +237,14 @@
           <input class="bg-gray-100 rounded-lg outline-none" type="text" placeholder="وصف مكان العطل "
             formControlName="locationDescription" [readonly]="statusId != 1" />
         </div>
-      </div>
+      </div>  
+    </div>
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+    <div class="two-inputs-fields">
+
 
       <div class="input-field">
         <label for="name"> معلومات إضافية </label>

@@ -2,7 +2,7 @@
 .sidebar {
   // Use CSS custom property instead of Tailwind class
   background: var(--sidebar-bg);
-  width: 264px;
+  width: 280px;
   border-radius: 8px;
   height: calc(100vh - 139px);
   position: fixed;

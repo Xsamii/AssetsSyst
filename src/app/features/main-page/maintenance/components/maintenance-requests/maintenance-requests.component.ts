@@ -314,6 +314,7 @@ export class MaintenanceRequestsComponent implements OnInit {
     this.showFilterPopup = true;
   }
   filterForm = this._fb.group({
+    siteId: [],
     buildingId: [],
     subUnitId: [],
     mainCategoryType: [],
@@ -324,6 +325,12 @@ export class MaintenanceRequestsComponent implements OnInit {
   popupFilter() {
     this.isSearchingReasult = true;
     this.filterDataParams.filterItems = [];
+    if (this.filterForm.value.siteId)
+      this.filterDataParams.filterItems.push({
+        key: 'SiteId',
+        operator: 'equals',
+        value: this.filterForm.value.siteId,
+      });
     if (this.filterForm.value.buildingId)
       this.filterDataParams.filterItems.push({
         key: 'buildingId',
@@ -397,12 +404,36 @@ export class MaintenanceRequestsComponent implements OnInit {
   // ------------------------------------
   // LOOKUPS
   // ------------------------------------
-  builldingLookup: any = [];
+  sitesLookup: any[] = [];
+  builldingLookup: any[] = [];
   buildingSubUnitLookup: any = [];
   visitRequestsStatusLookup: any = [];
   requestPrioretyLookup: any = [];
   primaryMaintenanceTypeLookup: any = [];
   secondaryMaintenanceTypeLookup: any = [];
+
+  getSites() {
+    this._sharedService.GetSites().subscribe((res: any) => {
+      this.sitesLookup = res.data || [];
+    });
+  }
+
+  onSiteChange(siteId: number) {
+    // Reset building selection when site changes
+    this.filterForm.patchValue({ buildingId: null });
+
+    if (siteId) {
+      // Filter buildings by selected site
+      this._sharedService.GetBuildingsBySiteId(siteId).subscribe((res: any) => {
+        this.builldingLookup = res.data || [];
+      });
+    } else {
+      // If no site selected, show all buildings
+      this._sharedService.getAllBuilding().subscribe((res) => {
+        this.builldingLookup = res.data;
+      });
+    }
+  }
 
   getAllBuildingLookup() {
     this._sharedService.getAllBuilding().subscribe((res) => {
@@ -454,6 +485,7 @@ export class MaintenanceRequestsComponent implements OnInit {
     // GET ALL
     this.getAllMaintenanceRequest();
     // LOOKUPS
+    this.getSites();
     this.getAllBuildingLookup();
     this.getVisitRequestsStatus();
     this.getRequestPriorety();
@@ -463,6 +495,8 @@ export class MaintenanceRequestsComponent implements OnInit {
     // COLUMN LIST
     this.cols = [
       new listColumns({ field: 'orderNumber', header: '#' }),
+      new listColumns({ field: 'siteName', header: 'الموقع' }),
+
       new listColumns({ field: 'buildingName', header: 'المبنى الرئيسي' }),
       // new listColumns({ field: 'buildingSubUnitName', header: 'المبنى الفرعي'  }),
       // new listColumns({ field: 'assetName', header: 'رقم الأصل' }),

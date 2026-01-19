@@ -38,6 +38,7 @@ export class AddEditMaintenanceComponent implements OnInit {
   showGeoLocationDialog: boolean = false;
   selectedLatitude: string = '';
   selectedLongitude: string = '';
+  sitesLookup: any[] = [];
   builldingLookup: any[] = [];
   buildingSubUnitLookup: any = [];
   floorLookup: any = [];
@@ -75,6 +76,7 @@ export class AddEditMaintenanceComponent implements OnInit {
   // FORM
   // ------------------------------------
   maintenanceForm = this._fb.group({
+    siteId: ['', Validators.required],
     buildingId: ['', Validators.required],
     assetNumber: [''],
     floorId: [null],
@@ -209,6 +211,7 @@ export class AddEditMaintenanceComponent implements OnInit {
 
         // Patch form values
         this.maintenanceForm.patchValue({
+          siteId: res.data.siteId,
           mainCategoryType: res.data.mainCategoryTypeId,
           subCategoryType: res.data.subCategoryType,
           proplemDescription: res.data.proplemDescription,
@@ -221,15 +224,12 @@ export class AddEditMaintenanceComponent implements OnInit {
           officeId: res.data.buildingOfficeId,
         });
 
-        // Patch latitude and longitude
-        if (res.data.lat) {
-          this.selectedLatitude = res.data.lat.toString();
-        }
-        if (res.data.lng) {
-          this.selectedLongitude = res.data.lng.toString();
+        // Load dependent data
+        if (res.data.siteId) {
+          // Load buildings for this site
+          this.getBuildingsBySiteId(res.data.siteId);
         }
 
-        // Load dependent data
         if (res.data.buildingId) {
           // Load floors and offices from the combined API
           this.getAlloffices(res.data.buildingId);
@@ -256,6 +256,18 @@ export class AddEditMaintenanceComponent implements OnInit {
   // ------------------------------------
   // LOOKUPS
   // ------------------------------------
+  getSites() {
+    this._sharedService.GetSites().subscribe((res: any) => {
+      this.sitesLookup = res.data;
+    });
+  }
+
+  getBuildingsBySiteId(siteId: number) {
+    this._sharedService.GetBuildingsBySiteId(siteId).subscribe((res: any) => {
+      this.builldingLookup = res.data;
+    });
+  }
+
   getAllBuildingLookup() {
     this._maintenanceRequestsService.getAllBuildingForMaintenanceRequest().subscribe((res) => {
       this.builldingLookup = res.data;
@@ -319,6 +331,26 @@ export class AddEditMaintenanceComponent implements OnInit {
     this._sharedService.getOfficesInFloor(floorId).subscribe((res) => {
       this.officesLookup = res.data || [];
     });
+  }
+
+  // Handle site change
+  onSiteChange(siteId: number) {
+    if (siteId) {
+      // Reset dependent fields
+      this.maintenanceForm.patchValue({
+        buildingId: null,
+        floorId: null,
+        officeId: null
+      });
+
+      // Clear dependent lookups
+      this.builldingLookup = [];
+      this.floorLookup = [];
+      this.officesLookup = [];
+
+      // Get buildings for this site
+      this.getBuildingsBySiteId(siteId);
+    }
   }
 
   // Handle building change
@@ -458,7 +490,7 @@ export class AddEditMaintenanceComponent implements OnInit {
   ngOnInit(): void {
     this.onEdit();
     // LOOKUPS
-    this.getAllBuildingLookup();
+    this.getSites();
     this.getVisitRequestsStatus();
     this.getRequestPriorety();
     this.getAllPrimaryMaintenanceType();
@@ -484,10 +516,15 @@ export class AddEditMaintenanceComponent implements OnInit {
       this.asset = res.data;
       if (res.isSuccess) {
         this.maintenanceForm.patchValue({
+          siteId: this.asset?.site?.id,
           buildingId: this.asset?.building?.id,
           floorId: this.asset?.floor?.id,
           officeId: this.asset?.office?.id,
         });
+
+        if (this.asset?.site?.id) {
+          this.getBuildingsBySiteId(this.asset.site.id);
+        }
 
         if (this.asset?.building?.id) {
           this.getAlloffices(this.asset.building.id);

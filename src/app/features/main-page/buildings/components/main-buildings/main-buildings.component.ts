@@ -41,7 +41,8 @@ export class MainBuildingsComponent {
   isSearchingReasult: boolean = false;
   totalPageCount!: number;
   executiveList;
-  mainBuildingsList;
+  sitesList: any[] = [];
+  mainBuildingsList: any[] = [];
   displayDialog: boolean = false;
   showBreadcrumb: boolean = true;
   alertSuccess: boolean = false;
@@ -110,6 +111,7 @@ export class MainBuildingsComponent {
   }
   initializeSearchForm() {
     this.searchForm = this._formBuilder.group({
+      siteId: [],
       buildingId: [],
       executiveProjectId: [],
     });
@@ -123,6 +125,12 @@ export class MainBuildingsComponent {
   popupFilter() {
     this.isSearchingReasult = true;
     this.filterDataParams.filterItems = [];
+    if (this.searchForm.value.siteId)
+      this.filterDataParams.filterItems.push({
+        key: 'SiteId',
+        operator: 'equals',
+        value: String(this.searchForm.value.siteId),
+      });
     if (this.searchForm.value.buildingId)
       this.filterDataParams.filterItems.push({
         key: 'Id',
@@ -138,6 +146,23 @@ export class MainBuildingsComponent {
 
     this.getData();
     this.displayDialog = false;
+  }
+
+  onSiteChange(siteId: number) {
+    // Reset building selection when site changes
+    this.searchForm.patchValue({ buildingId: null });
+
+    if (siteId) {
+      // Filter buildings by selected site
+      this._sharedService.GetBuildingsBySiteId(siteId).subscribe((res: any) => {
+        this.mainBuildingsList = res.data || [];
+      });
+    } else {
+      // If no site selected, show all buildings
+      this._sharedService.getAllBuilding().subscribe((res) => {
+        this.mainBuildingsList = res['data'];
+      });
+    }
   }
   hideDialog() {
     this.searchForm.reset();
@@ -202,6 +227,9 @@ export class MainBuildingsComponent {
     }
   }
   getDropDowns() {
+    this._sharedService.GetSites().subscribe((res: any) => {
+      this.sitesList = res.data || [];
+    });
     this._sharedService.getAllBuilding().subscribe((res) => {
       this.mainBuildingsList = res['data'];
     });

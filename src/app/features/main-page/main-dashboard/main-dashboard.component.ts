@@ -29,6 +29,7 @@ import { FilterDataParams } from 'src/app/Shared/models/filteredDataParams';
 export class MainDashboardComponent implements OnInit,  AfterViewInit {
   // Dashboard data properties - all from same API
   topMetrics = {
+    totalSites: 0,
     mainBuildings: 0,
     totalTasks: 0,
     totalVisits: 0,
@@ -828,6 +829,7 @@ showNoDataForContractChart(contractId: number): void {
 
   updateTopMetrics(data: any): void {
     this.topMetrics = {
+      totalSites: data.totalSites ?? 'لا توجد بيانات',
       mainBuildings: data.totalMainBuilidngs ?? 'لا توجد بيانات',
       totalTasks: data.totalProjectTasks ?? 'لا توجد بيانات',
       totalVisits: data.totalVisites ?? 'لا توجد بيانات',

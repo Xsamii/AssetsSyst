@@ -18,6 +18,18 @@
     </div>
     <form [formGroup]="searchForm" (ngSubmit)="OnSubmitData()">
       <div class="input-field">
+        <label for="name"> الموقع </label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر الموقع  " formControlName="siteId"
+            [options]="sitesList" [filter]="true" filterBy="name" (onChange)="onSiteChange($event.value)"></p-dropdown>
+        </div>
+      </div>
+      <div class="input-field">
         <label for="name"> المبنى </label>
         <div class="">
           <!-- <img src="assets/icons/select-main-building-icon.svg" /> -->

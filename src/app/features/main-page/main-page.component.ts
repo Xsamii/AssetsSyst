@@ -28,6 +28,7 @@ export class MainPageComponent implements OnInit, AfterViewChecked {
   showSidebarMenu: boolean = true;
   @ViewChild('myDiv') myDiv!: ElementRef;
   showChat: boolean = true;
+  isChatOpen: boolean = false;
   question: string = '';
   questionsAndAnswers: any[] = [];
   chatHistory: any[] = [];

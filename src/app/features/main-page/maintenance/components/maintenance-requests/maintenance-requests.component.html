@@ -51,6 +51,17 @@
       <!-- ---------------------------------------------------------------- -->
       <div class="two-inputs-fields">
         <div class="input-field">
+          <label for="main-building"> الموقع </label>
+          <div class="field-icon">
+            <img src="./assets/icons/select-main-building-icon.svg" />
+
+            <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
+              placeholder="اختر الموقع" formControlName="siteId" [options]="sitesLookup"
+              (onChange)="onSiteChange($event.value)" [filter]="true" [filterBy]="'name'"
+              ></p-dropdown>
+          </div>
+        </div>
+        <div class="input-field">
           <label for="main-building"> المبنى </label>
           <div class="field-icon">
             <img src="./assets/icons/select-main-building-icon.svg" />
@@ -58,9 +69,12 @@
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               placeholder="اختر  المبنى" formControlName="buildingId" [options]="builldingLookup"
               (onChange)="getAllBuildingSubUnit(filterForm.value.buildingId)" [filter]="true" [filterBy]="'name'"
-              [showClear]="true"></p-dropdown>
+              ></p-dropdown>
           </div>
         </div>
+      </div>
+
+      <div class="two-inputs-fields">
         <!-- <div class="input-field">
           <label for="main-building"> المبنى </label>
           <div class="field-icon">
@@ -68,7 +82,7 @@
 
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               placeholder="اختر  المبنى" formControlName="subUnitId" [options]="buildingSubUnitLookup" [filter]="true"
-              [filterBy]="'name'" [showClear]="true"></p-dropdown>
+              [filterBy]="'name'" ></p-dropdown>
           </div>
         </div> -->
 
@@ -79,7 +93,7 @@
 
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               formControlName="requestPriorety" placeholder="اختر  أولوية الطلب  " [options]="requestPrioretyLookup"
-              [filter]="true" [filterBy]="'name'" [showClear]="true"></p-dropdown>
+              [filter]="true" [filterBy]="'name'" ></p-dropdown>
           </div>
         </div>
 
@@ -98,7 +112,7 @@
               formControlName="mainCategoryType" placeholder="اختر  نوع العطل الرئيسي "
               [options]="primaryMaintenanceTypeLookup"
               (onChange)="getMaintTypesByParent(filterForm.value.mainCategoryType)" [filter]="true" [filterBy]="'name'"
-              [showClear]="true"></p-dropdown>
+              ></p-dropdown>
             <!-- -------------------------------- -->
             <!-- -------------------------------- -->
           </div>
@@ -110,7 +124,7 @@
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               formControlName="subCategoryType" placeholder="اختر  نوع العطل الفرعي "
               [options]="secondaryMaintenanceTypeLookup" [filter]="true" [filterBy]="'name'"
-              [showClear]="true"></p-dropdown>
+              ></p-dropdown>
           </div>
         </div>
       </div>
@@ -124,7 +138,7 @@
             <img src="./assets/icons/info-icon.svg" />
             <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
               formControlName="maintenanceRequestStatusId" placeholder="اختر  حالة الطلب  "
-              [options]="visitRequestsStatusLookup" [filter]="true" [filterBy]="'name'" [showClear]="true"></p-dropdown>
+              [options]="visitRequestsStatusLookup" [filter]="true" [filterBy]="'name'" ></p-dropdown>
           </div>
         </div>
 
