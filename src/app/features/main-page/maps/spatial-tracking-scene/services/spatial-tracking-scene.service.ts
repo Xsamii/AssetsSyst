@@ -187,21 +187,39 @@ export class SpatialTrackingSceneService {
 
       // Determine layer type - check both root level and layers array
       let layerType: string | null = null;
+      let is3DObject: boolean = false;
+      let layerUrlToUse: string = url;
 
       // Check root level first
       if (serviceInfo.layerType) {
         layerType = serviceInfo.layerType;
       }
-      // Check layers array (common for BuildingSceneLayer)
-      else if (serviceInfo.layers && serviceInfo.layers.length > 0) {
-        layerType = serviceInfo.layers[0].layerType;
+      // Check layers array (common for BuildingSceneLayer and 3DObject scene layers)
+      if (serviceInfo.layers && serviceInfo.layers.length > 0) {
+        const rootLayerInfo = serviceInfo.layers[0];
+        const rootLayerType = rootLayerInfo.layerType || layerType;
+        layerType = rootLayerType;
+
+        // If this is a 3DObject hosted scene layer, Esri often expects /layers/{id}
+        if (rootLayerType === '3DObject') {
+          is3DObject = true;
+          const rootLayerId =
+            typeof rootLayerInfo.id === 'number' ? rootLayerInfo.id : 0;
+          layerUrlToUse = `${url.replace(/\/+$/, '')}/layers/${rootLayerId}`;
+          console.log(
+            'Detected 3DObject scene layer. Using layer URL:',
+            layerUrlToUse
+          );
+        }
       }
 
-      console.log('Detected layer type:', layerType);
-
+      console.log('Detected layer type:', layerType, 'is3DObject:', is3DObject);
+      console.log('layerUrlToUsesssssssssssss', layerType);
       // Determine layer type and create appropriate layer
-      if (layerType === 'BuildingSceneLayer' || layerType === 'Building') {
-        // Create BuildingSceneLayer for building layers
+      // NOTE: We only treat explicit 'BuildingSceneLayer' as a BuildingSceneLayer.
+      // Any 'Building' or other types (including '3DObject') will be loaded as SceneLayer
+      if (layerType === 'BuildingSceneLayer') {
+        // Create BuildingSceneLayer only for true BuildingSceneLayer services
         this.sceneLayer = new BuildingSceneLayer({
           url: url,
           id: layerId,
@@ -209,13 +227,18 @@ export class SpatialTrackingSceneService {
         });
         console.log('Created BuildingSceneLayer');
       } else {
-        // Create regular SceneLayer for other scene layers
+        console.log('layerUrlToUsesssssssssssss', layerUrlToUse);
         this.sceneLayer = new SceneLayer({
-          url: url,
+          url: layerUrlToUse,
           id: layerId,
           title: serviceInfo.name || serviceInfo.serviceName || 'Zone 1 Layer',
         });
-        console.log('Created SceneLayer');
+        console.log(
+          'Created SceneLayer with URL (for non-BuildingSceneLayer type):',
+          layerUrlToUse,
+          'layerType:',
+          layerType
+        );
       }
 
       // Add to map
