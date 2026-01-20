@@ -669,7 +669,11 @@ export class SpatialTrackingMapService {
     }
 
     // Emit layer added event
+    console.log(`=== Emitting layerAdded event for layer: ${layerConfig.id} ===`);
+    console.log('Layer config:', layerConfig);
+    console.log('Layer object:', layer);
     this.layerAdded$.next({ layerId: layerConfig.id, layer });
+    console.log(`=== LayerAdded event emitted for: ${layerConfig.id} ===`);
 
     return layer;
   }
@@ -1280,6 +1284,10 @@ export class SpatialTrackingMapService {
     floorName?: string; // English floor name, not code
     roomCode?: string; // For rooms layer filtering
     roomName?: string; // For assets layer filtering
+    systemName?: string; // For assets layer filtering (SystemName)
+    systemClass?: string; // For assets layer filtering (SystemClass)
+    subCategory?: string; // For assets layer filtering (sub_catogry)
+    subCategoryType?: string; // For assets layer filtering (Sub_catogryType)
   }): Promise<void> {
     const assetsLayerId = 'assets-point-layer';
     const roomsLayerId = 'rooms-layer';
@@ -1440,6 +1448,30 @@ export class SpatialTrackingMapService {
           assetsWhereConditions.push(`RoomName = '${escaped}'`);
         }
 
+        // Filter by SystemType (system filter)
+        if (filters.systemName) {
+          const escaped = escapeValue(filters.systemName);
+          assetsWhereConditions.push(`SystemType = '${escaped}'`);
+        }
+
+        // Filter by SystemClass (system class filter)
+        if (filters.systemClass) {
+          const escaped = escapeValue(filters.systemClass);
+          assetsWhereConditions.push(`SystemClass = '${escaped}'`);
+        }
+
+        // Filter by sub_catogry (main/sub category)
+        if (filters.subCategory) {
+          const escaped = escapeValue(filters.subCategory);
+          assetsWhereConditions.push(`sub_catogry = '${escaped}'`);
+        }
+
+        // Filter by Sub_catogryType (sub category type)
+        if (filters.subCategoryType) {
+          const escaped = escapeValue(filters.subCategoryType);
+          assetsWhereConditions.push(`Sub_catogryType = '${escaped}'`);
+        }
+
         const assetsWhereClause =
           assetsWhereConditions.length > 0
             ? assetsWhereConditions.join(' AND ')
@@ -1458,7 +1490,11 @@ export class SpatialTrackingMapService {
         filters.buildingCode ||
         filters.floorName ||
         filters.roomCode ||
-        filters.roomName;
+        filters.roomName ||
+        filters.systemName ||
+        filters.systemClass ||
+        filters.subCategory ||
+        filters.subCategoryType;
 
       if (hasAnyFilter) {
         // Determine zoom level based on filter specificity
@@ -1505,7 +1541,10 @@ export class SpatialTrackingMapService {
                 });
               }
 
-              console.log('Zoomed to room extent with zoom level:', this.mapView.zoom);
+              console.log(
+                'Zoomed to room extent with zoom level:',
+                this.mapView.zoom
+              );
               return; // Exit early since we've zoomed to rooms layer
             }
           } catch (error) {
@@ -1690,12 +1729,14 @@ export class SpatialTrackingMapService {
             firstFeature.layer = assetsLayer;
 
             // Set the popup template on the feature from the layer config
-            const layerConfig = SPATIAL_TRACKING_LAYERS.find(l => l.id === assetsLayerId);
+            const layerConfig = SPATIAL_TRACKING_LAYERS.find(
+              (l) => l.id === assetsLayerId
+            );
             if (layerConfig?.popupTemplate) {
               firstFeature.popupTemplate = new PopupTemplate({
                 title: layerConfig.popupTemplate.title,
                 content: layerConfig.popupTemplate.content,
-                actions: layerConfig.popupTemplate.actions
+                actions: layerConfig.popupTemplate.actions,
               });
             }
 
@@ -1749,8 +1790,9 @@ export class SpatialTrackingMapService {
           setTimeout(() => {
             if (this.mapView && this.mapView.popup && firstFeature.geometry) {
               // For non-point geometries, use the centroid or extent center
-              const location = (firstFeature.geometry as any).centroid ||
-                             (firstFeature.geometry as any).extent?.center;
+              const location =
+                (firstFeature.geometry as any).centroid ||
+                (firstFeature.geometry as any).extent?.center;
 
               if (location) {
                 // Set popup properties directly
@@ -1795,7 +1837,9 @@ export class SpatialTrackingMapService {
     const assetsLayer = this.layers.get(assetsLayerId) as FeatureLayer;
     const roomsLayer = this.layers.get(roomsLayerId) as FeatureLayer;
     const buildingsLayer = this.layers.get(buildingsLayerId) as FeatureLayer;
-    const slaughterhouseLayer = this.layers.get(slaughterhouseLayerId) as FeatureLayer;
+    const slaughterhouseLayer = this.layers.get(
+      slaughterhouseLayerId
+    ) as FeatureLayer;
 
     // Hide all layers except slaughterhouse
     if (assetsLayer) {
@@ -1854,6 +1898,107 @@ export class SpatialTrackingMapService {
       }
     } catch (error) {
       console.error('Error zooming to slaughterhouse layer:', error);
+    }
+  }
+
+  /**
+   * Get unique values from a field in the assets layer
+   * @param fieldName The field name to get unique values from
+   * @returns Promise<string[]> Array of unique values
+   */
+  async getUniqueValuesFromAssetsLayer(fieldName: string): Promise<string[]> {
+    console.log(`=== getUniqueValuesFromAssetsLayer() CALLED for field: ${fieldName} ===`);
+    const assetsLayerId = 'assets-point-layer';
+    console.log('Looking for layer with ID:', assetsLayerId);
+    console.log('Available layers:', Array.from(this.layers.keys()));
+    
+    const assetsLayer = this.layers.get(assetsLayerId) as FeatureLayer;
+
+    if (!assetsLayer) {
+      console.warn('=== Assets layer not found ===');
+      console.warn('Layers map size:', this.layers.size);
+      console.warn('All layer IDs:', Array.from(this.layers.keys()));
+      return [];
+    }
+    
+    console.log('Assets layer found:', assetsLayer);
+    console.log('Layer URL:', assetsLayer.url);
+    console.log('Layer loadStatus:', assetsLayer.loadStatus);
+
+    try {
+      // Wait for layer to be ready
+      await assetsLayer.when();
+      console.log(`Getting unique values for field: ${fieldName}`);
+
+      // Make sure layer is loaded
+      if (assetsLayer.loadStatus === 'failed') {
+        console.error('Assets layer failed to load');
+        return [];
+      }
+
+      // Temporarily make layer visible to ensure it's queryable
+      const wasVisible = assetsLayer.visible;
+      if (!wasVisible) {
+        assetsLayer.visible = true;
+        // Wait for layer to refresh
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+
+      // Wait a bit more to ensure layer is fully queryable
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Create query to get values (we'll make them distinct on the client)
+      const query = assetsLayer.createQuery();
+      query.where = '1=1'; // Get all features
+      query.outFields = [fieldName];
+      query.returnGeometry = false;
+      // NOTE: returnDistinctValues is causing errors on this service (pbfQueryUtils / featureResult undefined)
+      // So we fetch values and compute distinct client-side instead of using server-side distinct.
+      query.num = 10000; // Limit to a reasonable number of features
+
+      console.log(`Querying for values of ${fieldName} (client-side distinct):`, query);
+
+      const result = await assetsLayer.queryFeatures(query);
+      console.log('Query result (raw features):', result);
+      // Restore original visibility
+      if (!wasVisible) {
+        assetsLayer.visible = false;
+      }
+
+      console.log(`Query result for ${fieldName}:`, {
+        featuresCount: result.features?.length || 0,
+        result: result,
+      });
+
+      // Extract unique values from features
+      const uniqueValues = new Set<string>();
+      if (result.features && result.features.length > 0) {
+        result.features.forEach((feature) => {
+          const value = feature.attributes[fieldName];
+          if (value !== null && value !== undefined && value !== '') {
+            uniqueValues.add(String(value));
+          }
+        });
+      } else {
+        console.warn(`No features returned for field ${fieldName}`);
+      }
+
+      const valuesArray = Array.from(uniqueValues).sort();
+      console.log(`=== Unique values for ${fieldName} ===`);
+      console.log(`Count: ${valuesArray.length}`);
+      console.log(`Values:`, valuesArray);
+      console.log(`First 10 values:`, valuesArray.slice(0, 10));
+      if (valuesArray.length > 10) {
+        console.log(`Last 10 values:`, valuesArray.slice(-10));
+      }
+      console.log(`=== End of unique values for ${fieldName} ===`);
+      return valuesArray;
+    } catch (error) {
+      console.error(
+        `Error getting unique values for field ${fieldName}:`,
+        error
+      );
+      return [];
     }
   }
 }

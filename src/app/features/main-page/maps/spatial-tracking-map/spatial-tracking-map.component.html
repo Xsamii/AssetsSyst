@@ -97,6 +97,66 @@
         </p-dropdown>
       </div>
 
+      <div class="filter-item">
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg p-3'"
+          [style]="{
+            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="اختر النظام"
+          formControlName="systemName"
+          [options]="systemNameOptions"
+          [filter]="true"
+          [showClear]="true"
+          (onChange)="onSystemNameChange()">
+        </p-dropdown>
+      </div>
+
+      <div class="filter-item">
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg p-3'"
+          [style]="{
+            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="اختر الفئة الفرعية"
+          formControlName="subCategory"
+          [options]="subCategoryOptions"
+          [filter]="true"
+          [showClear]="true"
+          (onChange)="onSubCategoryChange()">
+        </p-dropdown>
+      </div>
+
+      <div class="filter-item">
+        <p-dropdown
+          class="w-full"
+          [styleClass]="'w-full bg-filterBtnBg p-3'"
+          [style]="{
+            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="اختر نوع الفئة الفرعية"
+          formControlName="subCategoryType"
+          [options]="subCategoryTypeOptions"
+          [filter]="true"
+          [showClear]="true"
+          (onChange)="onSubCategoryTypeChange()">
+        </p-dropdown>
+      </div>
+
       <button class="reset-btn" (click)="resetFilters()" type="button" title="إعادة ضبط التصفية">
         <i class="fas fa-redo"></i>
         إعادة ضبط

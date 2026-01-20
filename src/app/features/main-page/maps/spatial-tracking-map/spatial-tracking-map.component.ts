@@ -63,6 +63,9 @@ export class SpatialTrackingMapComponent
   buildingOptions: any[] = [];
   floorOptions: any[] = [];
   roomOptions: any[] = [];
+  systemNameOptions: any[] = [];
+  subCategoryOptions: any[] = [];
+  subCategoryTypeOptions: any[] = [];
 
   // Selected filter codes (for map filtering)
   private selectedSlaughterhouseCode: string = '';
@@ -70,6 +73,9 @@ export class SpatialTrackingMapComponent
   private selectedFloorName: string = ''; // Store English floor name for filtering (not code)
   private selectedRoomCode: string = ''; // For rooms layer filtering
   private selectedRoomName: string = ''; // For assets layer filtering
+  private selectedSystemName: string = ''; // For assets layer filtering (SystemType)
+  private selectedSubCategory: string = ''; // For assets layer filtering (sub_catogry)
+  private selectedSubCategoryType: string = ''; // For assets layer filtering (Sub_catogryType)
 
   /**
    * Map Arabic floor code to English floor name for filtering
@@ -200,6 +206,9 @@ export class SpatialTrackingMapComponent
       building: [''],
       floor: [''],
       room: [''],
+      systemName: [''],
+      subCategory: [''],
+      subCategoryType: [''],
     });
 
     // Layer control form for toggling layers
@@ -245,6 +254,21 @@ export class SpatialTrackingMapComponent
 
       // Step 3.6: Zoom to slaughterhouse layer extent on initial load
       await this.spatialTrackingMapService.zoomToSlaughterhouseLayer();
+
+      // Step 3.7: Load unique values for asset filters after layers are added
+      // Call it here as a fallback in case the layerAdded event is not triggered for some reason
+      console.log('Calling loadAssetFilterOptions() from initializeMap...');
+      try {
+        await this.loadAssetFilterOptions();
+        console.log(
+          'loadAssetFilterOptions() from initializeMap completed successfully'
+        );
+      } catch (error) {
+        console.error(
+          'Error in loadAssetFilterOptions() from initializeMap:',
+          error
+        );
+      }
 
       // Check if we can process pending asset ID
       this.checkIfReadyToProcessAssetId();
@@ -295,17 +319,33 @@ export class SpatialTrackingMapComponent
         });
 
       // Subscribe to layer events
+      console.log('=== Subscribing to layerAdded events ===');
       const layerAddedSub = this.spatialTrackingMapService.layerAdded.subscribe(
         ({ layerId, layer }) => {
-          console.log('Layer added:', layerId, layer);
+          console.log('=== LayerAdded event received in component ===');
+          console.log('Layer ID:', layerId);
+          console.log('Layer object:', layer);
 
           // If assets layer is added, check if we can process pending asset ID
           if (layerId === 'assets-point-layer') {
-            console.log('Assets layer added');
+            console.log('=== Assets layer added event fired ===');
+            console.log('Layer ID:', layerId);
+            console.log('Layer object:', layer);
             // Wait a bit for layer to be fully ready, then check if we can process
-            setTimeout(() => {
+            setTimeout(async () => {
+              console.log(
+                '=== Inside setTimeout callback for assets layer ==='
+              );
               this.checkIfReadyToProcessAssetId();
-            }, 1000);
+              // Load unique values for asset filters - wait longer to ensure layer is queryable
+              console.log('About to call loadAssetFilterOptions()...');
+              try {
+                await this.loadAssetFilterOptions();
+                console.log('loadAssetFilterOptions() completed successfully');
+              } catch (error) {
+                console.error('Error in loadAssetFilterOptions():', error);
+              }
+            }, 2000);
 
             // Add popup action handler for 3D navigation
             this.setupPopupActionHandler();
@@ -569,6 +609,94 @@ export class SpatialTrackingMapComponent
   }
 
   /**
+   * Load unique values for asset filter dropdowns
+   */
+  async loadAssetFilterOptions(): Promise<void> {
+    console.log('=== loadAssetFilterOptions() CALLED ===');
+    console.log('Service available:', !!this.spatialTrackingMapService);
+    try {
+      console.log('=== Starting to load asset filter options ===');
+
+      // Load SystemName options
+      console.log('Loading SystemName unique values...');
+      const systemNames =
+        await this.spatialTrackingMapService.getUniqueValuesFromAssetsLayer(
+          'SystemType'
+        );
+      console.log('SystemName unique values:', systemNames);
+      this.systemNameOptions = systemNames.map((value) => ({
+        label: value,
+        value: value,
+      }));
+      console.log('SystemName options array:', this.systemNameOptions);
+
+      // Load sub_catogry options
+      console.log('Loading sub_catogry unique values...');
+      const subCategories =
+        await this.spatialTrackingMapService.getUniqueValuesFromAssetsLayer(
+          'sub_catogry'
+        );
+      console.log('sub_catogry unique values:', subCategories);
+      this.subCategoryOptions = subCategories.map((value) => ({
+        label: value,
+        value: value,
+      }));
+      console.log('sub_catogry options array:', this.subCategoryOptions);
+
+      // Load Sub_catogryType options
+      console.log('Loading Sub_catogryType unique values...');
+      const subCategoryTypes =
+        await this.spatialTrackingMapService.getUniqueValuesFromAssetsLayer(
+          'Sub_catogryType'
+        );
+      console.log('Sub_catogryType unique values:', subCategoryTypes);
+      this.subCategoryTypeOptions = subCategoryTypes.map((value) => ({
+        label: value,
+        value: value,
+      }));
+      console.log(
+        'Sub_catogryType options array:',
+        this.subCategoryTypeOptions
+      );
+
+      console.log('=== Asset filter options loaded summary ===');
+      console.log('SystemName count:', this.systemNameOptions.length);
+      console.log('sub_catogry count:', this.subCategoryOptions.length);
+      console.log('Sub_catogryType count:', this.subCategoryTypeOptions.length);
+      console.log('=== End of asset filter options loading ===');
+    } catch (error) {
+      console.error('Error loading asset filter options:', error);
+    }
+  }
+
+  /**
+   * Handle system name filter change
+   */
+  onSystemNameChange(): void {
+    const systemName = this.filterForm.get('systemName')?.value;
+    this.selectedSystemName = systemName || '';
+    this.applyMapFilters();
+  }
+
+  /**
+   * Handle sub category filter change
+   */
+  onSubCategoryChange(): void {
+    const subCategory = this.filterForm.get('subCategory')?.value;
+    this.selectedSubCategory = subCategory || '';
+    this.applyMapFilters();
+  }
+
+  /**
+   * Handle sub category type filter change
+   */
+  onSubCategoryTypeChange(): void {
+    const subCategoryType = this.filterForm.get('subCategoryType')?.value;
+    this.selectedSubCategoryType = subCategoryType || '';
+    this.applyMapFilters();
+  }
+
+  /**
    * Apply filters to the map
    */
   private applyMapFilters(): void {
@@ -578,6 +706,9 @@ export class SpatialTrackingMapComponent
       floorName: this.selectedFloorName, // Use English floor name instead of code
       roomCode: this.selectedRoomCode, // For rooms layer filtering
       roomName: this.selectedRoomName, // For assets layer filtering
+      systemName: this.selectedSystemName, // For assets layer filtering (SystemType)
+      subCategory: this.selectedSubCategory, // For assets layer filtering (sub_catogry)
+      subCategoryType: this.selectedSubCategoryType, // For assets layer filtering (Sub_catogryType)
     });
   }
 
@@ -591,6 +722,9 @@ export class SpatialTrackingMapComponent
       building: '',
       floor: '',
       room: '',
+      systemName: '',
+      subCategory: '',
+      subCategoryType: '',
     });
 
     // Clear selected filter codes
@@ -599,6 +733,9 @@ export class SpatialTrackingMapComponent
     this.selectedFloorName = '';
     this.selectedRoomCode = '';
     this.selectedRoomName = '';
+    this.selectedSystemName = '';
+    this.selectedSubCategory = '';
+    this.selectedSubCategoryType = '';
 
     // Clear dependent dropdown options (but keep slaughterhouse options)
     this.buildingOptions = [];
