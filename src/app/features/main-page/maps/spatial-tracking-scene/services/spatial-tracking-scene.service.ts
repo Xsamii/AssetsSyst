@@ -212,12 +212,14 @@ export class SpatialTrackingSceneService {
           layerSpatialReference = rootLayerInfo.spatialReference;
         }
 
-        // For 3DObject scene layers, use the base SceneServer URL directly
+        // For 3DObject scene layers, prefer the explicit layer URL (/layers/{id})
         if (rootLayerType === '3DObject') {
           is3DObject = true;
-          layerUrlToUse = url.replace(/\/+$/, '');
+          const rootLayerId =
+            typeof rootLayerInfo.id === 'number' ? rootLayerInfo.id : 0;
+          layerUrlToUse = `${url.replace(/\/+$/, '')}/layers/${rootLayerId}`;
           console.log(
-            'Detected 3DObject scene layer. Using base URL:',
+            'Detected 3DObject scene layer. Using explicit layer URL:',
             layerUrlToUse
           );
         }
@@ -227,11 +229,18 @@ export class SpatialTrackingSceneService {
       console.log('Layer spatial reference:', layerSpatialReference);
 
       // Check if we need to update the view's spatial reference for local coordinate systems
-      const layerWkid = layerSpatialReference?.wkid || layerSpatialReference?.latestWkid;
-      const isProjectedCRS = layerWkid && layerWkid !== 4326 && layerWkid !== 102100 && layerWkid !== 3857;
+      const layerWkid =
+        layerSpatialReference?.wkid || layerSpatialReference?.latestWkid;
+      const isProjectedCRS =
+        layerWkid &&
+        layerWkid !== 4326 &&
+        layerWkid !== 102100 &&
+        layerWkid !== 3857;
 
       if (isProjectedCRS && this.sceneView) {
-        console.log(`Layer uses projected CRS (wkid: ${layerWkid}), updating SceneView to local mode with matching spatial reference`);
+        console.log(
+          `Layer uses projected CRS (wkid: ${layerWkid}), updating SceneView to local mode with matching spatial reference`
+        );
 
         // Store current view settings
         const container = this.sceneView.container;
@@ -289,7 +298,10 @@ export class SpatialTrackingSceneService {
 
         // Wait for new view to be ready
         await this.sceneView.when();
-        console.log('SceneView recreated with local mode and spatial reference:', layerWkid);
+        console.log(
+          'SceneView recreated with local mode and spatial reference:',
+          layerWkid
+        );
       }
 
       // Create the appropriate layer type
@@ -339,6 +351,72 @@ export class SpatialTrackingSceneService {
       );
     } catch (error) {
       console.error('Error adding scene layer:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Add an additional scene layer on top of the existing one
+   * Does NOT replace the primary sceneLayer or reinitialize the view.
+   * Intended for overlay layers like Rooms, etc.
+   */
+  async addAdditionalSceneLayer(url: string, layerId: string): Promise<void> {
+    if (!this.map) {
+      throw new Error('Map is not initialized. Call initializeMap() first.');
+    }
+
+    try {
+      // Check layer type by fetching service metadata
+      const serviceUrl = url.endsWith('?f=json') ? url : `${url}?f=json`;
+      const response = await fetch(serviceUrl);
+      const serviceInfo = await response.json();
+      console.log('Additional layer serviceInfo', serviceInfo);
+
+      let layerType: string | null = null;
+      let layerUrlToUse: string = url;
+
+      if (serviceInfo.layerType) {
+        layerType = serviceInfo.layerType;
+      }
+
+      if (serviceInfo.layers && serviceInfo.layers.length > 0) {
+        const rootLayerInfo = serviceInfo.layers[0];
+        const rootLayerType = rootLayerInfo.layerType || layerType;
+        layerType = rootLayerType;
+
+        if (rootLayerType === '3DObject') {
+          const rootLayerId =
+            typeof rootLayerInfo.id === 'number' ? rootLayerInfo.id : 0;
+          layerUrlToUse = `${url.replace(/\/+$/, '')}/layers/${rootLayerId}`;
+          console.log(
+            'Additional 3DObject scene layer. Using explicit layer URL:',
+            layerUrlToUse
+          );
+        }
+      }
+
+      console.log(
+        'Adding additional SceneLayer with URL:',
+        layerUrlToUse,
+        'layerType:',
+        layerType
+      );
+
+      const extraLayer = new SceneLayer({
+        url: layerUrlToUse,
+        id: layerId,
+        title:
+          serviceInfo.name || serviceInfo.serviceName || 'Extra SceneLayer',
+      });
+
+      this.map.add(extraLayer);
+      await extraLayer.when();
+
+      this.layerAdded$.next({ layerId, layer: extraLayer });
+
+      console.log('Additional SceneLayer added successfully:', layerId);
+    } catch (error) {
+      console.error('Error adding additional scene layer:', error);
       throw error;
     }
   }

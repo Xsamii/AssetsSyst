@@ -29,9 +29,22 @@ export class SpatialTrackingSceneComponent
   showBaseMap = false;
   showLegend = false;
 
-  // Scene layer URL
-  private readonly SCENE_LAYER_URL =
+  // Scene layer URLs
+  private readonly MAIN_SCENE_LAYER_URL =
     'https://tiles.arcgis.com/tiles/FO8QSNbg7KTn0Nki/arcgis/rest/services/MechanicalEquipmentzone5664/SceneServer';
+
+  private readonly ROOMS_SCENE_LAYER_URL =
+    'https://tiles.arcgis.com/tiles/FO8QSNbg7KTn0Nki/arcgis/rest/services/Rooms/SceneServer';
+
+  private readonly WALLS_SCENE_LAYER_URL =
+    'https://tiles.arcgis.com/tiles/FO8QSNbg7KTn0Nki/arcgis/rest/services/Walls/SceneServer';
+
+  // Simple visibility model for custom layer list
+  layerVisibility = {
+    main: true,
+    rooms: true,
+    walls: true,
+  };
 
   // Pending element ID from query params
   private pendingElementId: string | null = null;
@@ -159,10 +172,22 @@ export class SpatialTrackingSceneComponent
         0 // Heading
       );
 
-      // Step 3: Add scene layer
+      // Step 3: Add main scene layer (Mechanical equipment)
       await this.spatialTrackingSceneService.addSceneLayer(
-        this.SCENE_LAYER_URL,
+        this.MAIN_SCENE_LAYER_URL,
         'c70381a8779a40e78a93f740d1883911'
+      );
+
+      // Step 3.1: Add Rooms scene layer (3D rooms) as an additional overlay layer
+      await this.spatialTrackingSceneService.addAdditionalSceneLayer(
+        this.ROOMS_SCENE_LAYER_URL,
+        '54cf836e00a24d9b8e451c4277f7d895'
+      );
+
+      // Step 3.2: Add Walls scene layer (3D walls) as an additional overlay layer
+      await this.spatialTrackingSceneService.addAdditionalSceneLayer(
+        this.WALLS_SCENE_LAYER_URL,
+        'd8d79300e2fb4fc9a91fa2976b038802'
       );
 
       // Step 4: Initialize widgets after scene is ready
@@ -234,6 +259,57 @@ export class SpatialTrackingSceneComponent
    */
   toggleLegend(): void {
     this.showLegend = !this.showLegend;
+  }
+
+  /**
+   * Handle custom layer visibility changes from checkboxes
+   */
+  onLayerVisibilityChange(
+    layerKey: 'main' | 'rooms' | 'walls',
+    event: Event
+  ): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.layerVisibility[layerKey] = checked;
+
+    // Map keys to actual layer IDs used when adding layers
+    let targetLayerId: string | null = null;
+
+    switch (layerKey) {
+      case 'main':
+        targetLayerId = 'c70381a8779a40e78a93f740d1883911';
+        break;
+      case 'rooms':
+        targetLayerId = '54cf836e00a24d9b8e451c4277f7d895';
+        break;
+      case 'walls':
+        targetLayerId = 'd8d79300e2fb4fc9a91fa2976b038802';
+        break;
+    }
+
+    if (!targetLayerId) {
+      return;
+    }
+
+    // Get map from the scene service to ensure we use the authoritative map instance
+    const map = this.spatialTrackingSceneService.getMap();
+    if (!map) {
+      console.warn('Map is not initialized yet');
+      return;
+    }
+
+    const layer = map.findLayerById(targetLayerId) as __esri.Layer | undefined;
+
+    if (layer) {
+      console.log(
+        'Toggling visibility for layer',
+        targetLayerId,
+        'to',
+        checked
+      );
+      layer.visible = checked;
+    } else {
+      console.warn('Layer not found for visibility toggle:', targetLayerId);
+    }
   }
 }
 

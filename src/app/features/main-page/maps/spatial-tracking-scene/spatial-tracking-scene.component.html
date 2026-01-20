@@ -22,6 +22,35 @@
     <!-- Scene View -->
     <div #sceneViewNode class="scene-view w-full h-full"></div>
 
+    <!-- Custom Layer Visibility Controls -->
+    <div
+      class="absolute bottom-4 right-4 z-40 bg-white/90 rounded-lg shadow-md p-3 min-w-[180px] text-xs space-y-2">
+      <h3 class="font-semibold text-gray-800 mb-1">عرض الطبقات</h3>
+
+      <label class="flex items-center gap-2 text-gray-700">
+        <input
+          type="checkbox"
+          [checked]="layerVisibility.main"
+          (change)="onLayerVisibilityChange('main', $event)" />
+        <span>معدات ميكانيكية</span>
+      </label>
+
+      <label class="flex items-center gap-2 text-gray-700">
+        <input
+          type="checkbox"
+          [checked]="layerVisibility.rooms"
+          (change)="onLayerVisibilityChange('rooms', $event)" />
+        <span>الغرف</span>
+      </label>
+
+      <label class="flex items-center gap-2 text-gray-700">
+        <input
+          type="checkbox"
+          [checked]="layerVisibility.walls"
+          (change)="onLayerVisibilityChange('walls', $event)" />
+        <span>الجدران</span>
+      </label>
+    </div>
     <!-- Map Controls -->
     <app-map-controls
       (layerListToggle)="toggleLayerList()"
