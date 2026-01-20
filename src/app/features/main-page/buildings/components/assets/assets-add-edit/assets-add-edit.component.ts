@@ -45,7 +45,6 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
   officesList;
   typeAssetList;
   assetStatusList;
-  subunitList;
   regularmaintenanceitemList;
   categoryList;
   subCategoryList;
@@ -143,7 +142,6 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
       fileUploads: [null],
       siteId: [null, Validators.required],
       buildingId: [null, Validators.required],
-      // subunitId: [null, Validators.required],
       FloorId: [null, Validators.required],
     });
   }
@@ -158,11 +156,6 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
     return building?.code || '';
   }
 
-  // getSelectedSubunitName(): string {
-  //   const subunitId = this.assetForm.get('subunitId')?.value;
-  //   const subunit = this.subunitList?.find((s) => s.id === subunitId);
-  //   return subunit?.code || '';
-  // }
 
   getSelectedFloorName(): string {
     const floorId = this.assetForm.get('FloorId')?.value;
@@ -185,7 +178,6 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
   getAssetDisplayName(): string {
     const parts = [
       this.getSelectedBuildingName(),
-      // this.getSelectedSubunitName(),
       this.getSelectedFloorName(),
       this.getSelectedOfficeName(),
       this.getSelectedAssetTypeName(),
@@ -221,15 +213,9 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
     this.getFloorLookUp(value.value);
   }
 
-  getSubunitLookUp(id) {
-    this._sharedService.getAllBuildingSubUnit(id).subscribe((res) => {
-      this.subunitList = res.data;
-    });
-  }
 
-  changeSubUnit(id) {
-    this.getFloorLookUp(id.value);
-  }
+
+
 
 
   getFloorLookUp(id) {
@@ -415,9 +401,10 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
   }
 
   patchAssetForm(data) {
-    // if (data.building?.id) {
-    //   this.getSubunitLookUp(data.building?.id);
-    // }
+
+     if (data.site.id) {
+      this.getSiteBuildings(data.site.id);
+    }
     if (data.building.id) {
       this.getFloorLookUp(data.building.id);
     }
@@ -450,7 +437,6 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
       regularMaintenanceItemIds:  data.regularMaintenanceItems?.map(item => item.id) || [],
       siteId: data.site?.id,
       buildingId: data.building?.id,
-      // subunitId: data.subUnit.id,
       FloorId: data.floor.id,
       isWorking: data.isWorking,
     });

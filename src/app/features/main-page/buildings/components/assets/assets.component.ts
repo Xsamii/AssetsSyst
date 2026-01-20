@@ -44,6 +44,8 @@ export class AssetsComponent {
   officesList;
   typeAssetList;
   assetStatusList;
+  sitesLookup: any[] = [];
+
   displayDialog: boolean = false;
   showBreadcrumb: boolean = true;
   alertSuccess: boolean = false;
@@ -64,14 +66,29 @@ export class AssetsComponent {
     private _formBuilder: FormBuilder
   ) { }
   ngOnInit() {
+    this.initializeSearchForm();
+
+    this.assetStatusList = [
+      {
+        status: true,
+        name: 'يعمل',
+      },
+      {
+        status: false,
+        name: ' لا يعمل',
+      },
+    ];
+
     this.getData();
+    this.getSitesLookup();
+
     this.getAssetTypeLookUp();
     this.getBulldingLookUp();
     this.cols = [
       new listColumns({ field: 'id', header: '#' }),
       new listColumns({ field: 'name', header: 'رقم الأصل' }),
       new listColumns({ field: 'notes', header: 'اسم الأصل' }),
-       new listColumns({
+      new listColumns({
         field: 'siteName',
         header: 'اسم الموقع ',
       }),
@@ -160,11 +177,12 @@ export class AssetsComponent {
   initializeSearchForm() {
     this.searchForm = this._formBuilder.group({
       unitId: [],
+      siteId: [],
       buildingId: [],
       floorId: [],
       officeId: [],
       typeAssetId: [],
-      assetStatusId: [],
+      isWorking: [],
     });
   }
 
@@ -174,7 +192,24 @@ export class AssetsComponent {
 
   showDialog() {
     this.displayDialog = true;
-    this.initializeSearchForm();
+    // If a site is already selected, load buildings for that site
+    if (this.searchForm.value.siteId) {
+      this._sharedService.GetBuildingsBySiteId(this.searchForm.value.siteId).subscribe({
+        next: (res: any) => {
+          this.mainBuildingsList = res.data || [];
+        }
+      });
+    }
+    // If a building is already selected, load floors for that building
+    if (this.searchForm.value.buildingId) {
+      this.getFloorLookUp(this.searchForm.value.buildingId);
+    }
+    // If a floor is already selected, load offices for that floor
+    if (this.searchForm.value.floorId) {
+      this._sharedService.getOfficesInFloor(this.searchForm.value.floorId).subscribe((res) => {
+        this.officesList = res.data;
+      });
+    }
   }
 
   filterBySearchTesxt(value: string) {
@@ -186,33 +221,51 @@ export class AssetsComponent {
   popupFilter() {
     this.isSearchingReasult = true;
     this.filterDataParams.filterItems = [];
+    if (this.searchForm.value.siteId)
+      this.filterDataParams.SiteIds = this.searchForm.value.siteId;
+
     if (this.searchForm.value.buildingId)
-      this.filterDataParams.filterItems.push({
-        key: 'Id',
-        operator: 'equals',
-        value: String(this.searchForm.value.buildingId),
-      });
-    if (this.searchForm.value.unitId)
-      this.filterDataParams.filterItems.push({
-        key: 'unitId',
-        operator: 'equals',
-        value: String(this.searchForm.value.unitId),
-      });
+      this.filterDataParams.BuildingIds = this.searchForm.value.buildingId;
 
     if (this.searchForm.value.floorId)
-      this.filterDataParams.filterItems.push({
-        key: 'floorId',
-        operator: 'equals',
-        value: String(this.searchForm.value.floorId),
-      });
+      this.filterDataParams.FloorIds = this.searchForm.value.floorId;
+
+    if (this.searchForm.value.officeId)
+      this.filterDataParams.OfficeIds = this.searchForm.value.officeId;
+    if (this.searchForm.value.typeAssetId)
+      this.filterDataParams.AssetTypeIds = this.searchForm.value.typeAssetId;
+    // Fix: Check for undefined/null instead of truthy value since false is a valid filter value
+    if (this.searchForm.value.isWorking !== undefined && this.searchForm.value.isWorking !== null)
+      this.filterDataParams.IsWorking = this.searchForm.value.isWorking;
+
     this.getData();
     this.displayDialog = false;
   }
   hideDialog() {
-    this.searchForm.reset();
     this.displayDialog = false;
-    this.popupFilter();
   }
+
+  resetFilter() {
+    this.searchForm.reset();
+    // Reset buildings list to show all buildings
+    this._sharedService.getAllBuilding().subscribe((res) => {
+      this.mainBuildingsList = res.data;
+    });
+    this.floorsList = [];
+    this.officesList = [];
+    // Reset filter params
+    this.filterDataParams.SiteIds = undefined;
+    this.filterDataParams.BuildingIds = undefined;
+    this.filterDataParams.FloorIds = undefined;
+    this.filterDataParams.OfficeIds = undefined;
+    this.filterDataParams.AssetTypeIds = undefined;
+    this.filterDataParams.IsWorking = undefined;
+    this.filterDataParams.filterItems = [];
+    this.isSearchingReasult = false;
+    this.getData();
+    this.displayDialog = false;
+  }
+
   OnSubmitData() {
     this.popupFilter();
   }
@@ -283,20 +336,65 @@ export class AssetsComponent {
     });
   }
   changeBulding(id) {
-    this.getSubunitLookUp(id.value);
-  }
-  getSubunitLookUp(id) {
-    this._sharedService.getAllBuildingSubUnit(id).subscribe((res) => {
-      this.subUnitsList = res.data;
-    });
-  }
-  changeSubUnit(id) {
     this.getFloorLookUp(id.value);
   }
+  changeFloor(id) {
+    console.log(id);
+
+    this._sharedService.getOfficesInFloor(id.value).subscribe((res) => {
+      this.officesList = res.data;
+    });
+  }
+
+  // getSubunitLookUp(id) {
+  //   this._sharedService.getAllBuildingSubUnit(id).subscribe((res) => {
+  //     this.subUnitsList = res.data;
+  //   });
+  // }
+  // changeSubUnit(id) {
+  //   this.getFloorLookUp(id.value);
+  // }
 
   getFloorLookUp(id) {
-    this._sharedService.getFloorsInSubunit(id).subscribe((res) => {
+    this._sharedService.GetBuildingFloors(id).subscribe((res) => {
       this.floorsList = res.data;
     });
   }
+  onFilterSiteChange(siteId: number): void {
+    this.floorsList = [];
+    this.mainBuildingsList = [];
+    this.searchForm.patchValue({ buildingId: null, floorId: null, officeId: null });
+
+    if (siteId) {
+      this._sharedService.GetBuildingsBySiteId(siteId).subscribe({
+        next: (res: any) => {
+          this.mainBuildingsList = res.data || [];
+        },
+        error: (err) => this.handleError(err)
+      });
+    } else {
+      this._sharedService.getAllBuilding().subscribe({
+        next: (res) => {
+          this.mainBuildingsList = res.data || [];
+        },
+        error: (err) => this.handleError(err)
+      });
+    }
+  }
+  getSitesLookup(): void {
+    this._sharedService.GetSites().subscribe({
+      next: (res) => {
+        this.sitesLookup = res.data || [];
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+  private handleError(error: any): void {
+    console.error('Error occurred:', error);
+    this.alertError = true;
+    // this.alertErrorMsg = error?.error?.message || error?.message || 'حدث خطأ ما، يرجى المحاولة مرة أخرى';
+    // this.isLoading = false;
+    // this.isLoadingFloors = false;
+  }
+
 }

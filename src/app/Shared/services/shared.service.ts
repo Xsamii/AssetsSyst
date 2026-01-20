@@ -427,6 +427,42 @@ export class SharedService {
       params = params.set('ProjectId', filterDataParams?.ProjectId);
     }
     if (
+      filterDataParams?.SiteIds != undefined &&
+      filterDataParams?.SiteIds != null
+    ) {
+      params = params.set('SiteIds', filterDataParams?.SiteIds);
+    }
+    if (
+      filterDataParams?.BuildingIds != undefined &&
+      filterDataParams?.BuildingIds != null
+    ) {
+      params = params.set('BuildingIds', filterDataParams?.BuildingIds);
+    }
+    if (
+      filterDataParams?.FloorIds != undefined &&
+      filterDataParams?.FloorIds != null
+    ) {
+      params = params.set('FloorIds', filterDataParams?.FloorIds);
+    }
+    if (
+      filterDataParams?.OfficeIds != undefined &&
+      filterDataParams?.OfficeIds != null
+    ) {
+      params = params.set('OfficeIds', filterDataParams?.OfficeIds);
+    }
+    if (
+      filterDataParams?.AssetTypeIds != undefined &&
+      filterDataParams?.AssetTypeIds != null
+    ) {
+      params = params.set('AssetTypeIds', filterDataParams?.AssetTypeIds);
+    }
+     if (
+      filterDataParams?.IsWorking != undefined &&
+      filterDataParams?.IsWorking != null
+    ) {
+      params = params.set('IsWorking', filterDataParams?.IsWorking);
+    }
+    if (
       filterDataParams?.GlobalProjectId != undefined &&
       filterDataParams?.GlobalProjectId != null
     ) {
@@ -549,7 +585,13 @@ export class FilterDataParams {
     ProjectType?: number,
     renderType?: number,
     AssetId?:number,
-    mainCatId?:number
+    mainCatId?:number,
+    SiteIds?:number,
+    BuildingIds?:number,
+    FloorIds?:number,
+    OfficeIds?:number,
+    AssetTypeIds?:number,
+    IsWorking?:boolean
   ) {
     this.pageNumber = pageNumber;
     this.searchTerm = searchTerm;
@@ -567,7 +609,13 @@ export class FilterDataParams {
     this.skipCount = skipCount;
     this.renderType = renderType;
     this.AssetId=AssetId
-    this.mainCatId=mainCatId
+    this.mainCatId=mainCatId;
+    this.SiteIds=SiteIds;
+    this.BuildingIds=BuildingIds;
+    this.FloorIds=FloorIds;
+    this.OfficeIds=OfficeIds;
+    this.AssetTypeIds=AssetTypeIds;
+    this.IsWorking=IsWorking;
   }
   filterType?: number;
   pageNumber?: number;
@@ -585,5 +633,11 @@ export class FilterDataParams {
   ProjectType?: number;
   renderType?: number;
   AssetId?:number
-  mainCatId?:number
+  mainCatId?:number;
+  SiteIds?:number;
+  BuildingIds?:number;
+  FloorIds?:number;
+  OfficeIds?:number;
+  AssetTypeIds?:number;
+  IsWorking?:boolean;
 }

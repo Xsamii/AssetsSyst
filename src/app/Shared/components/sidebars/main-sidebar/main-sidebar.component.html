@@ -11,7 +11,7 @@
     </div>
     <p>الرئيسية</p>
   </a>
-  <a class="item p-2" routerLink="/survey-dashboard" routerLinkActive="active-menu-items" *ngIf="
+  <!-- <a class="item p-2" routerLink="/survey-dashboard" routerLinkActive="active-menu-items" *ngIf="
       userRole !== roles.ServiceRequester &&
       userRole !== roles.MaintenanceSupervisor &&
       userRole !== roles.OfficeEmployee &&
@@ -32,7 +32,7 @@
 
     </div>
     <p>مؤشرات تقييم مستخدمين للمرافق</p>
-  </a>
+  </a> -->
 
   <hr class="opacity-30" />
 
@@ -72,10 +72,10 @@
         <p>طلب صيانة 3D</p>
       </a> -->
 
-      <a class="item" routerLink="/maintenance-map" routerLinkActive="active-menu-items"
+      <!-- <a class="item" routerLink="/maintenance-map" routerLinkActive="active-menu-items"
         *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer">
         <p>الطلبات الموزعه علي الخريطة</p>
-      </a>
+      </a> -->
     </div>
   </div>
 
@@ -253,17 +253,17 @@
       </a>
 
       <!-- Malfunction Types -->
-      <a class="item" routerLink="/maintenance-plan-settings/maintenace-plan-malfunction-types"
+      <!-- <a class="item" routerLink="/maintenance-plan-settings/maintenace-plan-malfunction-types"
         routerLinkActive="active-menu-items" *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer">
         <p>أنواع الأعطال</p>
-      </a>
+      </a> -->
     </div>
   </div>
 
   <hr class="opacity-30" *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer" />
 
   <!-- Projects Management Section -->
-  <div class="item p-2" [ngClass]="{ active: projectsOpenMenu }" (click)="showProjectsSubMenu(true)" *ngIf="
+  <!-- <div class="item p-2" [ngClass]="{ active: projectsOpenMenu }" (click)="showProjectsSubMenu(true)" *ngIf="
       userRole === roles.Admin ||
       userRole === roles.SystemOfficer ||
       userRole === roles.OfficeManager ||
@@ -277,12 +277,11 @@
     <i [class]="
         projectsOpenMenu ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'
       "></i>
-  </div>
+  </div> -->
 
   <!-- Projects Submenu -->
-  <div class="Drop-Down" *ngIf="projectsOpenMenu">
+  <!-- <div class="Drop-Down" *ngIf="projectsOpenMenu">
     <div class="items">
-      <!-- Projects Section -->
       <div class="item" [ngClass]="{ active: projectsMenu }" (click)="showSubMenu('projects')" *ngIf="
           userRole === roles.Admin ||
           userRole === roles.SystemOfficer ||
@@ -295,7 +294,6 @@
           "></i>
       </div>
 
-      <!-- Projects Dropdown -->
       <div class="Drop-Down space-y-2" *ngIf="projectsMenu">
         <div class="dropdown-menu item" routerLinkActive="active-sub-submenu"
           [routerLinkActiveOptions]="{ exact: true }" *ngIf="
@@ -350,7 +348,6 @@
         </div>
       </div>
 
-      <!-- Visit Requests Section -->
       <div class="item" [ngClass]="{ active: requestsMenu }" (click)="showSubMenu('requests')">
         <p>طلبات الزيارة</p>
         <i [class]="
@@ -358,7 +355,6 @@
           "></i>
       </div>
 
-      <!-- Visit Requests Dropdown -->
       <div class="Drop-Down space-y-2" *ngIf="requestsMenu">
         <div class="dropdown-menu item" routerLinkActive="active-sub-submenu"
           [routerLinkActiveOptions]="{ exact: true }"
@@ -400,7 +396,6 @@
         </div>
       </div>
 
-      <!-- Project Settings -->
       <a class="item" routerLink="/projects/project-settings" routerLinkActive="active-menu-items"
         *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer">
         <p>الإعدادات</p>
@@ -414,7 +409,7 @@
       userRole === roles.OfficeManager ||
       userRole === roles.ProjectManager ||
       userRole === roles.OfficeEmployee
-    " />
+    " /> -->
 
 
   <!-- Map Tracking Section -->
@@ -549,7 +544,7 @@
   </div>
 
   <!-- arch Section -->
-  <a class="item p-2" routerLink="/monthly-report/main-tab" routerLinkActive="active-menu-items"
+  <!-- <a class="item p-2" routerLink="/monthly-report/main-tab" routerLinkActive="active-menu-items"
     *ngIf="userRole == roles.Admin">
     <div class="item-icon">
       <i class="fa-solid fa-box-archive"></i>
@@ -561,7 +556,7 @@
       userRole !== roles.ServiceRequester &&
       userRole !== roles.OfficeEmployee &&
       userRole !== roles.inventoryManager
-    " />
+    " /> -->
 
   <!-- System Management Section -->
   <div class="item p-2" [ngClass]="{ active: settingOpenMenu }" (click)="showSettingSubMenu(true)" *ngIf="
