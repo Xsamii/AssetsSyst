@@ -31,7 +31,7 @@ export class SpatialTrackingSceneComponent
 
   // Scene layer URL
   private readonly SCENE_LAYER_URL =
-    'https://tiles.arcgis.com/tiles/FO8QSNbg7KTn0Nki/arcgis/rest/services/Zone1_Layer/SceneServer';
+    'https://tiles.arcgis.com/tiles/FO8QSNbg7KTn0Nki/arcgis/rest/services/MechanicalEquipmentzone5664/SceneServer';
 
   // Pending element ID from query params
   private pendingElementId: string | null = null;
@@ -162,7 +162,7 @@ export class SpatialTrackingSceneComponent
       // Step 3: Add scene layer
       await this.spatialTrackingSceneService.addSceneLayer(
         this.SCENE_LAYER_URL,
-        'f5f758a2a24d4d81bd2b791920b3499d'
+        'c70381a8779a40e78a93f740d1883911'
       );
 
       // Step 4: Initialize widgets after scene is ready
