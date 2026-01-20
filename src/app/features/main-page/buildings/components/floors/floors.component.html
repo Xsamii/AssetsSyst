@@ -5,7 +5,7 @@
     { name: 'الرئيسية', routerLink: '/' },
     { name: 'إدارة الأصول', routerLink: '/buildings' },
     { name: 'الطوابق ', routerLink: '/buildings/floors' }
-  ]" [isFilte]="true" [inputPlaceholder]="'ابحث باسم الطابق...'" [buttonText]="'اضافة طابق'" [saveBtnText]="'إضافة'"
+  ]" [isFilte]="true" [inputPlaceholder]="'ابحث برقم الطابق...'" [buttonText]="'اضافة طابق'" [saveBtnText]="'إضافة'"
   [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false" (addButton)="openAdd()"
   (valueSearch)="filterBySearchText($event)" (onFilterClick)="showDialog()"></app-bread-crumb>
 
@@ -22,17 +22,30 @@
 <!-- ============================= -->
 <!-- SEARCH-->
 <!-- ============================= -->
-<div class="overlay" *ngIf="displayDialog">
-  <div class="popup">
+<div class="overlay" *ngIf="displayDialog" (click)="hideDialog()">
+  <div class="popup" (click)="$event.stopPropagation()">
     <div class="title">
       <img src="./assets/icons/search-filter.svg" />
       <p>تصفية الطوابق</p>
+      <i class="fa-solid fa-xmark cursor-pointer mr-auto" (click)="hideDialog()"></i>
     </div>
     <form [formGroup]="searchForm" (ngSubmit)="search()">
       <div class="input-field">
+        <label for="site"> الموقع </label>
+        <div class="">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+              background:
+                'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+              'background-color': '#f6f6f6',
+              'padding-right': '35px'
+            }" optionLabel="name" optionValue="id" placeholder=" اختر الموقع " formControlName="siteId"
+            [options]="sitesLookup" [filter]="true" filterBy="name"
+            (onChange)="onFilterSiteChange(searchForm.value.siteId)"></p-dropdown>
+        </div>
+      </div>
+      <div class="input-field">
         <label for="name"> المبنى </label>
         <div class="">
-          <!-- <img src="assets/icons/select-main-building-icon.svg" /> -->
           <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
               background:
                 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
@@ -43,23 +56,10 @@
             (onChange)="getAllBuildingSubUnit(searchForm.value.buildingId)"></p-dropdown>
         </div>
       </div>
-      <!-- <div class="input-field">
-        <label for="code">المبنى الفرعي</label>
-        <div class="">
-          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
-              background:
-                'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
-              'background-color': '#f6f6f6',
-              'padding-right': '35px'
-            }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى الفرعي"
-            formControlName="buildingSubUnitId" [options]="buildingSubUnitLookup" [filter]="true"
-            filterBy="name"></p-dropdown>
-        </div>
-      </div> -->
 
       <div class="buttons-content">
         <button class="buttons" type="submit">تصفية</button>
-        <button class="buttons-white" type="button" (click)="hideDialog()">
+        <button class="buttons-white" type="button" (click)="resetFilter()">
           إعادة ضبط
         </button>
       </div>
@@ -94,6 +94,26 @@
       </div>
 
       <div class="input-field">
+        <label for="site">
+          الموقع
+          <span>*</span>
+        </label>
+        <div class=" ">
+          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
+            background:
+              'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+            'background-color': '#f6f6f6',
+            'padding-right': '35px'
+          }" optionLabel="name" optionValue="id" placeholder=" اختر الموقع " formControlName="siteId"
+            [options]="sitesLookup" [filter]="true" filterBy="name"
+            (onChange)="onAddEditSiteChange(floorForm.value.siteId)"></p-dropdown>
+        </div>
+          <small *ngIf="formControls.siteId.invalid && formControls.siteId.touched">
+          برجاء إدخال الموقع
+        </small>
+      </div>
+
+      <div class="input-field">
         <label for="main-building">
           المبنى الرئيسي
           <span>*</span>
@@ -105,8 +125,7 @@
             'background-color': '#f6f6f6',
             'padding-right': '35px'
           }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى الرئيسي " formControlName="buildingId"
-            [options]="builldingLookup" [filter]="true" filterBy="name"
-            (onChange)="getAllBuildingSubUnit(floorForm.value.buildingId)"></p-dropdown>
+            [options]="addEditBuildingLookup" [filter]="true" filterBy="name"></p-dropdown>
         </div>
         <small *ngIf="
             formControls.buildingId.invalid &&

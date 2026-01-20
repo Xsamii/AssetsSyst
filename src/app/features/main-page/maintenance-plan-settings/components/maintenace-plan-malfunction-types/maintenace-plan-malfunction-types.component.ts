@@ -5,7 +5,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SweetAlertMessageComponent } from 'src/app/Shared/components/sweet-alert-message/sweet-alert-message.component';
 import { ListComponent } from 'src/app/Shared/components/list/list.component';
-import { DropdownModule } from 'primeng/dropdown';
 import { BreadCrumbComponent } from 'src/app/Shared/components/bread-crumb/bread-crumb.component';
 import { FilterDataParams } from 'src/app/Shared/services/shared.service';
 import { NoDataYetComponent } from 'src/app/Shared/components/no-data-yet/no-data-yet.component';
@@ -17,7 +16,6 @@ import { NoDataYetComponent } from 'src/app/Shared/components/no-data-yet/no-dat
     CommonModule,
     SweetAlertMessageComponent,
     ListComponent,
-    DropdownModule,
     BreadCrumbComponent,
     ReactiveFormsModule,
     NoDataYetComponent
@@ -32,10 +30,6 @@ export class MaintenacePlanMalfunctionTypesComponent {
   items = []
   values: any[] = [];
   cols: any[] = [];
-  malfunctionTypesList = [
-    { name: 'صيانة', id: 1 },
-    { name: 'نظافة', id: 2 },
-  ];
   totalPageCount!: number;
   searchValue!: string;
   isSearchingReasult: boolean = false;
@@ -53,7 +47,7 @@ export class MaintenacePlanMalfunctionTypesComponent {
 
   malfunctionTypeId: number;
   malfunctionTypesForm = this._fb.group({
-    maintTypeId: ['', Validators.required],
+    name: ['', Validators.required],
     code: ['', Validators.required]
   });
   get formControls() {
@@ -98,7 +92,7 @@ export class MaintenacePlanMalfunctionTypesComponent {
     this.malfunctionTypeId = id;
     this._MalfunctionTypesService.getMalfunctionTypeById(id).subscribe((res) => {
       this.malfunctionTypesForm.patchValue({
-        maintTypeId: res.data.maintTypeId,
+        name: res.data.name,
         code: res.data.code
       });
     });
@@ -106,7 +100,7 @@ export class MaintenacePlanMalfunctionTypesComponent {
   OnSubmitData() {
     const obj = {
       id: this.malfunctionTypeId,
-      maintTypeId: this.malfunctionTypesForm.value.maintTypeId,
+      name: this.malfunctionTypesForm.value.name,
       code: this.malfunctionTypesForm.value.code
     };
     if (!this.isEditMode) {
@@ -204,7 +198,7 @@ export class MaintenacePlanMalfunctionTypesComponent {
     ];
     this.getData();
     this.cols = [
-      new listColumns({ field: 'maintTypeName', header: 'التصنيف' }),
+      new listColumns({ field: 'maintTypeName', header: 'الإسم' }),
       new listColumns({ field: 'code', header: 'الكود' }),
 
     ];

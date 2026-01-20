@@ -20,7 +20,7 @@ export class BuildingOfficesService {
     SearchTerm?: string,
     OfficeIds?: number[],
     FloorIds?: number[],
-    BuildingSubUnitIds?: number[],
+    SiteIds?: number[],
     buildingIds?: number[]
   ): Observable<any> {
     let params = new HttpParams();
@@ -47,9 +47,9 @@ export class BuildingOfficesService {
       });
     }
 
-    if (BuildingSubUnitIds && BuildingSubUnitIds.length > 0) {
-      BuildingSubUnitIds.forEach(id => {
-        params = params.append('BuildingSubUnitIds', id.toString());
+    if (SiteIds && SiteIds.length > 0) {
+      SiteIds.forEach(id => {
+        params = params.append('SiteIds', id.toString());
       });
     }
 

@@ -29,7 +29,9 @@ import { DropdownModule } from 'primeng/dropdown';
 export class FloorsComponent {
   showAddEditPopup: boolean = false;
   isEditMode: boolean = false;
+  sitesLookup: any = [];
   builldingLookup: any = [];
+  addEditBuildingLookup: any = [];
   buildingSubUnitLookup: any = [];
   alertSuccess: boolean = false;
   displayDialog: boolean = false;
@@ -51,8 +53,8 @@ export class FloorsComponent {
   // -----------------------------------
   floorForm = this._fb.group({
     floorNumber: ['', Validators.required],
-    // buildingSubUnitId: [null, Validators.required],
-    buildingId: [],
+    siteId: [null, Validators.required],
+    buildingId: [null, Validators.required],
   });
   get formControls() {
     return this.floorForm.controls;
@@ -62,10 +64,42 @@ export class FloorsComponent {
   // ------------------------------------
   // LOOKUPS
   // ------------------------------------
+  getSitesLookup() {
+    this._sharedService.GetSites().subscribe((res) => {
+      this.sitesLookup = res.data;
+    });
+  }
   getAllBuildingLookup() {
     this._sharedService.getAllBuilding().subscribe((res) => {
       this.builldingLookup = res.data;
+      this.addEditBuildingLookup = res.data;
     });
+  }
+  // For filter dialog - load buildings by site
+  onFilterSiteChange(siteId: number) {
+    if (siteId) {
+      this._sharedService.GetBuildingsBySiteId(siteId).subscribe((res: any) => {
+        this.builldingLookup = res.data || [];
+      });
+    } else {
+      this._sharedService.getAllBuilding().subscribe((res) => {
+        this.builldingLookup = res.data;
+      });
+    }
+    this.searchForm.patchValue({ buildingId: null });
+  }
+  // For add-edit dialog - load buildings by site
+  onAddEditSiteChange(siteId: number) {
+    if (siteId) {
+      this._sharedService.GetBuildingsBySiteId(siteId).subscribe((res: any) => {
+        this.addEditBuildingLookup = res.data || [];
+      });
+    } else {
+      this._sharedService.getAllBuilding().subscribe((res) => {
+        this.addEditBuildingLookup = res.data;
+      });
+    }
+    this.floorForm.patchValue({ buildingId: null });
   }
   getAllBuildingSubUnit(id: number) {
     this._sharedService.getAllBuildingSubUnit(id).subscribe((res) => {
@@ -81,11 +115,11 @@ export class FloorsComponent {
   totalPageCount!: number;
   searchValue!: string;
   buildingIds: number[] = [];
-  buildingSubUnitIds: number[] = [];
+  SiteIds: number[] = [];
   showBreadcrumb: boolean = true;
   getAllFloors(paganations?: any) {
     this._floorsService
-      .getAllFloors(paganations, this.searchValue, this.buildingSubUnitIds, this.buildingIds)
+      .getAllFloors(paganations, this.searchValue, this.SiteIds, this.buildingIds)
       .subscribe(
         (data) => {
           this.values = data.data.items;
@@ -114,22 +148,28 @@ export class FloorsComponent {
   popupFilter() {
     this.isSearchingReasult = true;
     this.buildingIds = [];
-    this.buildingSubUnitIds = [];
+    this.SiteIds = [];
     if (this.searchForm.value.buildingId)
       this.buildingIds.push(this.searchForm.value.buildingId);
 
-    if (this.searchForm.value.buildingSubUnitId)
-      this.buildingSubUnitIds.push(this.searchForm.value.buildingSubUnitId);
+    if (this.searchForm.value.siteId)
+      this.SiteIds.push(this.searchForm.value.siteId);
 
     this.getAllFloors();
     this.displayDialog = false;
   }
   showDialog() {
     this.displayDialog = true;
-    this.initializeSearchForm();
+    // If a site is already selected, load buildings for that site
+    if (this.searchForm.value.siteId) {
+      this._sharedService.GetBuildingsBySiteId(this.searchForm.value.siteId).subscribe((res: any) => {
+        this.builldingLookup = res.data || [];
+      });
+    }
   }
   initializeSearchForm() {
     this.searchForm = this._fb.group({
+      siteId: [],
       buildingId: [],
       buildingSubUnitId: [],
     });
@@ -138,9 +178,19 @@ export class FloorsComponent {
     this.popupFilter();
   }
   hideDialog() {
-    this.searchForm.reset();
     this.displayDialog = false;
-    this.popupFilter();
+  }
+  resetFilter() {
+    this.searchForm.reset();
+    // Reset buildings list to show all buildings
+    this._sharedService.getAllBuilding().subscribe((res) => {
+      this.builldingLookup = res.data;
+    });
+    this.buildingIds = [];
+    this.SiteIds = [];
+    this.isSearchingReasult = false;
+    this.getAllFloors();
+    this.displayDialog = false;
   }
   // ------------------------------------
   // UPDATE  FLOOR
@@ -152,8 +202,11 @@ export class FloorsComponent {
     this.floorForm.reset();
     this.showAddEditPopup = true;
     this.floorId = null;
-    // this.builldingLookup = [];
-    this.buildingSubUnitLookup = [];
+    // Reset to all buildings for add mode
+    // this._sharedService.getAllBuilding().subscribe((res) => {
+    //   this.addEditBuildingLookup = res.data;
+    // });
+    this.addEditBuildingLookup = [];
   }
   openEdit(id) {
     this.isEditMode = true;
@@ -161,11 +214,27 @@ export class FloorsComponent {
     this.floorId = id;
     this._floorsService.getFloorById(id).subscribe((res) => {
       this.getAllBuildingSubUnit(res.data.buildingId);
-      this.floorForm.patchValue({
-        floorNumber: res.data.floorNumber,
-        // buildingSubUnitId: res.data.buildingSubUnitId,
-        buildingId: res.data.buildingId,
-      });
+      // If the floor has a siteId, load buildings for that site
+      if (res.data.siteId) {
+        this._sharedService.GetBuildingsBySiteId(res.data.siteId).subscribe((siteRes: any) => {
+          this.addEditBuildingLookup = siteRes.data || [];
+          this.floorForm.patchValue({
+            floorNumber: res.data.floorNumber,
+            siteId: res.data.siteId,
+            buildingId: res.data.buildingId,
+          });
+        });
+      } else {
+        // No site, load all buildings
+        this._sharedService.getAllBuilding().subscribe((buildRes) => {
+          this.addEditBuildingLookup = buildRes.data;
+          this.floorForm.patchValue({
+            floorNumber: res.data.floorNumber,
+            siteId: null,
+            buildingId: res.data.buildingId,
+          });
+        });
+      }
     });
   }
   OnSubmitData() {
@@ -260,12 +329,14 @@ export class FloorsComponent {
   // ONINIT
   // ------------------------------------
   ngOnInit(): void {
+    this.initializeSearchForm();
     this.getAllFloors();
+    this.getSitesLookup();
     this.getAllBuildingLookup();
     this.cols = [
       new listColumns({ field: 'id', header: '#' }),
       new listColumns({ field: 'floorNumber', header: 'رقم الطابق' }),
-      // new listColumns({ field: 'buildingSubUnitName', header: 'اسم المبنى الفرعي' }),
+      new listColumns({ field: 'siteName', header: 'اسم الموقع ' }),
       new listColumns({ field: 'buildingName', header: 'اسم المبنى الرئيسي' }),
 
     ];

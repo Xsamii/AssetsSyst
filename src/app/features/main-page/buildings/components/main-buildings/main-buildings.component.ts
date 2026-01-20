@@ -102,9 +102,12 @@ export class MainBuildingsComponent {
 
   showDialog() {
     this.displayDialog = true;
-    // this.searchForm.reset()
-    this.initializeSearchForm();
-    this.getDropDowns();
+    // If a site is already selected, load buildings for that site
+    if (this.searchForm.value.siteId) {
+      this._sharedService.GetBuildingsBySiteId(this.searchForm.value.siteId).subscribe((res: any) => {
+        this.mainBuildingsList = res.data || [];
+      });
+    }
   }
   OnSubmitData() {
     this.popupFilter();
@@ -165,9 +168,19 @@ export class MainBuildingsComponent {
     }
   }
   hideDialog() {
-    this.searchForm.reset();
     this.displayDialog = false;
-    this.popupFilter();
+  }
+
+  resetFilter() {
+    this.searchForm.reset();
+    // Reset buildings list to show all buildings
+    this._sharedService.getAllBuilding().subscribe((res) => {
+      this.mainBuildingsList = res['data'];
+    });
+    this.filterDataParams.filterItems = [];
+    this.isSearchingReasult = false;
+    this.getData();
+    this.displayDialog = false;
   }
 
   openEdit(event) {
@@ -242,6 +255,8 @@ export class MainBuildingsComponent {
   }
 
   ngOnInit() {
+    this.initializeSearchForm();
+    this.getDropDowns();
     this.getData();
     this.cols = [
       new listColumns({ field: 'orderNumber', header: '#' }),

@@ -51,10 +51,10 @@ export class AddEditMaintenancePlanComponent implements OnInit {
     this.maintenancePlanForm = this.fb.group({
       maintenanceTypeId: [2, Validators.required],
       buildingId: [null, Validators.required],
-      floorIds: [[] ],
-      assetIds: [[] ],
+      floorIds: [[]],
+      assetIds: [[]],
       officeId: [null, Validators.required],
-      planMalfunctionTypeId: [null, Validators.required],
+      planMalfunctionTypeIds: [[], Validators.required],
       planDay: [null],
       dateFrom: [null],
       dateTo: [null],
@@ -254,7 +254,7 @@ export class AddEditMaintenancePlanComponent implements OnInit {
       buildingId: this.maintenancePlanForm.get('buildingId')!,
       floorIds: this.maintenancePlanForm.get('floorIds')!,
       officeId: this.maintenancePlanForm.get('officeId')!,
-      planMalfunctionTypeId: this.maintenancePlanForm.get('planMalfunctionTypeId')!,
+      planMalfunctionTypeIds: this.maintenancePlanForm.get('planMalfunctionTypeIds')!,
       planDay: this.maintenancePlanForm.get('planDay')!,
       dateFrom: this.maintenancePlanForm.get('dateFrom')!,
       dateTo: this.maintenancePlanForm.get('dateTo')!
@@ -365,12 +365,17 @@ export class AddEditMaintenancePlanComponent implements OnInit {
   // Load dependent data and patch form
   async loadDependentDataAndPatchForm(data: any) {
     try {
+      // Convert single planMalfunctionTypeId to array for multiselect
+      const planMalfunctionTypeIds = Array.isArray(data.planMalfunctionTypeIds)
+        ? data.planMalfunctionTypeIds
+        : data.planMalfunctionTypeId ? [data.planMalfunctionTypeId] : [];
+
       // First, patch the independent fields
       this.maintenancePlanForm.patchValue({
         maintenanceTypeId: data.maintenanceTypeId,
         buildingId: data.buildingId,
         officeId: data.officeId,
-        planMalfunctionTypeId: data.planMalfunctionTypeId,
+        planMalfunctionTypeIds: planMalfunctionTypeIds,
         planDay: data.planDay ? new Date(data.planDay) : null,
         dateFrom: data.dateFrom ? new Date(data.dateFrom) : null,
         dateTo: data.dateTo ? new Date(data.dateTo) : null
@@ -517,7 +522,9 @@ export class AddEditMaintenancePlanComponent implements OnInit {
         ? formValue.assetIds.map((id: any) => Number(id))
         : [],
       officeId: formValue.officeId ? Number(formValue.officeId) : 0,
-      planMalfunctionTypeId: formValue.planMalfunctionTypeId ? Number(formValue.planMalfunctionTypeId) : 0,
+      planMalfunctionTypeIds: formValue.planMalfunctionTypeIds?.length > 0
+        ? formValue.planMalfunctionTypeIds.map((id: any) => Number(id))
+        : [],
     };
 
     // Add date fields based on maintenance type

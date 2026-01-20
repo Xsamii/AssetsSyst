@@ -212,8 +212,13 @@ export class MainBuildingsAddEditComponent {
   }
 
   submit() {
+    // Convert empty string to null for floorsNumber
+    const floorsNumberValue = this.formData.value.floorsNumber;
+    const floorsNumber = floorsNumberValue === '' || floorsNumberValue === undefined ? null : floorsNumberValue;
+
     let obj = {
       ...this.formData.value,
+      floorsNumber: floorsNumber,
       lat: this.markerPositions?.lat ? this.markerPositions.lat : null,
       long: this.markerPositions?.lng ? this.markerPositions.lng : null,
       fileUploads: this.uploadedFiles,

@@ -312,6 +312,16 @@ export class MaintenanceRequestsComponent implements OnInit {
   //=================================================
   onShowFilterPopup() {
     this.showFilterPopup = true;
+    // If a site is already selected, load buildings for that site
+    if (this.filterForm.value.siteId) {
+      this._sharedService.GetBuildingsBySiteId(this.filterForm.value.siteId).subscribe((res: any) => {
+        this.builldingLookup = res.data || [];
+      });
+    }
+  }
+
+  hideFilterPopup() {
+    this.showFilterPopup = false;
   }
   filterForm = this._fb.group({
     siteId: [],
@@ -367,8 +377,14 @@ export class MaintenanceRequestsComponent implements OnInit {
   }
   closePopupFilter() {
     this.filterForm.reset();
+    // Reset buildings list to show all buildings
+    this._sharedService.getAllBuilding().subscribe((res) => {
+      this.builldingLookup = res.data;
+    });
+    this.filterDataParams.filterItems = [];
+    this.isSearchingReasult = false;
+    this.getAllMaintenanceRequest();
     this.showFilterPopup = false;
-    this.popupFilter();
   }
   // ==========================================
   // DELETE Maintenance Request

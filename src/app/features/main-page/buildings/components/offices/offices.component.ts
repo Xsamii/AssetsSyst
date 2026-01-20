@@ -40,8 +40,11 @@ export class OfficesComponent implements OnInit {
   isLoadingFloors: boolean = false;
 
   // Lookup data
+  sitesLookup: any[] = [];
   buildingLookup: any[] = [];
+  addEditBuildingLookup: any[] = [];
   floorLookup: any[] = [];
+  addEditFloorLookup: any[] = [];
   buildingOfficeLookup: any[] = [];
 
   // Alert states
@@ -65,6 +68,7 @@ export class OfficesComponent implements OnInit {
   // Search and filter parameters
   searchValue: string = '';
   buildingIds: number[] = [];
+  siteIds: number[] = [];
   officeIds: number[] = [];
   floorIds: number[] = [];
   buildingOfficeId: number | null = null;
@@ -84,6 +88,7 @@ export class OfficesComponent implements OnInit {
     this.buildingOfficeForm = this._fb.group({
       officeNumber: ['', Validators.required],
       name: ['', Validators.required],
+      siteId: [null, Validators.required],
       floorId: [null],
       buildingId: [null, Validators.required],
     });
@@ -93,6 +98,7 @@ export class OfficesComponent implements OnInit {
 
   initializeSearchForm(): void {
     this.searchForm = this._fb.group({
+      siteId: [null],
       buildingId: [null],
       officeId: [null],
       floorId: [null],
@@ -128,13 +134,68 @@ export class OfficesComponent implements OnInit {
   // ------------------------------------
   // LOOKUP METHODS
   // ------------------------------------
+  getSitesLookup(): void {
+    this._sharedService.GetSites().subscribe({
+      next: (res) => {
+        this.sitesLookup = res.data || [];
+      },
+      error: (err) => this.handleError(err)
+    });
+  }
+
   getAllBuildingLookup(): void {
     this._sharedService.getAllBuilding().subscribe({
       next: (res) => {
         this.buildingLookup = res.data || [];
+        this.addEditBuildingLookup = res.data || [];
       },
       error: (err) => this.handleError(err)
     });
+  }
+
+  // For filter dialog - load buildings by site
+  onFilterSiteChange(siteId: number): void {
+    this.floorLookup = [];
+    this.buildingOfficeLookup = [];
+    this.searchForm.patchValue({ buildingId: null, floorId: null, officeId: null });
+
+    if (siteId) {
+      this._sharedService.GetBuildingsBySiteId(siteId).subscribe({
+        next: (res: any) => {
+          this.buildingLookup = res.data || [];
+        },
+        error: (err) => this.handleError(err)
+      });
+    } else {
+      this._sharedService.getAllBuilding().subscribe({
+        next: (res) => {
+          this.buildingLookup = res.data || [];
+        },
+        error: (err) => this.handleError(err)
+      });
+    }
+  }
+
+  // For add-edit dialog - load buildings by site
+  onAddEditSiteChange(siteId: number): void {
+    this.addEditFloorLookup = [];
+    this.buildingOfficeForm.patchValue({ buildingId: null, floorId: null });
+
+    if (siteId) {
+      this._sharedService.GetBuildingsBySiteId(siteId).subscribe({
+        next: (res: any) => {
+          this.addEditBuildingLookup = res.data || [];
+        },
+        error: (err) => this.handleError(err)
+      });
+    } else {
+      this._sharedService.getAllBuilding().subscribe({
+        next: (res) => {
+          this.addEditBuildingLookup = res.data || [];
+        },
+        error: (err) => this.handleError(err)
+      });
+    }
   }
 
   getFloorsByBuildingId(buildingId: number): void {
@@ -149,6 +210,22 @@ export class OfficesComponent implements OnInit {
       error: (err) => {
         this.handleError(err);
         this.floorLookup = [];
+      }
+    });
+  }
+
+  getFloorsForAddEdit(buildingId: number): void {
+    if (!buildingId) return;
+
+    this.isLoadingFloors = true;
+    this._sharedService.GetBuildingFloors(buildingId).subscribe({
+      next: (res) => {
+        this.addEditFloorLookup = res.data || [];
+        this.isLoadingFloors = false;
+      },
+      error: (err) => {
+        this.handleError(err);
+        this.addEditFloorLookup = [];
       }
     });
   }
@@ -179,7 +256,7 @@ export class OfficesComponent implements OnInit {
         this.searchValue,
         this.officeIds,
         this.floorIds,
-        [],
+        this.siteIds,
         this.buildingIds
       )
       .subscribe({
@@ -210,6 +287,9 @@ export class OfficesComponent implements OnInit {
 
     const formValue = this.searchForm.value;
 
+    if (formValue.siteId) {
+      this.siteIds.push(formValue.siteId);
+    }
     if (formValue.buildingId) {
       this.buildingIds.push(formValue.buildingId);
     }
@@ -226,8 +306,22 @@ export class OfficesComponent implements OnInit {
 
   showDialog(): void {
     this.displayDialog = true;
-    this.resetFilterArrays();
-    this.initializeSearchForm();
+    // If a site is already selected, load buildings for that site
+    if (this.searchForm.value.siteId) {
+      this._sharedService.GetBuildingsBySiteId(this.searchForm.value.siteId).subscribe({
+        next: (res: any) => {
+          this.buildingLookup = res.data || [];
+        }
+      });
+    }
+    // If a building is already selected, load floors for that building
+    if (this.searchForm.value.buildingId) {
+      this.getFloorsByBuildingId(this.searchForm.value.buildingId);
+    }
+    // If a floor is already selected, load offices for that floor
+    if (this.searchForm.value.floorId) {
+      this.getOfficesByFloorId(this.searchForm.value.floorId);
+    }
   }
 
   search(): void {
@@ -235,9 +329,23 @@ export class OfficesComponent implements OnInit {
   }
 
   hideDialog(): void {
-    this.searchForm.reset();
     this.displayDialog = false;
-    this.popupFilter();
+  }
+
+  resetFilter(): void {
+    this.searchForm.reset();
+    // Reset buildings list to show all buildings
+    this._sharedService.getAllBuilding().subscribe({
+      next: (res) => {
+        this.buildingLookup = res.data || [];
+      }
+    });
+    this.floorLookup = [];
+    this.buildingOfficeLookup = [];
+    this.resetFilterArrays();
+    this.isSearchingResult = false;
+    this.getAllBuildingOffices();
+    this.displayDialog = false;
   }
 
   // ------------------------------------
@@ -270,14 +378,14 @@ export class OfficesComponent implements OnInit {
   }
 
   onBuildingChange(event: any): void {
-    this.floorLookup = [];
+    this.addEditFloorLookup = [];
 
     this.buildingOfficeForm.patchValue({
       floorId: null
     });
 
     if (event.value) {
-      this.getFloorsByBuildingId(event.value);
+      this.getFloorsForAddEdit(event.value);
     }
   }
 
@@ -289,6 +397,9 @@ export class OfficesComponent implements OnInit {
     this.buildingOfficeForm.reset();
     this.showAddEditPopup = true;
     this.buildingOfficeId = null;
+
+    this.addEditFloorLookup = [];
+    this.addEditBuildingLookup = [];
     this.resetDependentDropdowns();
   }
 
@@ -301,9 +412,24 @@ export class OfficesComponent implements OnInit {
     this._buildingOffices.getBuildingOfficeById(id).pipe(
       tap(res => {
         const officeData = res.data;
+        // If the office has a siteId, load buildings for that site
+        if (officeData.siteId) {
+          this._sharedService.GetBuildingsBySiteId(officeData.siteId).subscribe({
+            next: (siteRes: any) => {
+              this.addEditBuildingLookup = siteRes.data || [];
+            }
+          });
+        } else {
+          this._sharedService.getAllBuilding().subscribe({
+            next: (buildRes) => {
+              this.addEditBuildingLookup = buildRes.data || [];
+            }
+          });
+        }
         this.buildingOfficeForm.patchValue({
           officeNumber: officeData.officeNumber,
           name: officeData.name,
+          siteId: officeData.siteId || null,
           buildingId: officeData.buildingId,
         });
         this.isLoading = false;
@@ -313,7 +439,7 @@ export class OfficesComponent implements OnInit {
         if (officeData.buildingId) {
           return this._sharedService.GetBuildingFloors(officeData.buildingId).pipe(
             tap(floors => {
-              this.floorLookup = floors.data || [];
+              this.addEditFloorLookup = floors.data || [];
               this.buildingOfficeForm.patchValue({
                 floorId: officeData.floorId,
               });
@@ -433,6 +559,7 @@ export class OfficesComponent implements OnInit {
   // ------------------------------------
   ngOnInit(): void {
     this.getAllBuildingOffices();
+    this.getSitesLookup();
     this.getAllBuildingLookup();
 
     this.cols = [
@@ -440,6 +567,7 @@ export class OfficesComponent implements OnInit {
       new listColumns({ field: 'officeNumber', header: 'رقم الغرفة' }),
       new listColumns({ field: 'name', header: 'اسم الغرفة' }),
       new listColumns({ field: 'floorNumber', header: 'رقم الطابق' }),
+      new listColumns({ field: 'siteName', header: 'اسم الموقع' }),
       new listColumns({ field: 'buildingName', header: 'المبنى الرئيسي' }),
     ];
   }

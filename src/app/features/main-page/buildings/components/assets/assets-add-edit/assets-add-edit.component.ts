@@ -39,6 +39,7 @@ import { FilesService } from 'src/app/Shared/services/files.service';
   ],
 })
 export class AssetsAddEditComponent implements OnInit, OnDestroy {
+  sitesList
   mainBuildingsList;
   FloorsList;
   officesList;
@@ -80,6 +81,7 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeForm();
     this.getBulldingLookUp();
+    this.getSitesLookUp();
     this.getAssetTypeLookUp();
     this.getRegularMaintenanceItemList();
     this.assetStatusList = [
@@ -139,7 +141,7 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
       officeId: [null, Validators.required],
       regularMaintenanceItemIds: [[]],
       fileUploads: [null],
-
+      siteId: [null, Validators.required],
       buildingId: [null, Validators.required],
       // subunitId: [null, Validators.required],
       FloorId: [null, Validators.required],
@@ -196,9 +198,21 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
   // ------------------------------------
   // LookUps
   // ------------------------------------
-
+  getSitesLookUp(){
+    this._sharedService.GetSites().subscribe((res) => {
+      this.sitesList = res.data;
+    });
+  }
   getBulldingLookUp() {
-    this._sharedService.getAllBuilding().subscribe((res) => {
+    // this._sharedService.getAllBuilding().subscribe((res) => {
+    //   this.mainBuildingsList = res.data;
+    // });
+  }
+  changeSites(value) {
+    this.getSiteBuildings(value.value);
+  }
+  getSiteBuildings(id) {
+    this._sharedService.GetBuildingsBySiteId(id).subscribe((res) => {
       this.mainBuildingsList = res.data;
     });
   }
@@ -216,6 +230,7 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
   changeSubUnit(id) {
     this.getFloorLookUp(id.value);
   }
+
 
   getFloorLookUp(id) {
     this._sharedService.GetBuildingFloors(id).subscribe((res) => {
@@ -400,12 +415,12 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
   }
 
   patchAssetForm(data) {
-    if (data.building?.id) {
-      this.getSubunitLookUp(data.building?.id);
-    }
-    // if (data.subUnit.id) {
-    //   this.getFloorLookUp(data.subUnit.id);
+    // if (data.building?.id) {
+    //   this.getSubunitLookUp(data.building?.id);
     // }
+    if (data.building.id) {
+      this.getFloorLookUp(data.building.id);
+    }
     if (data.floor.id) {
       this.getOfficesInFloorUp(data.floor.id);
     }
@@ -433,6 +448,7 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
       subCategoryId: data.subCategory.id,
       officeId: data.office.id,
       regularMaintenanceItemIds:  data.regularMaintenanceItems?.map(item => item.id) || [],
+      siteId: data.site?.id,
       buildingId: data.building?.id,
       // subunitId: data.subUnit.id,
       FloorId: data.floor.id,

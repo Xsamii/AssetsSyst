@@ -37,11 +37,12 @@
 <!-- POPUP FILTER-->
 <!-- ============================= -->
 
-<div class="overlay" *ngIf="showFilterPopup">
-  <div class="popup">
+<div class="overlay" *ngIf="showFilterPopup" (click)="hideFilterPopup()">
+  <div class="popup" (click)="$event.stopPropagation()">
     <div class="title">
       <img src="./assets/icons/search-filter.svg" />
       <p>تصفية طلبات الصيانة</p>
+      <i class="fa-solid fa-xmark cursor-pointer mr-auto" (click)="hideFilterPopup()"></i>
     </div>
     <!--  (ngSubmit)="OnSubmitData()" -->
 

@@ -10,11 +10,12 @@
   (addButton)="openAdd()" (valueSearch)="filterBySearchTesxt($event)" (onFilterClick)="showDialog()"></app-bread-crumb>
 
 <!-- Search Dialog -->
-<div class="overlay" *ngIf="displayDialog">
-  <div class="popup">
+<div class="overlay" *ngIf="displayDialog" (click)="hideDialog()">
+  <div class="popup" (click)="$event.stopPropagation()">
     <div class="title">
       <img src="./assets/icons/search-filter.svg" />
       <p>تصفية المباني</p>
+      <i class="fa-solid fa-xmark cursor-pointer mr-auto" (click)="hideDialog()"></i>
     </div>
     <form [formGroup]="searchForm" (ngSubmit)="OnSubmitData()">
       <div class="input-field">
@@ -58,7 +59,7 @@
 
       <div class="buttons-content">
         <button class="buttons" type="submit">تصفية</button>
-        <button class="buttons-white" type="button" (click)="hideDialog()">
+        <button class="buttons-white" type="button" (click)="resetFilter()">
           إعادة ضبط
         </button>
       </div>
@@ -71,7 +72,7 @@
 <!-- ======================================================== -->
 
 <app-list [cols]="cols" [isSearching]="isSearchingReasult" [values]="values" [totalPageCount]="totalPageCount"
-  [withControles]="true" (editEvent)="openEdit($event)" [show3D]="true" (ThreedEvent)="openLink($event)"
+  [withControles]="true" (editEvent)="openEdit($event)" [show3D]="false" (ThreedEvent)="openLink($event)"
   (deleteEvent)="deleteBuilding($event)" (rowsCountChanged)="getData($event)"
   [noData]="showBreadcrumb ? false : true"></app-list>
 

@@ -829,7 +829,7 @@ showNoDataForContractChart(contractId: number): void {
 
   updateTopMetrics(data: any): void {
     this.topMetrics = {
-      totalSites: data.totalSites ?? 'لا توجد بيانات',
+      totalSites: data.totaSites ?? 'لا توجد بيانات',
       mainBuildings: data.totalMainBuilidngs ?? 'لا توجد بيانات',
       totalTasks: data.totalProjectTasks ?? 'لا توجد بيانات',
       totalVisits: data.totalVisites ?? 'لا توجد بيانات',

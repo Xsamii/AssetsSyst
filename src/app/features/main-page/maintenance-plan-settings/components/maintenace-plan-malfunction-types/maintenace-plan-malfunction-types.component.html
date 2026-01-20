@@ -39,20 +39,15 @@
     </div>
     <form [formGroup]="malfunctionTypesForm" (ngSubmit)="OnSubmitData()">
       <div class="input-field">
-        <label for="typeId">  التصنيف
+        <label for="name">الاسم
           <span>*</span>
         </label>
-        <div class="">
-          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{
-            background:
-              'url(./assets/inputs-icons/contractIcon.svg) no-repeat right 10px center',
-            'background-color': '#f6f6f6',
-            'padding-right': '35px'
-          }" optionLabel="name" optionValue="id" placeholder="اختر التصنيف" formControlName="maintTypeId"
-            [options]="malfunctionTypesList"></p-dropdown>
+        <div class="field-icon">
+          <img src="./assets/icons/name-icon.svg" />
+          <input formControlName="name" id="name" type="text" placeholder="أدخل الاسم" />
         </div>
-        <small *ngIf="formControls.maintTypeId.invalid && formControls.maintTypeId.touched">
-          برجاء اختيار التصنيف
+        <small *ngIf="formControls.name.invalid && formControls.name.touched">
+          برجاء إدخال الاسم
         </small>
       </div>
       <div class="input-field">

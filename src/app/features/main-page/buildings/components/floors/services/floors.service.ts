@@ -18,7 +18,7 @@ export class FloorsService {
   getAllFloors(
     paganations?: any,
     SearchTerm?: string,
-    BuildingSubUnitIds?: number[],
+    SiteIds?: number[],
     buildingIds?: number[]
   ): Observable<any> {
     return this._http.get<any>(
@@ -28,7 +28,7 @@ export class FloorsService {
           SkipCount: paganations?.first ? paganations?.first : 0,
           MaxResultCount: paganations?.rows ? paganations?.rows : 10,
           SearchTerm: SearchTerm ? SearchTerm : '',
-          BuildingSubUnitIds: BuildingSubUnitIds ? BuildingSubUnitIds : [],
+          SiteIds: SiteIds ? SiteIds : [],
           BuildingIds: buildingIds ? buildingIds :  [],
         },
       }

@@ -144,19 +144,21 @@
         </div>
       </div>
 
-      <!-- Plan Malfunction Type -->
+      <!-- Plan Malfunction Type - MULTISELECT -->
       <div class="input-field col-span-6">
         <label for="planMalfunctionType">
           كود نوع العطل
           <span>*</span>
         </label>
         <div class="">
-          <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{ 'padding-right': '20px' }"
-            optionLabel="code" optionValue="id" placeholder="اختر كود نوع العطل" formControlName="planMalfunctionTypeId"
-            [options]="planMalfunctionTypesList" [filter]="true" filterBy="name"></p-dropdown>
+          <p-multiSelect class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" optionLabel="code" optionValue="id"
+            placeholder="اختر كود نوع العطل" formControlName="planMalfunctionTypeIds" [options]="planMalfunctionTypesList"
+            [filter]="true" filterBy="code" [showToggleAll]="true" [showClear]="true"
+            selectedItemsLabel="تم اختيار {0} نوع عطل">
+          </p-multiSelect>
         </div>
         <small class="default-attention"
-          *ngIf="maintenancePlanForm.controls['planMalfunctionTypeId'].errors?.['required'] && (maintenancePlanForm.controls['planMalfunctionTypeId'].dirty || maintenancePlanForm.controls['planMalfunctionTypeId'].touched)">
+          *ngIf="maintenancePlanForm.controls['planMalfunctionTypeIds'].errors?.['required'] && (maintenancePlanForm.controls['planMalfunctionTypeIds'].dirty || maintenancePlanForm.controls['planMalfunctionTypeIds'].touched)">
           كود نوع العطل مطلوب
         </small>
       </div>

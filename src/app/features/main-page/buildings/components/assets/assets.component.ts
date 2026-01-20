@@ -71,7 +71,10 @@ export class AssetsComponent {
       new listColumns({ field: 'id', header: '#' }),
       new listColumns({ field: 'name', header: 'رقم الأصل' }),
       new listColumns({ field: 'notes', header: 'اسم الأصل' }),
-
+       new listColumns({
+        field: 'siteName',
+        header: 'اسم الموقع ',
+      }),
       new listColumns({
         field: 'buildingName',
         header: 'المبني الرئيسي',
