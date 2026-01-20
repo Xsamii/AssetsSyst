@@ -10,6 +10,7 @@ import LayerList from '@arcgis/core/widgets/LayerList';
 import Legend from '@arcgis/core/widgets/Legend';
 import Fullscreen from '@arcgis/core/widgets/Fullscreen';
 import BasemapGallery from '@arcgis/core/widgets/BasemapGallery';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 
 @Injectable({
   providedIn: 'root',
@@ -91,7 +92,7 @@ export class SpatialTrackingSceneService {
 
   /**
    * Initialize the scene view
-   * Uses LOCAL scene for better building visualization and viewing from all angles
+   * Uses GLOBAL scene for broader spatial reference compatibility with various scene layers
    */
   initSceneView(
     container: string | HTMLDivElement,
@@ -110,7 +111,7 @@ export class SpatialTrackingSceneService {
     this.sceneView = new SceneView({
       container: container,
       map: this.map,
-      viewingMode: 'local', // Use LOCAL scene for better building visualization
+      viewingMode: 'global', // Use GLOBAL scene for broader spatial reference compatibility
       center: center,
       zoom: zoom,
       camera: {
@@ -164,6 +165,7 @@ export class SpatialTrackingSceneService {
   /**
    * Add scene layer to the map
    * Automatically detects if it's a BuildingSceneLayer or regular SceneLayer
+   * Handles spatial reference compatibility by updating the view if needed
    */
   async addSceneLayer(
     url: string,
@@ -185,41 +187,113 @@ export class SpatialTrackingSceneService {
       const serviceInfo = await response.json();
       console.log('serviceInfo', serviceInfo);
 
-      // Determine layer type - check both root level and layers array
+      // Determine layer type and spatial reference
       let layerType: string | null = null;
       let is3DObject: boolean = false;
       let layerUrlToUse: string = url;
+      let layerSpatialReference: any = null;
 
       // Check root level first
       if (serviceInfo.layerType) {
         layerType = serviceInfo.layerType;
       }
+      if (serviceInfo.spatialReference) {
+        layerSpatialReference = serviceInfo.spatialReference;
+      }
+
       // Check layers array (common for BuildingSceneLayer and 3DObject scene layers)
       if (serviceInfo.layers && serviceInfo.layers.length > 0) {
         const rootLayerInfo = serviceInfo.layers[0];
         const rootLayerType = rootLayerInfo.layerType || layerType;
         layerType = rootLayerType;
 
-        // If this is a 3DObject hosted scene layer, Esri often expects /layers/{id}
+        // Get spatial reference from layer if not found at root level
+        if (!layerSpatialReference && rootLayerInfo.spatialReference) {
+          layerSpatialReference = rootLayerInfo.spatialReference;
+        }
+
+        // For 3DObject scene layers, use the base SceneServer URL directly
         if (rootLayerType === '3DObject') {
           is3DObject = true;
-          const rootLayerId =
-            typeof rootLayerInfo.id === 'number' ? rootLayerInfo.id : 0;
-          layerUrlToUse = `${url.replace(/\/+$/, '')}/layers/${rootLayerId}`;
+          layerUrlToUse = url.replace(/\/+$/, '');
           console.log(
-            'Detected 3DObject scene layer. Using layer URL:',
+            'Detected 3DObject scene layer. Using base URL:',
             layerUrlToUse
           );
         }
       }
 
       console.log('Detected layer type:', layerType, 'is3DObject:', is3DObject);
-      console.log('layerUrlToUsesssssssssssss', layerType);
-      // Determine layer type and create appropriate layer
-      // NOTE: We only treat explicit 'BuildingSceneLayer' as a BuildingSceneLayer.
-      // Any 'Building' or other types (including '3DObject') will be loaded as SceneLayer
+      console.log('Layer spatial reference:', layerSpatialReference);
+
+      // Check if we need to update the view's spatial reference for local coordinate systems
+      const layerWkid = layerSpatialReference?.wkid || layerSpatialReference?.latestWkid;
+      const isProjectedCRS = layerWkid && layerWkid !== 4326 && layerWkid !== 102100 && layerWkid !== 3857;
+
+      if (isProjectedCRS && this.sceneView) {
+        console.log(`Layer uses projected CRS (wkid: ${layerWkid}), updating SceneView to local mode with matching spatial reference`);
+
+        // Store current view settings
+        const container = this.sceneView.container;
+        const tilt = this.sceneView.camera?.tilt || 75;
+        const heading = this.sceneView.camera?.heading || 0;
+
+        // Destroy the current view
+        this.sceneView.destroy();
+
+        // Create a new map without basemap for local projected views
+        // Standard web basemaps don't support local projected coordinate systems
+        this.map = new ArcGISMap({
+          ground: 'world-elevation',
+        });
+
+        // Create a new SceneView with local viewing mode and matching spatial reference
+        this.sceneView = new SceneView({
+          container: container,
+          map: this.map,
+          viewingMode: 'local',
+          spatialReference: new SpatialReference({ wkid: layerWkid }),
+          camera: {
+            position: {
+              x: 0,
+              y: 0,
+              z: 500,
+              spatialReference: new SpatialReference({ wkid: layerWkid }),
+            },
+            tilt: tilt,
+            heading: heading,
+          },
+          ui: {
+            components: [],
+          },
+          environment: {
+            background: {
+              type: 'color',
+              color: [50, 50, 50, 1],
+            },
+            starsEnabled: false,
+            atmosphereEnabled: false,
+          },
+        });
+
+        // Remove attribution
+        this.sceneView.ui.remove('attribution');
+
+        // Add Fullscreen widget
+        this.sceneView.ui.add(
+          new Fullscreen({
+            view: this.sceneView,
+          }),
+          'top-left'
+        );
+
+        // Wait for new view to be ready
+        await this.sceneView.when();
+        console.log('SceneView recreated with local mode and spatial reference:', layerWkid);
+      }
+
+      // Create the appropriate layer type
       if (layerType === 'BuildingSceneLayer') {
-        // Create BuildingSceneLayer only for true BuildingSceneLayer services
         this.sceneLayer = new BuildingSceneLayer({
           url: url,
           id: layerId,
@@ -227,7 +301,6 @@ export class SpatialTrackingSceneService {
         });
         console.log('Created BuildingSceneLayer');
       } else {
-        console.log('layerUrlToUsesssssssssssss', layerUrlToUse);
         this.sceneLayer = new SceneLayer({
           url: layerUrlToUse,
           id: layerId,
@@ -246,6 +319,14 @@ export class SpatialTrackingSceneService {
 
       // Wait for layer to load
       await this.sceneLayer.when();
+
+      // Zoom to layer extent after loading
+      if (this.sceneLayer.fullExtent && this.sceneView) {
+        await this.sceneView.goTo({
+          target: this.sceneLayer.fullExtent,
+          duration: 1000,
+        });
+      }
 
       // Emit layer added event
       this.layerAdded$.next({ layerId: layerId, layer: this.sceneLayer });
