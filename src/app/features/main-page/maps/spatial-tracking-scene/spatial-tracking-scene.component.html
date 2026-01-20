@@ -11,11 +11,7 @@
     ]">
   </app-bread-crumb>
 
-  <!-- Loading Indicator -->
-  <div class="loading-indicator" *ngIf="isLoading">
-    <i class="fas fa-spinner fa-spin"></i>
-    <span>جاري تحميل المشهد...</span>
-  </div>
+
 
   <!-- Scene Container -->
   <div id="sceneContainer" class="w-full bg-gray-200 rounded-lg relative flex-1" style="min-height: 0;">
@@ -52,11 +48,11 @@
       </label>
     </div>
     <!-- Map Controls -->
-    <app-map-controls
+    <!-- <app-map-controls
       (layerListToggle)="toggleLayerList()"
       (baseMapToggle)="toggleBaseMap()"
       (legendToggle)="toggleLegend()">
-    </app-map-controls>
+    </app-map-controls> -->
 
     <!-- Layer List Panel -->
     <div
