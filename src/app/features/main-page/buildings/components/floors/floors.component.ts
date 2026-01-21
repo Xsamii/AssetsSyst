@@ -337,7 +337,7 @@ export class FloorsComponent {
       new listColumns({ field: 'id', header: '#' }),
       new listColumns({ field: 'floorNumber', header: 'رقم الطابق' }),
       new listColumns({ field: 'siteName', header: 'اسم الموقع ' }),
-      new listColumns({ field: 'buildingName', header: 'اسم المبنى الرئيسي' }),
+      new listColumns({ field: 'buildingName', header: 'اسم المبنى ' }),
 
     ];
   }

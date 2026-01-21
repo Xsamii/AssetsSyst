@@ -8,151 +8,152 @@
     [subTitles]="[
       { name: 'الرئيسية', routerLink: '/' },
       { name: 'المتابعة المكانية', routerLink: '/map' }
-    ]">
+    ]"
+    [isFilte]="true"
+    [isShowFilter]="false"
+    [showInPutSearch]="false"
+    (onFilterClick)="openFilterDialog()">
   </app-bread-crumb>
 
-  <!-- Filter Controls Section -->
-  <div class="controls-section">
-    <div class="filter-controls" [formGroup]="filterForm">
-      <div class="filter-item">
-        <p-dropdown
-          class="w-full"
-          [styleClass]="'w-full bg-filterBtnBg p-3'"
-          [style]="{
-            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
-            'background-color': '#f6f6f6',
-            'padding-right': '35px'
-          }"
-          optionLabel="label"
-          optionValue="value"
-          placeholder=" المجزرة"
-          formControlName="slaughterhouse"
-          [options]="slaughterhouseOptions"
-          [filter]="true"
-          [showClear]="true"
-          (onChange)="onSlaughterhouseChange()">
-        </p-dropdown>
+  <!-- Search Dialog -->
+  <div class="overlay" *ngIf="showFilterDialog" (click)="closeFilterDialog()">
+    <div class="popup" (click)="$event.stopPropagation()">
+      <div class="title">
+        <img src="./assets/icons/search-filter.svg" />
+        <p>تصفية البيانات</p>
+        <i class="fa-solid fa-xmark cursor-pointer mr-auto" (click)="closeFilterDialog()"></i>
       </div>
+      <form [formGroup]="filterForm" (ngSubmit)="applyFiltersFromDialog()">
+        <div class="grid grid-cols-12 gap-4">
+          <!-- المجزرة -->
+          <div class="input-field col-span-6">
+            <label>المجزرة</label>
+            <div class="dropdown-container">
+              <p-dropdown
+                class="w-full"
+                [styleClass]="'w-full bg-filterBtnBg py-3'"
+                [style]="{
+                  background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+                  'background-color': '#f6f6f6',
+                  'padding-right': '35px'
+                }"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="اختر المجزرة"
+                formControlName="slaughterhouse"
+                [options]="slaughterhouseOptions"
+                [filter]="true"
+                [showClear]="false"
+                (onChange)="onSlaughterhouseChange()">
+              </p-dropdown>
+            </div>
+          </div>
 
-      <div class="filter-item">
-        <p-dropdown
-          class="w-full"
-          [styleClass]="'w-full bg-filterBtnBg p-3'"
-          [style]="{
-            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
-            'background-color': '#f6f6f6',
-            'padding-right': '35px'
-          }"
-          optionLabel="label"
-          optionValue="value"
-          placeholder=" المبنى"
-          formControlName="building"
-          [options]="buildingOptions"
-          [filter]="true"
-          [showClear]="true"
-          [disabled]="!filterForm.get('slaughterhouse')?.value"
-          (onChange)="onBuildingChange()">
-        </p-dropdown>
-      </div>
+          <!-- المبنى -->
+          <div class="input-field col-span-6">
+            <label>المبنى</label>
+            <div class="dropdown-container">
+              <p-dropdown
+                class="w-full"
+                [styleClass]="'w-full bg-filterBtnBg py-3'"
+                [style]="{
+                  background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                  'background-color': '#f6f6f6',
+                  'padding-right': '35px'
+                }"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="اختر المبنى"
+                formControlName="building"
+                [options]="buildingOptions"
+                [filter]="true"
+                [showClear]="false"
+                [disabled]="!filterForm.get('slaughterhouse')?.value"
+                (onChange)="onBuildingChange()">
+              </p-dropdown>
+            </div>
+          </div>
 
-      <div class="filter-item">
-        <p-dropdown
-          class="w-full"
-          [styleClass]="'w-full bg-filterBtnBg p-3'"
-          [style]="{
-            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
-            'background-color': '#f6f6f6',
-            'padding-right': '35px'
-          }"
-          optionLabel="label"
-          optionValue="value"
-          placeholder=" الدور"
-          formControlName="floor"
-          [options]="floorOptions"
-          [filter]="true"
-          [showClear]="true"
-          [disabled]="!filterForm.get('building')?.value"
-          (onChange)="onFloorChange()">
-        </p-dropdown>
-      </div>
+          <!-- الدور -->
+          <div class="input-field col-span-6">
+            <label>الدور</label>
+            <div class="dropdown-container">
+              <p-dropdown
+                class="w-full"
+                [styleClass]="'w-full bg-filterBtnBg py-3'"
+                [style]="{
+                  background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                  'background-color': '#f6f6f6',
+                  'padding-right': '35px'
+                }"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="اختر الدور"
+                formControlName="floor"
+                [options]="floorOptions"
+                [filter]="true"
+                [showClear]="false"
+                [disabled]="!filterForm.get('building')?.value"
+                (onChange)="onFloorChange()">
+              </p-dropdown>
+            </div>
+          </div>
 
-      <div class="filter-item">
-        <p-dropdown
-          class="w-full"
-          [styleClass]="'w-full bg-filterBtnBg p-3'"
-          [style]="{
-            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
-            'background-color': '#f6f6f6',
-            'padding-right': '35px'
-          }"
-          optionLabel="label"
-          optionValue="value"
-          placeholder=" الغرفة"
-          formControlName="room"
-          [options]="roomOptions"
-          [filter]="true"
-          [showClear]="true"
-          [disabled]="!filterForm.get('floor')?.value"
-          (onChange)="onRoomChange()">
-        </p-dropdown>
-      </div>
+          <!-- الغرفة -->
+          <div class="input-field col-span-6">
+            <label>الغرفة</label>
+            <div class="dropdown-container">
+              <p-dropdown
+                class="w-full"
+                [styleClass]="'w-full bg-filterBtnBg py-3'"
+                [style]="{
+                  background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                  'background-color': '#f6f6f6',
+                  'padding-right': '35px'
+                }"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="اختر الغرفة"
+                formControlName="room"
+                [options]="roomOptions"
+                [filter]="true"
+                [showClear]="false"
+                [disabled]="!filterForm.get('floor')?.value"
+                (onChange)="onRoomChange()">
+              </p-dropdown>
+            </div>
+          </div>
 
-      <div class="filter-item">
-        <p-dropdown
-          class="w-full"
-          [styleClass]="'w-full bg-filterBtnBg p-3'"
-          [style]="{
-            background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
-            'background-color': '#f6f6f6',
-            'padding-right': '35px'
-          }"
-          optionLabel="label"
-          optionValue="value"
-          placeholder=" النظام"
-          formControlName="systemName"
-          [options]="systemNameOptions"
-          [filter]="true"
-          [showClear]="true"
-          (onChange)="onSystemNameChange()">
-        </p-dropdown>
-      </div>
+          <!-- النظام -->
+          <div class="input-field col-span-6">
+            <label>النظام</label>
+            <div class="dropdown-container">
+              <p-dropdown
+                class="w-full"
+                [styleClass]="'w-full bg-filterBtnBg py-3'"
+                [style]="{
+                  background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                  'background-color': '#f6f6f6',
+                  'padding-right': '35px'
+                }"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="اختر النظام"
+                formControlName="systemName"
+                [options]="systemNameOptions"
+                [filter]="true"
+                [showClear]="false"
+                (onChange)="onSystemNameChange()">
+              </p-dropdown>
+            </div>
+          </div>
+        </div>
 
-      <div class="filter-item">
-        <p-dropdown
-          class="w-full"
-          [styleClass]="'w-full bg-filterBtnBg p-3'"
-
-          optionLabel="label"
-          optionValue="value"
-          placeholder=" الفئة الفرعية"
-          formControlName="subCategory"
-          [options]="subCategoryOptions"
-          [filter]="true"
-          [showClear]="true"
-          (onChange)="onSubCategoryChange()">
-        </p-dropdown>
-      </div>
-
-      <div class="filter-item">
-        <p-dropdown
-          class="w-full"
-          [styleClass]="'w-full bg-filterBtnBg p-3'"
-           
-          optionLabel="label"
-          optionValue="value"
-          placeholder=" نوع الفئة الفرعية"
-          formControlName="subCategoryType"
-          [options]="subCategoryTypeOptions"
-          [filter]="true"
-          [showClear]="true"
-          (onChange)="onSubCategoryTypeChange()">
-        </p-dropdown>
-      </div>
-
-      <button class="reset-btn" (click)="resetFilters()" type="button" title="إعادة ضبط التصفية">
-        <i class="fas fa-redo"></i>
-        إعادة ضبط
-      </button>
+        <div class="buttons-content mt-5">
+          <button class="buttons" type="submit">تصفية</button>
+          <button class="buttons-white" type="button" (click)="resetFilters()">إعادة ضبط</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -166,6 +167,21 @@
   <div id="mapContainer" class="w-full bg-gray-200 rounded-lg relative flex-1" style="min-height: 0;">
     <!-- Map View -->
     <div #mapViewNode class="map-view w-full h-full"></div>
+
+    <!-- Asset Number Search -->
+    <div class="asset-search-container">
+      <p-autoComplete
+        [(ngModel)]="selectedAssetNumber"
+        [suggestions]="assetNumberSuggestions"
+        (completeMethod)="searchAssetNumber($event)"
+        (onSelect)="onAssetNumberSelect($event)"
+        (onClear)="onAssetNumberClear()"
+        (ngModelChange)="onAssetNumberChange($event)"
+        [minLength]="2"
+        placeholder="ابحث برقم الأصل..."
+        [inputStyleClass]="'asset-search-input'">
+      </p-autoComplete>
+    </div>
 
     <!-- Map Controls -->
     <app-map-controls

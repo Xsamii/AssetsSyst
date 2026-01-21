@@ -53,4 +53,15 @@ export class AssetsService {
        return this._http.post(`${environment.url}RegularMaintenanceItem/Create`, body);
      }
 
+     searchAssetsByNumber(assetNumber: string): Observable<any> {
+      return this._http.get(
+        `${environment.url}Asset/SearchAtAssetsNumbers?assetNumber=` + assetNumber
+      );
+    }
+    getAssetByNumber(assetNumber: string): Observable<any> {
+       return this._http.get(
+        `${environment.url}Asset/GetByAssetByNumber?assetNumber=` + assetNumber
+      );
+    }
+
   }

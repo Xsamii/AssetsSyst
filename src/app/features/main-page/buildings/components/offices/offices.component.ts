@@ -568,7 +568,7 @@ export class OfficesComponent implements OnInit {
       new listColumns({ field: 'name', header: 'اسم الغرفة' }),
       new listColumns({ field: 'floorNumber', header: 'رقم الطابق' }),
       new listColumns({ field: 'siteName', header: 'اسم الموقع' }),
-      new listColumns({ field: 'buildingName', header: 'المبنى الرئيسي' }),
+      new listColumns({ field: 'buildingName', header: 'المبنى' }),
     ];
   }
 }

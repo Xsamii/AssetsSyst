@@ -20,17 +20,17 @@
     <!-- ---------------------------------------------------------------- -->
     <div class="two-inputs-fields">
       <div class="input-field">
-        <label for="main-building"> المبنى الرئيسي</label>
+        <label for="main-building"> المبنى</label>
         <div class="field-icon">
           <img src="./assets/icons/select-main-building-icon.svg" />
 
           <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg'" optionLabel="name" optionValue="id"
-            placeholder="اختر  المبنى الرئيسي" formControlName="buildingId" [options]="builldingLookup"
+            placeholder="اختر  المبنى" formControlName="buildingId" [options]="builldingLookup"
             (onChange)="getAllBuildingSubUnit(filterForm.value.buildingId)" [filter]="true"
             [filterBy]="'name'"></p-dropdown>
         </div>
       </div>
-<div class="input-field">
+      <div class="input-field">
         <label for="main-building"> حالة الطلب </label>
         <div class="field-icon">
           <img src="./assets/icons/info-icon.svg" />

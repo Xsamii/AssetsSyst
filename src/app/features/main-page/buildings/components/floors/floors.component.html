@@ -115,7 +115,7 @@
 
       <div class="input-field">
         <label for="main-building">
-          المبنى الرئيسي
+          المبنى
           <span>*</span>
         </label>
         <div class=" ">
@@ -124,14 +124,14 @@
               'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
             'background-color': '#f6f6f6',
             'padding-right': '35px'
-          }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى الرئيسي " formControlName="buildingId"
+          }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى  " formControlName="buildingId"
             [options]="addEditBuildingLookup" [filter]="true" filterBy="name"></p-dropdown>
         </div>
         <small *ngIf="
             formControls.buildingId.invalid &&
             formControls.buildingId.touched
           ">
-          برجاء إختيار المبنى الرئيسي
+          برجاء إختيار المبنى 
         </small>
       </div>
 

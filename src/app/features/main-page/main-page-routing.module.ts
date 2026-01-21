@@ -25,7 +25,7 @@ const routes: Routes = [
         title: 'الصفحة الرئيسية',
       },
       { path: '', title: 'الصفحة الرئيسة', component: MainDashboardComponent },
-      {path: 'dashboard', title: 'لوحة التحكم', component: MainDashboardComponent},
+      { path: 'dashboard', title: 'لوحة التحكم', component: MainDashboardComponent },
       {
         path: 'survey-dashboard',
         title: 'مؤشرات التقييم',
@@ -41,7 +41,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./settings/settings.module').then((m) => m.SettingsModule),
       },
-       {
+      {
         path: 'map',
         title: 'المتابعة المكانية',
         data: {
@@ -72,14 +72,14 @@ const routes: Routes = [
         component: SpatialTrackingMapComponent,
       },
       {
-      path: 'buildings-models',
-      title: 'التوزيع المكاني  3D',
-      canActivate: [AuthGuard],
-      component: BuildingsmodelsComponent,
+        path: 'buildings-models',
+        title: 'التوزيع المكاني  3D',
+        canActivate: [AuthGuard],
+        component: BuildingsmodelsComponent,
       },
       {
         path: 'scene',
-        title: 'المشهد ثلاثي الأبعاد',
+        title: '3D View',
         data: {
           role: [
             Roles.Admin,
@@ -189,7 +189,7 @@ const routes: Routes = [
         path: 'performance-contracts-evaluation',
         title: 'تقييم عقود الأداء',
         data: {
-          role: [Roles.Admin, Roles.SystemOfficer,Roles.MaintenanceSupervisor,],
+          role: [Roles.Admin, Roles.SystemOfficer, Roles.MaintenanceSupervisor,],
         },
         canActivate: [AuthGuard],
         loadChildren: () =>
@@ -205,7 +205,7 @@ const routes: Routes = [
             './monthly-report/monthly-report.module'
 
           ).then((m) => m.MonthlyReportModule),
-          data: {
+        data: {
           role: [
             Roles.Admin,
             Roles.SystemOfficer,
@@ -232,4 +232,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class MainPageRoutingModule {}
+export class MainPageRoutingModule { }

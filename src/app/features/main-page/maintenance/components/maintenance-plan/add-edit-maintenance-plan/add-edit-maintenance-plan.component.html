@@ -35,19 +35,19 @@
       <!-- Building -->
       <div class="input-field col-span-6">
         <label for="building">
-          المبنى الرئيسي
+          المبنى
           <span>*</span>
         </label>
         <div class="">
 
 
           <p-dropdown class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" [style]="{ 'padding-right': '20px' }"
-            optionLabel="name" optionValue="id" placeholder="اختر المبنى الرئيسي" formControlName="buildingId"
+            optionLabel="name" optionValue="id" placeholder="اختر المبنى" formControlName="buildingId"
             [options]="mainBuildingsList" [filter]="true" filterBy="name"></p-dropdown>
         </div>
         <small class="default-attention"
           *ngIf="maintenancePlanForm.controls['buildingId'].errors?.['required'] && (maintenancePlanForm.controls['buildingId'].dirty || maintenancePlanForm.controls['buildingId'].touched)">
-          المبنى الرئيسي مطلوب
+          المبنى مطلوب
         </small>
       </div>
 
@@ -64,7 +64,7 @@
           </p-multiSelect>
         </div>
       </div>
-         <!-- asset - MULTISELECT -->
+      <!-- asset - MULTISELECT -->
       <div class="input-field col-span-6">
         <label for="assets">
           الأصول
@@ -152,9 +152,9 @@
         </label>
         <div class="">
           <p-multiSelect class="w-full" [styleClass]="'w-full bg-filterBtnBg py-3'" optionLabel="code" optionValue="id"
-            placeholder="اختر كود نوع العطل" formControlName="planMalfunctionTypeIds" [options]="planMalfunctionTypesList"
-            [filter]="true" filterBy="code" [showToggleAll]="true" [showClear]="true"
-            selectedItemsLabel="تم اختيار {0} نوع عطل">
+            placeholder="اختر كود نوع العطل" formControlName="planMalfunctionTypeIds"
+            [options]="planMalfunctionTypesList" [filter]="true" filterBy="code" [showToggleAll]="true"
+            [showClear]="true" selectedItemsLabel="تم اختيار {0} نوع عطل">
           </p-multiSelect>
         </div>
         <small class="default-attention"

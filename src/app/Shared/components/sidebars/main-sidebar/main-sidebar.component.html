@@ -58,7 +58,7 @@
 
       <a class="item" routerLink="/scene" routerLinkActive="active-menu-items"
         *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer">
-        <p>المشهد ثلاثي الأبعاد</p>
+        <p>3D View</p>
       </a>
 
       <!-- <a class="item"
@@ -189,6 +189,11 @@
       <a class="item" routerLink="/maintenance/maintenace-requests" routerLinkActive="active-menu-items">
         <p>طلبات الصيانة</p>
       </a>
+      <!-- Maintenance Plan -->
+      <a class="item" routerLink="/maintenance/maintenace-plan" routerLinkActive="active-menu-items"
+        *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer">
+        <p>خطة الصيانة</p>
+      </a>
 
       <!-- Parts Requests -->
       <a class="item" routerLink="/maintenance/parts-requests" routerLinkActive="active-menu-items" *ngIf="
@@ -229,7 +234,7 @@
   <hr class="opacity-30" />
 
   <!-- Maintenance Plan Settings Section -->
-  <div class="item p-2" [ngClass]="{ active: maintenancePlanSettingsOpenMenu }"
+  <!-- <div class="item p-2" [ngClass]="{ active: maintenancePlanSettingsOpenMenu }"
     (click)="showMaintenancePlanSettingsSubMenu(true)"
     *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer">
     <div class="item-icon">
@@ -241,26 +246,22 @@
           ? 'fa-solid fa-chevron-up'
           : 'fa-solid fa-chevron-down'
       "></i>
-  </div>
+  </div> -->
 
   <!-- Maintenance Plan Settings Submenu -->
-  <div class="Drop-Down" *ngIf="maintenancePlanSettingsOpenMenu">
-    <div class="items">
-      <!-- Maintenance Plan -->
-      <a class="item" routerLink="/maintenance-plan-settings/maintenace-plan" routerLinkActive="active-menu-items"
-        *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer">
-        <p>خطة الصيانة</p>
-      </a>
+  <!-- <div class="Drop-Down" *ngIf="maintenancePlanSettingsOpenMenu">
+    <div class="items"> -->
 
-      <!-- Malfunction Types -->
-      <!-- <a class="item" routerLink="/maintenance-plan-settings/maintenace-plan-malfunction-types"
+
+  <!-- Malfunction Types -->
+  <!-- <a class="item" routerLink="/maintenance-plan-settings/maintenace-plan-malfunction-types"
         routerLinkActive="active-menu-items" *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer">
         <p>أنواع الأعطال</p>
       </a> -->
-    </div>
+  <!-- </div>
   </div>
 
-  <hr class="opacity-30" *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer" />
+  <hr class="opacity-30" *ngIf="userRole === roles.Admin || userRole === roles.SystemOfficer" /> -->
 
   <!-- Projects Management Section -->
   <!-- <div class="item p-2" [ngClass]="{ active: projectsOpenMenu }" (click)="showProjectsSubMenu(true)" *ngIf="

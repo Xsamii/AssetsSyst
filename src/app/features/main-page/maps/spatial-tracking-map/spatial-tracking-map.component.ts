@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DropdownModule } from 'primeng/dropdown';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { BreadCrumbComponent } from 'src/app/Shared/components/bread-crumb/bread-crumb.component';
+import { AssetsService } from '../../buildings/components/assets/assets.service';
 import { MapControlsComponent } from './components/map-controls/map-controls.component';
 import { SpatialTrackingMapService } from './services/spatial-tracking-map.service';
 import { SharedService } from 'src/app/Shared/services/shared.service';
@@ -26,7 +28,9 @@ import { Subscription } from 'rxjs';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     DropdownModule,
+    AutoCompleteModule,
     BreadCrumbComponent,
     MapControlsComponent,
   ],
@@ -52,6 +56,7 @@ export class SpatialTrackingMapComponent
   showBaseMap = false;
   showLegend = false;
   showFilters = true; // Show filters
+  showFilterDialog = false; // Filter dialog visibility
   height = 'calc(100vh - 200px)'; // Map height
 
   // Layer configurations
@@ -66,6 +71,11 @@ export class SpatialTrackingMapComponent
   systemNameOptions: any[] = [];
   subCategoryOptions: any[] = [];
   subCategoryTypeOptions: any[] = [];
+
+  // Asset number autocomplete
+  assetNumberSuggestions: any[] = [];
+  selectedAssetNumber: string = '';
+  selectedAssetData: any = null;
 
   // Selected filter codes (for map filtering)
   private selectedSlaughterhouseCode: string = '';
@@ -113,6 +123,7 @@ export class SpatialTrackingMapComponent
     private fb: FormBuilder,
     private spatialTrackingMapService: SpatialTrackingMapService,
     private sharedService: SharedService,
+    private assetsService: AssetsService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -517,9 +528,6 @@ export class SpatialTrackingMapComponent
     } else {
       this.selectedSlaughterhouseCode = '';
     }
-
-    // Apply filter to map
-    this.applyMapFilters();
   }
 
   /**
@@ -552,9 +560,6 @@ export class SpatialTrackingMapComponent
     } else {
       this.selectedBuildingCode = '';
     }
-
-    // Apply filter to map
-    this.applyMapFilters();
   }
 
   /**
@@ -583,9 +588,6 @@ export class SpatialTrackingMapComponent
     } else {
       this.selectedFloorName = '';
     }
-
-    // Apply filter to map
-    this.applyMapFilters();
   }
 
   /**
@@ -603,9 +605,6 @@ export class SpatialTrackingMapComponent
       this.selectedRoomCode = '';
       this.selectedRoomName = '';
     }
-
-    // Apply filter to map
-    this.applyMapFilters();
   }
 
   /**
@@ -675,7 +674,6 @@ export class SpatialTrackingMapComponent
   onSystemNameChange(): void {
     const systemName = this.filterForm.get('systemName')?.value;
     this.selectedSystemName = systemName || '';
-    this.applyMapFilters();
   }
 
   /**
@@ -684,7 +682,6 @@ export class SpatialTrackingMapComponent
   onSubCategoryChange(): void {
     const subCategory = this.filterForm.get('subCategory')?.value;
     this.selectedSubCategory = subCategory || '';
-    this.applyMapFilters();
   }
 
   /**
@@ -693,7 +690,84 @@ export class SpatialTrackingMapComponent
   onSubCategoryTypeChange(): void {
     const subCategoryType = this.filterForm.get('subCategoryType')?.value;
     this.selectedSubCategoryType = subCategoryType || '';
-    this.applyMapFilters();
+  }
+
+  /**
+   * Search assets by number for autocomplete
+   * Only calls API after 2+ characters are entered
+   */
+  searchAssetNumber(event: any): void {
+    const query = event.query;
+
+    // Only search if query has 2 or more characters
+    if (query && query.length >= 2) {
+      this.assetsService.searchAssetsByNumber(query).subscribe({
+        next: (res) => {
+          if (res.isSuccess && res.data) {
+            this.assetNumberSuggestions = res.data;
+          } else {
+            this.assetNumberSuggestions = [];
+          }
+        },
+        error: (err) => {
+          console.error('Error searching assets by number:', err);
+          this.assetNumberSuggestions = [];
+        }
+      });
+    } else {
+      this.assetNumberSuggestions = [];
+    }
+  }
+
+  /**
+   * Handle asset number selection from autocomplete
+   * Calls getAssetByNumber, saves the data, and zooms to asset on map with popup
+   */
+  onAssetNumberSelect(event: any): void {
+    const assetNumber = event.value || event;
+    this.selectedAssetNumber = assetNumber;
+
+    // Call getAssetByNumber API and save the result
+    this.assetsService.getAssetByNumber(assetNumber).subscribe({
+      next: (res) => {
+        if (res.isSuccess && res.data) {
+          this.selectedAssetData = res.data;
+          console.log('Asset data retrieved:', this.selectedAssetData);
+
+          // Filter and zoom to the asset on the map, and open popup
+          // The filterAndZoomToAsset method adds the leading "0" to match AssetCode format
+          this.spatialTrackingMapService.filterAndZoomToAsset(assetNumber);
+        }
+      },
+      error: (err) => {
+        console.error('Error getting asset by number:', err);
+      }
+    });
+  }
+
+  /**
+   * Handle asset number clear event
+   * Resets the map filter when the autocomplete is cleared
+   */
+  onAssetNumberClear(): void {
+    this.selectedAssetNumber = '';
+    this.selectedAssetData = null;
+    this.assetNumberSuggestions = [];
+    // Clear the asset filter and reset map view
+    this.spatialTrackingMapService.clearLayerFilterAndResetView();
+  }
+
+  /**
+   * Handle asset number input change
+   * Resets the map filter when the input becomes empty
+   */
+  onAssetNumberChange(value: string): void {
+    if (!value || value.trim() === '') {
+      this.selectedAssetData = null;
+      this.assetNumberSuggestions = [];
+      // Clear the asset filter and reset map view
+      this.spatialTrackingMapService.clearLayerFilterAndResetView();
+    }
   }
 
   /**
@@ -736,6 +810,11 @@ export class SpatialTrackingMapComponent
     this.selectedSystemName = '';
     this.selectedSubCategory = '';
     this.selectedSubCategoryType = '';
+
+    // Clear asset number autocomplete
+    this.selectedAssetNumber = '';
+    this.selectedAssetData = null;
+    this.assetNumberSuggestions = [];
 
     // Clear dependent dropdown options (but keep slaughterhouse options)
     this.buildingOptions = [];
@@ -798,6 +877,30 @@ export class SpatialTrackingMapComponent
       this.showLayerList = false;
       this.showBaseMap = false;
     }
+  }
+
+  /**
+   * Open filter dialog
+   */
+  openFilterDialog(): void {
+    this.showFilterDialog = true;
+  }
+
+  /**
+   * Close filter dialog
+   */
+  closeFilterDialog(): void {
+    this.showFilterDialog = false;
+  }
+
+  /**
+   * Apply filters from dialog (called when clicking submit button)
+   */
+  applyFiltersFromDialog(): void {
+    // Apply the filters to the map
+    this.applyMapFilters();
+    // Close the dialog
+    this.showFilterDialog = false;
   }
 
   // Store asset ID from query params

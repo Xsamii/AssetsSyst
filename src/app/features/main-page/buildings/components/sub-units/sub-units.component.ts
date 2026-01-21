@@ -218,7 +218,7 @@ export class SubUnitsComponent implements OnInit {
       new listColumns({ field: 'orderNumber', header: '#' }),
       new listColumns({ field: 'name', header: 'اسم المبنى الفرعي' }),
       new listColumns({ field: 'code', header: 'كود المبنى الفرعي' }),
-      new listColumns({ field: 'mainBuidingName', header: 'المبنى الرئيسي' }),
+      new listColumns({ field: 'mainBuidingName', header: 'المبنى' }),
     ];
   }
 }

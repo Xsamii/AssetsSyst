@@ -19,6 +19,7 @@ export class BreadCrumbComponent {
   @Input() inputPlaceholder: string = '';
   @Input() buttonText: string = '';
   @Input() isShowFilter: boolean = true;
+  @Input() showInPutSearch: boolean = true;
   @Input() isShowAddEdite: boolean = false;
   @Input() saveBtnText: string = '';
   @Input() showAddButton: boolean = true;

@@ -13,8 +13,9 @@
   </div>
   <div class="cramb-left" *ngIf="!isShowFilter">
     <div class="input-search" *ngIf="isSearch">
-      <div><img src="./assets/icons/seacrhIcon.svg" /></div>
+      <div *ngIf="showInPutSearch"><img src="./assets/icons/seacrhIcon.svg" /></div>
       <input
+      *ngIf="showInPutSearch"
         type="text"
         [placeholder]="inputPlaceholder"
         #search

@@ -5,9 +5,9 @@
     { name: 'الرئيسية', routerLink: '/' },
     { name: 'إدارة الأصول', routerLink: '/buildings' },
     { name: 'المباني الفرعية', routerLink: '/buildings/sub-units' }
-  ]" [isFilte]="false" [inputPlaceholder]="'ابحث بالرقم، اسم المبنى الفرعي، اسم المبنى، الكود...'" [buttonText]="' مبنى فرعي جديد'"
-  [saveBtnText]="'إضافة'" [isShowFilter]="showBreadcrumb ? false : true" [isShowAddEdite]="false"
-  (addButton)="openAdd()" (valueSearch)="filterBySearchText($event)"></app-bread-crumb>
+  ]" [isFilte]="false" [inputPlaceholder]="'ابحث بالرقم، اسم المبنى الفرعي، اسم المبنى، الكود...'"
+  [buttonText]="' مبنى فرعي جديد'" [saveBtnText]="'إضافة'" [isShowFilter]="showBreadcrumb ? false : true"
+  [isShowAddEdite]="false" (addButton)="openAdd()" (valueSearch)="filterBySearchText($event)"></app-bread-crumb>
 
 <!-- ============================= -->
 <!-- TABLE LIST-->
@@ -54,7 +54,7 @@
       </div>
       <div class="input-field">
         <label for="main-building">
-          المبنى الرئيسي
+          المبنى
           <span>*</span>
         </label>
         <div class=" ">
@@ -71,7 +71,7 @@
               'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
             'background-color': '#f6f6f6',
             'padding-right': '35px'
-          }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى الرئيسي " formControlName="mainBuildingId"
+          }" optionLabel="name" optionValue="id" placeholder=" اختر المبنى " formControlName="mainBuildingId"
             [options]="builldingLookup" [filter]="true" filterBy="name"></p-dropdown>
 
 
@@ -80,7 +80,7 @@
             formControls.mainBuildingId.invalid &&
             formControls.mainBuildingId.touched
           ">
-          برجاء إختيار المبنى الرئيسي
+          برجاء إختيار المبنى
         </small>
       </div>
       <div class="buttons-content">

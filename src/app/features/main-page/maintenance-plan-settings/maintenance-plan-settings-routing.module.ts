@@ -14,21 +14,21 @@ const routes: Routes = [
     component: MaintenancePlanSettingsComponent,
     children: [
       { path: '', redirectTo: 'maintenace-plan', pathMatch: 'full' },
-      {
-        path: 'maintenace-plan',
-        title: 'خطة الصيانة',
-        data: {
-          role: [
-            Roles.Admin,
-            Roles.SystemOfficer,
-          ],
-        },
-        canActivate: [AuthGuard],
-        loadChildren: () =>
-          import('./components/maintenance-plan/maintenance-plan.module').then(
-            (m) => m.MaintenancePlanModule
-          ),
-      },
+      // {
+      //   path: 'maintenace-plan',
+      //   title: 'خطة الصيانة',
+      //   data: {
+      //     role: [
+      //       Roles.Admin,
+      //       Roles.SystemOfficer,
+      //     ],
+      //   },
+      //   canActivate: [AuthGuard],
+      //   loadChildren: () =>
+      //     import('./components/maintenance-plan/maintenance-plan.module').then(
+      //       (m) => m.MaintenancePlanModule
+      //     ),
+      // },
       {
         path: 'maintenace-plan-malfunction-types',
         title: 'أنواع الأعطال',

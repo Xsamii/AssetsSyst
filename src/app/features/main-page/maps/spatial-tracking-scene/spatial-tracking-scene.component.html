@@ -1,13 +1,10 @@
 <!-- Spatial Tracking Scene Dashboard -->
 <div class="spatial-tracking-scene-dashboard">
   <!-- Breadcrumb -->
-  <app-bread-crumb
-    class="bg-white"
-    [title]="'المشهد ثلاثي الأبعاد'"
-    [imageTitle]="'./assets/icons/mainBuildingsActive.svg'"
+  <app-bread-crumb class="bg-white" [title]="'3D View'" [imageTitle]="'./assets/icons/mainBuildingsActive.svg'"
     [subTitles]="[
       { name: 'الرئيسية', routerLink: '/' },
-      { name: 'المشهد ثلاثي الأبعاد', routerLink: '/scene' }
+      { name: '3D View', routerLink: '/scene' }
     ]">
   </app-bread-crumb>
 
@@ -19,31 +16,21 @@
     <div #sceneViewNode class="scene-view w-full h-full"></div>
 
     <!-- Custom Layer Visibility Controls -->
-    <div
-      class="absolute bottom-4 right-4 z-40 bg-white/90 rounded-lg shadow-md p-3 min-w-[180px] text-xs space-y-2">
+    <div class="absolute bottom-4 right-4 z-40 bg-white/90 rounded-lg shadow-md p-3 min-w-[180px] text-xs space-y-2">
       <h3 class="font-semibold text-gray-800 mb-1">عرض الطبقات</h3>
 
       <label class="flex items-center gap-2 text-gray-700">
-        <input
-          type="checkbox"
-          [checked]="layerVisibility.main"
-          (change)="onLayerVisibilityChange('main', $event)" />
+        <input type="checkbox" [checked]="layerVisibility.main" (change)="onLayerVisibilityChange('main', $event)" />
         <span>معدات ميكانيكية</span>
       </label>
 
       <label class="flex items-center gap-2 text-gray-700">
-        <input
-          type="checkbox"
-          [checked]="layerVisibility.rooms"
-          (change)="onLayerVisibilityChange('rooms', $event)" />
+        <input type="checkbox" [checked]="layerVisibility.rooms" (change)="onLayerVisibilityChange('rooms', $event)" />
         <span>الغرف</span>
       </label>
 
       <label class="flex items-center gap-2 text-gray-700">
-        <input
-          type="checkbox"
-          [checked]="layerVisibility.walls"
-          (change)="onLayerVisibilityChange('walls', $event)" />
+        <input type="checkbox" [checked]="layerVisibility.walls" (change)="onLayerVisibilityChange('walls', $event)" />
         <span>الجدران</span>
       </label>
     </div>
@@ -55,46 +42,36 @@
     </app-map-controls> -->
 
     <!-- Layer List Panel -->
-    <div
-      [class.hidden]="!showLayerList"
+    <div [class.hidden]="!showLayerList"
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-4 z-50 max-h-[70vh] overflow-auto"
       style="min-width: 400px; max-width: 600px;">
       <div class="flex justify-between items-center mb-3">
         <h3 class="text-lg font-bold text-gray-800">الطبقات</h3>
-        <button
-          (click)="toggleLayerList()"
-          class="text-gray-600 hover:text-gray-800 text-xl">&times;</button>
+        <button (click)="toggleLayerList()" class="text-gray-600 hover:text-gray-800 text-xl">&times;</button>
       </div>
       <div id="sceneLayerListDiv"></div>
     </div>
 
     <!-- BaseMap Panel -->
-    <div
-      [class.hidden]="!showBaseMap"
+    <div [class.hidden]="!showBaseMap"
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl p-4 z-50 max-h-[70vh] overflow-auto"
       style="min-width: 400px; max-width: 600px;">
       <div class="flex justify-between items-center mb-3">
         <h3 class="text-lg font-bold text-gray-800">خرائط الأساس</h3>
-        <button
-          (click)="toggleBaseMap()"
-          class="text-gray-600 hover:text-gray-800 text-xl">&times;</button>
+        <button (click)="toggleBaseMap()" class="text-gray-600 hover:text-gray-800 text-xl">&times;</button>
       </div>
       <div id="sceneBaseMapDiv"></div>
     </div>
 
     <!-- Legend Panel -->
-    <div
-      [class.hidden]="!showLegend"
+    <div [class.hidden]="!showLegend"
       class="absolute bottom-4 left-4 bg-white rounded-lg shadow-xl p-4 z-50 max-h-[60%] overflow-auto"
       style="min-width: 250px; max-width: 400px;">
       <div class="flex justify-between items-center mb-3">
         <h3 class="text-lg font-bold text-gray-800">وسيلة الإيضاح</h3>
-        <button
-          (click)="toggleLegend()"
-          class="text-gray-600 hover:text-gray-800 text-xl">&times;</button>
+        <button (click)="toggleLegend()" class="text-gray-600 hover:text-gray-800 text-xl">&times;</button>
       </div>
       <div id="sceneLegendContainer"></div>
     </div>
   </div>
 </div>
-

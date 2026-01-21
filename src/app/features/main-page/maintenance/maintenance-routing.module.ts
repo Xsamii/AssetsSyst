@@ -145,6 +145,21 @@ const routes: Routes = [
         component: NotificationsComponent,
         title: 'الاشعارات',
       },
+      {
+              path: 'maintenace-plan',
+              title: 'خطة الصيانة',
+              data: {
+                role: [
+                  Roles.Admin,
+                  Roles.SystemOfficer,
+                ],
+              },
+              canActivate: [AuthGuard],
+              loadChildren: () =>
+                import('./components/maintenance-plan/maintenance-plan.module').then(
+                  (m) => m.MaintenancePlanModule
+                ),
+            },
     ],
   },
 ];
