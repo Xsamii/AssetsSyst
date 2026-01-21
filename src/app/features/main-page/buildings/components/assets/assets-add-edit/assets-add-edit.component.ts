@@ -21,6 +21,7 @@ import { File, UploadFiles } from 'src/app/Shared/models/files';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { CalendarModule } from 'primeng/calendar';
 import { FilesService } from 'src/app/Shared/services/files.service';
+import { DirectivesModule } from "src/app/core/directives/directives.module";
 
 @Component({
   selector: 'app-assets-add-edit',
@@ -36,7 +37,8 @@ import { FilesService } from 'src/app/Shared/services/files.service';
     CommonModule,
     MultiSelectModule,
     CalendarModule,
-  ],
+    DirectivesModule
+],
 })
 export class AssetsAddEditComponent implements OnInit, OnDestroy {
   sitesList
@@ -143,6 +145,10 @@ export class AssetsAddEditComponent implements OnInit, OnDestroy {
       siteId: [null, Validators.required],
       buildingId: [null, Validators.required],
       FloorId: [null, Validators.required],
+      virtualAge: [0],
+      depreciationRate: [0],
+      initialValue: [0],
+      currentValue: [0]
     });
   }
 

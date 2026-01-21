@@ -24,127 +24,137 @@
         <i class="fa-solid fa-xmark cursor-pointer mr-auto" (click)="closeFilterDialog()"></i>
       </div>
       <form [formGroup]="filterForm" (ngSubmit)="applyFiltersFromDialog()">
-        <div class="grid grid-cols-12 gap-4">
-          <!-- المجزرة -->
-          <div class="input-field col-span-6">
-            <label>المجزرة</label>
-            <div class="dropdown-container">
-              <p-dropdown
-                class="w-full"
-                [styleClass]="'w-full bg-filterBtnBg py-3'"
-                [style]="{
-                  background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
-                  'background-color': '#f6f6f6',
-                  'padding-right': '35px'
-                }"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="اختر المجزرة"
-                formControlName="slaughterhouse"
-                [options]="slaughterhouseOptions"
-                [filter]="true"
-                [showClear]="false"
-                (onChange)="onSlaughterhouseChange()">
-              </p-dropdown>
+        <!-- Filter by Location Section -->
+        <div class="filter-section">
+          <div class="filter-section-title">تصفية حسب الموقع</div>
+          <div class="grid grid-cols-12 gap-4">
+            <!-- المجزرة -->
+            <div class="input-field col-span-6">
+              <label>المجزرة</label>
+              <div class="dropdown-container">
+                <p-dropdown
+                  class="w-full"
+                  [styleClass]="'w-full bg-filterBtnBg py-3'"
+                  [style]="{
+                    background: 'url(./assets/icons/select-main-building-icon.svg) no-repeat right 10px center',
+                    'background-color': '#f6f6f6',
+                    'padding-right': '35px'
+                  }"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="اختر المجزرة"
+                  formControlName="slaughterhouse"
+                  [options]="slaughterhouseOptions"
+                  [filter]="true"
+                  [showClear]="false"
+                  (onChange)="onSlaughterhouseChange()">
+                </p-dropdown>
+              </div>
+            </div>
+
+            <!-- المبنى -->
+            <div class="input-field col-span-6">
+              <label>المبنى</label>
+              <div class="dropdown-container">
+                <p-dropdown
+                  class="w-full"
+                  [styleClass]="'w-full bg-filterBtnBg py-3'"
+                  [style]="{
+                    background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                    'background-color': '#f6f6f6',
+                    'padding-right': '35px'
+                  }"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="اختر المبنى"
+                  formControlName="building"
+                  [options]="buildingOptions"
+                  [filter]="true"
+                  [showClear]="false"
+                  [disabled]="!filterForm.get('slaughterhouse')?.value"
+                  (onChange)="onBuildingChange()">
+                </p-dropdown>
+              </div>
+            </div>
+
+            <!-- الدور -->
+            <div class="input-field col-span-6">
+              <label>الدور</label>
+              <div class="dropdown-container">
+                <p-dropdown
+                  class="w-full"
+                  [styleClass]="'w-full bg-filterBtnBg py-3'"
+                  [style]="{
+                    background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                    'background-color': '#f6f6f6',
+                    'padding-right': '35px'
+                  }"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="اختر الدور"
+                  formControlName="floor"
+                  [options]="floorOptions"
+                  [filter]="true"
+                  [showClear]="false"
+                  [disabled]="!filterForm.get('building')?.value"
+                  (onChange)="onFloorChange()">
+                </p-dropdown>
+              </div>
+            </div>
+
+            <!-- الغرفة -->
+            <div class="input-field col-span-6">
+              <label>الغرفة</label>
+              <div class="dropdown-container">
+                <p-dropdown
+                  class="w-full"
+                  [styleClass]="'w-full bg-filterBtnBg py-3'"
+                  [style]="{
+                    background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                    'background-color': '#f6f6f6',
+                    'padding-right': '35px'
+                  }"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="اختر الغرفة"
+                  formControlName="room"
+                  [options]="roomOptions"
+                  [filter]="true"
+                  [showClear]="false"
+                  [disabled]="!filterForm.get('floor')?.value"
+                  (onChange)="onRoomChange()">
+                </p-dropdown>
+              </div>
             </div>
           </div>
+        </div>
 
-          <!-- المبنى -->
-          <div class="input-field col-span-6">
-            <label>المبنى</label>
-            <div class="dropdown-container">
-              <p-dropdown
-                class="w-full"
-                [styleClass]="'w-full bg-filterBtnBg py-3'"
-                [style]="{
-                  background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
-                  'background-color': '#f6f6f6',
-                  'padding-right': '35px'
-                }"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="اختر المبنى"
-                formControlName="building"
-                [options]="buildingOptions"
-                [filter]="true"
-                [showClear]="false"
-                [disabled]="!filterForm.get('slaughterhouse')?.value"
-                (onChange)="onBuildingChange()">
-              </p-dropdown>
-            </div>
-          </div>
-
-          <!-- الدور -->
-          <div class="input-field col-span-6">
-            <label>الدور</label>
-            <div class="dropdown-container">
-              <p-dropdown
-                class="w-full"
-                [styleClass]="'w-full bg-filterBtnBg py-3'"
-                [style]="{
-                  background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
-                  'background-color': '#f6f6f6',
-                  'padding-right': '35px'
-                }"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="اختر الدور"
-                formControlName="floor"
-                [options]="floorOptions"
-                [filter]="true"
-                [showClear]="false"
-                [disabled]="!filterForm.get('building')?.value"
-                (onChange)="onFloorChange()">
-              </p-dropdown>
-            </div>
-          </div>
-
-          <!-- الغرفة -->
-          <div class="input-field col-span-6">
-            <label>الغرفة</label>
-            <div class="dropdown-container">
-              <p-dropdown
-                class="w-full"
-                [styleClass]="'w-full bg-filterBtnBg py-3'"
-                [style]="{
-                  background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
-                  'background-color': '#f6f6f6',
-                  'padding-right': '35px'
-                }"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="اختر الغرفة"
-                formControlName="room"
-                [options]="roomOptions"
-                [filter]="true"
-                [showClear]="false"
-                [disabled]="!filterForm.get('floor')?.value"
-                (onChange)="onRoomChange()">
-              </p-dropdown>
-            </div>
-          </div>
-
-          <!-- النظام -->
-          <div class="input-field col-span-6">
-            <label>النظام</label>
-            <div class="dropdown-container">
-              <p-dropdown
-                class="w-full"
-                [styleClass]="'w-full bg-filterBtnBg py-3'"
-                [style]="{
-                  background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
-                  'background-color': '#f6f6f6',
-                  'padding-right': '35px'
-                }"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="اختر النظام"
-                formControlName="systemName"
-                [options]="systemNameOptions"
-                [filter]="true"
-                [showClear]="false"
-                (onChange)="onSystemNameChange()">
-              </p-dropdown>
+        <!-- Filter by System Section -->
+        <div class="filter-section">
+          <div class="filter-section-title">تصفية حسب النظام</div>
+          <div class="grid grid-cols-12 gap-4">
+            <!-- النظام -->
+            <div class="input-field col-span-12">
+              <label>النظام</label>
+              <div class="dropdown-container">
+                <p-dropdown
+                  class="w-full"
+                  [styleClass]="'w-full bg-filterBtnBg py-3'"
+                  [style]="{
+                    background: 'url(./assets/icons/userIcon.svg) no-repeat right 10px center',
+                    'background-color': '#f6f6f6',
+                    'padding-right': '35px'
+                  }"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="اختر النظام"
+                  formControlName="systemName"
+                  [options]="systemNameOptions"
+                  [filter]="true"
+                  [showClear]="false"
+                  (onChange)="onSystemNameChange()">
+                </p-dropdown>
+              </div>
             </div>
           </div>
         </div>

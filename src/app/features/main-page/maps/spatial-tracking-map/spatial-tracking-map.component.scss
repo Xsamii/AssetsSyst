@@ -109,6 +109,25 @@
     form {
       padding: 24px;
 
+      .filter-section {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        position: relative;
+
+        .filter-section-title {
+          position: absolute;
+          top: -12px;
+          right: 16px;
+          background-color: #fff;
+          padding: 0 8px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #16968c;
+        }
+      }
+
       .input-field {
         margin-bottom: 5px;
 

@@ -61,7 +61,7 @@
           المبنى مطلوب
         </small>
       </div>
-    
+
       <div class="input-field col-span-6">
         <label for="name"> الطابق <span>*</span></label>
         <div class="">
@@ -183,10 +183,41 @@
       </div>
 
       <div class="input-field col-span-6">
-        <label for="name"> مدة الضمان </label>
+        <label for="name"> مدة الضمان (سنوات) </label>
         <div class="field-icon">
-          <input type="text" name="" id="" class="form-control" formControlName="warrantyDuration"
+          <input appOnlyNumber type="text" name="" id="" class="form-control" formControlName="warrantyDuration"
             placeholder="حدد مدة الضمان" />
+        </div>
+      </div>
+       <div class="input-field col-span-6">
+        <label for="name"> العمر الإفتراضي </label>
+        <div class="field-icon">
+          <input appOnlyNumber type="text" name="" id="" class="form-control" formControlName="virtualAge"
+            placeholder="  ادخل العمر الإفتراضي " />
+        </div>
+      </div>
+
+       <div class="input-field col-span-6">
+        <label for="name"> نسبة الإهلاك السنوي  </label>
+        <div class="field-icon">
+          <input appOnlyNumber type="text" name="" id="" class="form-control" formControlName="depreciationRate"
+            placeholder="  ادخل نسبة الإهلاك السنوي " />
+        </div>
+      </div>
+
+       <div class="input-field col-span-6">
+        <label for="name"> قيمة الأصل الأساسية  </label>
+        <div class="field-icon">
+          <input appOnlyNumber type="text" name="" id="" class="form-control" formControlName="initialValue"
+            placeholder="  ادخل قيمة الأصل الأساسية " />
+        </div>
+      </div>
+
+       <div class="input-field col-span-6">
+        <label for="name">  قيمة الأصل الحالية </label>
+        <div class="field-icon">
+          <input appOnlyNumber type="text" name="" id="" class="form-control" formControlName="currentValue"
+            placeholder="  ادخل قيمة الأصل الحالية " />
         </div>
       </div>
 
@@ -209,7 +240,7 @@
     </div>
   </div>
 
-  <div class="bg-white px-5 pt-3 pb-5 rounded mt-5">
+  <!-- <div class="bg-white px-5 pt-3 pb-5 rounded mt-5">
     <h3 class="font-bold my-3">بيانات الصيانة</h3>
     <hr />
     <div class="grid grid-cols-12 gap-4 mt-3">
@@ -223,14 +254,12 @@
             optionValue="id" placeholder="اختر عناصر الصيانة الدورية" display="chip" #maintenanceDropdown
             (onFilter)="onDropdownFilter($event)" [filter]="true">
 
-            <!-- Custom item template -->
             <ng-template pTemplate="item" let-option let-index="index">
-              <!-- Regular item -->
+
               <div *ngIf="!option.isAddButton" class="p-2">
                 <span>{{ option.name }}</span>
               </div>
 
-              <!-- Add button item -->
               <div *ngIf="option.isAddButton"
                 class="flex items-center justify-between w-full p-2 bg-gray-50 border-t border-gray-200">
                 <span class="text-gray-700">إضافة: "{{ option.searchTerm }}"</span>
@@ -243,7 +272,7 @@
             </ng-template>
           </p-multiSelect>
         </div>
-      </div>
+      </div> -->
 
       <!-- <div class="input-field col-span-6">
         <label for="name">
@@ -262,8 +291,8 @@
             placeholder="      حدد موعد الصيانة الثانوي" />
         </div>
       </div> -->
-    </div>
-  </div>
+    <!-- </div>
+  </div> -->
   <div class="bg-white px-5 pt-3 pb-5 rounded mt-5">
     <h3 class="font-bold my-3">المرفقات و الملاحظات</h3>
     <hr />

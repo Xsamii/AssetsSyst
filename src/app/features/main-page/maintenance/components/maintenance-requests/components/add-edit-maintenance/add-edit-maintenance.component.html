@@ -123,20 +123,10 @@
     </div>
 
     <div class="two-inputs-fields">
-      <!-- <div class="input-field">
-        <label for="name"> المبنى الفرعي <span>*</span> </label>
-        <div class="field-icon">
-          <img src="./assets/icons/select-main-building-icon.svg" />
-          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
-            optionLabel="name" optionValue="id" placeholder="اختر المبنى الفرعي" formControlName="subUnitId"
-            [options]="buildingSubUnitLookup" (onChange)="getAllfloors(+maintenanceForm.value.subUnitId)"
-            [filter]="true" filterBy="name"></p-dropdown>
-        </div>
-
-      </div> -->
+     
 
       <div class="input-field">
-        <label for="name"> الطابق </label>
+        <label for="name"> الطابق <span>*</span></label>
         <div class="field-icon">
           <img src="./assets/icons/select-main-building-icon.svg" />
           <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
@@ -168,6 +158,17 @@
     <div class="two-inputs-fields">
 
 
+       <div class="input-field">
+        <label for="name"> الأصل <span>*</span> </label>
+        <div class="field-icon">
+          <img src="./assets/icons/select-main-building-icon.svg" />
+          <p-dropdown [readonly]="statusId != 1" class="w-full" [styleClass]="'w-full bg-filterBtnBg'"
+            optionLabel="name" optionValue="id" placeholder="اختر الأصل " formControlName="assetId"
+            [options]="assetLookup" [filter]="true" filterBy="name">
+          </p-dropdown>
+        </div>
+      </div>
+
 
 
       <div class="input-field">
@@ -187,7 +188,16 @@
       </div>
 
 
-         <div class="input-field">
+
+
+    </div>
+    <!-- ---------------------------------------------------------------- -->
+    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
+    <!-- ---------------------------------------------------------------- -->
+
+    <div class="two-inputs-fields">
+
+        <div class="input-field">
         <label for="name"> نوع العطل الرئيسي <span>*</span> </label>
         <div class="field-icon">
           <img src="./assets/icons/types-icon-fill.svg" />
@@ -204,14 +214,6 @@
           " class="error-text">يجب إختيار نوع العطل الرئيسي
         </small>
       </div>
-
-    </div>
-    <!-- ---------------------------------------------------------------- -->
-    <!-- ------------------TWO INPUTS FIELDS----------------------------- -->
-    <!-- ---------------------------------------------------------------- -->
-
-    <div class="two-inputs-fields">
-
 
 
 
@@ -230,14 +232,7 @@
           " class="error-text">يجب إختيار نوع العطل الرئيسي ثم العطل الفرعي التابة له</small>
       </div>
 
-      <div class="input-field">
-        <label for="name"> وصف مكان العطل </label>
-        <div class="field-icon">
-          <img src="./assets/icons/locationIcon.svg" />
-          <input class="bg-gray-100 rounded-lg outline-none" type="text" placeholder="وصف مكان العطل "
-            formControlName="locationDescription" [readonly]="statusId != 1" />
-        </div>
-      </div>  
+
     </div>
 
     <!-- ---------------------------------------------------------------- -->
@@ -245,6 +240,15 @@
     <!-- ---------------------------------------------------------------- -->
     <div class="two-inputs-fields">
 
+
+      <div class="input-field">
+        <label for="name"> وصف مكان العطل </label>
+        <div class="field-icon">
+          <img src="./assets/icons/locationIcon.svg" />
+          <input class="bg-gray-100 rounded-lg outline-none" type="text" placeholder="وصف مكان العطل "
+            formControlName="locationDescription" [readonly]="statusId != 1" />
+        </div>
+      </div>
 
       <div class="input-field">
         <label for="name"> معلومات إضافية </label>

@@ -222,6 +222,7 @@ export class AddEditMaintenanceComponent implements OnInit {
           executableProjectId: res.data.executableProjectId,
           floorId: res.data.floorId,
           officeId: res.data.buildingOfficeId,
+          assetId: res.data.assetId,
         });
 
         // Load dependent data
@@ -392,6 +393,7 @@ export class AddEditMaintenanceComponent implements OnInit {
 
   getAllAssetsInOffice(id: number) {
     this._sharedService.GetAllAssetsBySearch(id).subscribe((res) => {
+
       this.assetLookup = res.data;
     });
   }

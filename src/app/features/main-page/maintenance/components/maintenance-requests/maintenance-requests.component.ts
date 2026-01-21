@@ -514,10 +514,11 @@ export class MaintenanceRequestsComponent implements OnInit {
       new listColumns({ field: 'siteName', header: 'الموقع' }),
 
       new listColumns({ field: 'buildingName', header: 'المبنى' }),
-      // new listColumns({ field: 'buildingSubUnitName', header: 'المبنى الفرعي'  }),
-      // new listColumns({ field: 'assetName', header: 'رقم الأصل' }),
+
       new listColumns({ field: 'floorNumber', header: 'الطابق' }),
       new listColumns({ field: 'buildingOfficeName', header: 'الغرفة' }),
+      new listColumns({ field: 'assetName', header: 'الأصل' }),
+
       new listColumns({
         field: 'mainCategoryTypeName',
         header: 'العطل الرئيسي',
